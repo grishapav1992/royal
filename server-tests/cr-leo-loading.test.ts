@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CrLeoAssetStore, type CrLeoAsset } from '../src/ui/crLeoAssets';
-import { CR_LEO_ASSETS } from '../src/ui/crLeoAssetManifest';
+import { CrLeoAssetStore, type CrLeoAsset } from '../games/cr-vs-leo/crLeoAssets';
+import { CR_LEO_ASSETS } from '../games/cr-vs-leo/crLeoAssetManifest';
 
 const specs = ['a','b','c','d','e'].map((key,i) => ({ key, file:key+'.webp', bytes:(i+1)*100 }));
 const asset = (): CrLeoAsset => ({ image: {} as HTMLImageElement });

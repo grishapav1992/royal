@@ -1,10 +1,14 @@
-import type { PenaltyHero, PenaltyRisk } from '../shared/crLeo';
+import type { PenaltyHero, PenaltyRisk } from '../../src/shared/crLeo';
 
 // Metres, measured from the centre of the goal line towards the kicker.
 export const PITCH = { goalWidth: 7.32, goalHeight: 2.44, goalDepth: 2, goalArea: 5.5, penaltyArea: 16.5, penaltySpot: 11, arcRadius: 9.15, standBehindGoal: 4 } as const;
+export const kickSpot = (hero: PenaltyHero, risk: PenaltyRisk) => ({ distance: risk === 'safe' ? 11 : risk === 'sharp' ? 20 : 30, cameraX: risk === 'safe' ? 0 : hero === 'cr' ? -1.1 : 1.1 });
 export function createPitch(width: number, height: number, hero: PenaltyHero, risk: PenaltyRisk) {
-  const distance = risk === 'safe' ? 11 : risk === 'sharp' ? 20 : 30;
-  const cameraZ = distance + 6.5, cameraX = risk === 'safe' ? 0 : hero === 'cr' ? -1.1 : 1.1;
+  const spot = kickSpot(hero, risk); return createPitchAt(width, height, spot.distance, spot.cameraX);
+}
+/** The same projection for any camera position, so the camera can travel between spots. */
+export function createPitchAt(width: number, height: number, distance: number, cameraX: number) {
+  const cameraZ = distance + 6.5;
   const horizon = height * .385;
   // Keep the foreground readable on portrait screens while retaining one ground projection.
   const focal = Math.min(height * .94, width * .72) * 17.5 / PITCH.goalWidth;
@@ -39,13 +43,14 @@ export function pitchMarkings() {
   return paths;
 }
 
-export function drawPitch(c: CanvasRenderingContext2D, pitch: Pitch, background?: HTMLImageElement) {
+export function drawPitch(c: CanvasRenderingContext2D, pitch: Pitch, background?: HTMLImageElement, stands?: () => void) {
   const { width: w, height: h, project, cameraZ } = pitch;
   if (background) {
     // The clean plate has no baked-in lines. Its stand foot follows the same end of the pitch.
     const imageScale = Math.max(w / background.width, pitch.standBottom / 446);
     c.drawImage(background, (w - background.width * imageScale) / 2, pitch.standBottom - 446 * imageScale, background.width * imageScale, background.height * imageScale);
   } else { c.fillStyle = '#346d35'; c.fillRect(0, 0, w, h); }
+  stands?.();
   c.save(); c.lineCap = 'butt'; c.lineJoin = 'round'; c.strokeStyle = '#fffde7cf';
   // Clip to the visible ground before projecting, never through or behind the camera.
   const nearZ = cameraZ - (h * (.84 - .385) * 6.5) / (h - pitch.horizon);

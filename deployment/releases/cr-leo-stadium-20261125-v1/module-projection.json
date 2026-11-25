@@ -1,0 +1,309 @@
+{
+  "format": 1,
+  "productionCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "moduleGames": [
+    "cr-vs-leo"
+  ],
+  "moduleContracts": {
+    "original-cr-vs-leo": {
+      "apiVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1
+    }
+  },
+  "moduleAssets": {
+    "public/assets/cr-vs-leo/audio/v1/ankara-messi.mp3": "e2169e3b76e785bca01edb1e9e9e189df670299aa0b4db2101657fdd6e152ed6",
+    "public/assets/cr-vs-leo/audio/v1/goal.mp3": "57b320a5d213701b8204f30f2deb9d9edcb0244e196cac156a2a1525e56b7ff4",
+    "public/assets/cr-vs-leo/audio/v1/kick.mp3": "4390e06290de978bbd5a38d87f9d1c0c6952f4f489af0f38b411334908741651",
+    "public/assets/cr-vs-leo/audio/v1/miss.mp3": "3c10132247d3b3a3b9c5608fcb6fea59a75c00db6a2ad6b9a6af93d866eebef1",
+    "public/assets/cr-vs-leo/audio/v1/siuuu.mp3": "bb04818d6538e4e28b6d915b7893bbccbb38d760d34afb092c4677f220e5f474",
+    "public/assets/cr-vs-leo/audio/v1/stadium.mp3": "b65aa4095f242c0ab582dbd1088199cf5873d3e1fa022943ad59de22b5ccbead",
+    "public/assets/cr-vs-leo/v2/ball-ordem-v-atlas.webp": "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f",
+    "public/assets/cr-vs-leo/v2/cr-white-thumb.webp": "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c",
+    "public/assets/cr-vs-leo/v2/cr-white.webp": "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e",
+    "public/assets/cr-vs-leo/v2/keeper-dive.webp": "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba",
+    "public/assets/cr-vs-leo/v2/keeper-empty.webp": "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f",
+    "public/assets/cr-vs-leo/v2/keeper-reach.webp": "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302",
+    "public/assets/cr-vs-leo/v2/leo-thumb.webp": "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c",
+    "public/assets/cr-vs-leo/v2/leo.webp": "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92",
+    "public/assets/cr-vs-leo/v2/wall-far.webp": "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d",
+    "public/assets/cr-vs-leo/v2/wall.webp": "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a",
+    "public/assets/cr-vs-leo/v3/clouds.webp": "f817674955f5e8b905db479146a64bff9a15feb3187f80e038047dcc284048c3",
+    "public/assets/cr-vs-leo/v3/crowd-mask.webp": "5c46899641c98a96a0018455e580101a8ea1be5dbcba2d35f6b7448e6c853161",
+    "public/assets/cr-vs-leo/v3/stadium-clear.webp": "37b01d4f426e4f3c98d79d9e1722a838bbeebd1277a96055e126f10184d4ccd6"
+  },
+  "files": {
+    "games/cr-vs-leo/CrLeoAudio.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/CrLeoAudio.ts",
+      "baseSha256": "5f16f841b75e5433cb654bea1e3535bf5be05039cf581a7212e106a47db405bd",
+      "sha256": "5f16f841b75e5433cb654bea1e3535bf5be05039cf581a7212e106a47db405bd"
+    },
+    "games/cr-vs-leo/CrLeoScene.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/CrLeoScene.ts",
+      "baseSha256": "dc1d55df3812a4841ff84ab3ee4be436a08afa9321248d928a0d4783b910e5c6",
+      "sha256": "dc1d55df3812a4841ff84ab3ee4be436a08afa9321248d928a0d4783b910e5c6"
+    },
+    "games/cr-vs-leo/CrLeoUI.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/CrLeoUI.ts",
+      "baseSha256": "b9fd24bd65c2389c4897d852ef9e81d5c00316f86a902ca3215aa4f06e9c8aa1",
+      "sha256": "b9fd24bd65c2389c4897d852ef9e81d5c00316f86a902ca3215aa4f06e9c8aa1"
+    },
+    "games/cr-vs-leo/camera.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/camera.ts",
+      "baseSha256": "ab04e78e4d181003baff42670364c2041a058bb63977575e04a0f7745fdcb222",
+      "sha256": "ab04e78e4d181003baff42670364c2041a058bb63977575e04a0f7745fdcb222"
+    },
+    "games/cr-vs-leo/cr-leo.css": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/cr-leo.css",
+      "baseSha256": "e08efeb147495188712463a586b91035087e0a78f3f57a917962d7c2dc013ad6",
+      "sha256": "e08efeb147495188712463a586b91035087e0a78f3f57a917962d7c2dc013ad6"
+    },
+    "games/cr-vs-leo/crLeoAssetManifest.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/crLeoAssetManifest.ts",
+      "baseSha256": "ea84b4c6669dc3bca6d59476072e6bad931e61121495b221a3e4ffed0c83ad4a",
+      "sha256": "ea84b4c6669dc3bca6d59476072e6bad931e61121495b221a3e4ffed0c83ad4a"
+    },
+    "games/cr-vs-leo/crLeoAssets.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/crLeoAssets.ts",
+      "baseSha256": "0b62b00ee871bab59b144f04b6f6d1eca490301aa2c1e664b86c2e0277b68c5e",
+      "sha256": "0b62b00ee871bab59b144f04b6f6d1eca490301aa2c1e664b86c2e0277b68c5e"
+    },
+    "games/cr-vs-leo/crLeoBall.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/crLeoBall.ts",
+      "baseSha256": "9c0d24ec50cf2cb8e70d74fd0498760d068e3cea7019d8950ead0f9e7b42dd30",
+      "sha256": "9c0d24ec50cf2cb8e70d74fd0498760d068e3cea7019d8950ead0f9e7b42dd30"
+    },
+    "games/cr-vs-leo/crLeoFreeKick.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/crLeoFreeKick.ts",
+      "baseSha256": "57e78da26ff71059daec59ee3cf25e035c6bdbafff68a6338655d9cabb0c1c13",
+      "sha256": "57e78da26ff71059daec59ee3cf25e035c6bdbafff68a6338655d9cabb0c1c13"
+    },
+    "games/cr-vs-leo/crLeoGoal.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/crLeoGoal.ts",
+      "baseSha256": "7812d5b177bbf2affdfc0f9e6f7a11feebd31fba35be105774c793a59e9787b9",
+      "sha256": "7812d5b177bbf2affdfc0f9e6f7a11feebd31fba35be105774c793a59e9787b9"
+    },
+    "games/cr-vs-leo/crLeoPitch.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/crLeoPitch.ts",
+      "baseSha256": "476cec26227a748d9e793200bdcdbccb77c50ed4457dfe8616b8f7acf24970d4",
+      "sha256": "476cec26227a748d9e793200bdcdbccb77c50ed4457dfe8616b8f7acf24970d4"
+    },
+    "games/cr-vs-leo/crLeoTimeline.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/crLeoTimeline.ts",
+      "baseSha256": "afba6631a19f80b6ccd7c417c8135d313c45ca970a0356a3919aafc8dcdaa6e2",
+      "sha256": "afba6631a19f80b6ccd7c417c8135d313c45ca970a0356a3919aafc8dcdaa6e2"
+    },
+    "games/cr-vs-leo/effects.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/effects.ts",
+      "baseSha256": "48ed0451a94ca9f5a03f8291e35f3c674f59f52db5571720c9a2f88f76a5aede",
+      "sha256": "48ed0451a94ca9f5a03f8291e35f3c674f59f52db5571720c9a2f88f76a5aede"
+    },
+    "games/cr-vs-leo/entry.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/entry.ts",
+      "baseSha256": "78e0bffc59c4a3f009837d7207c0b6a462b74f02c97c76f80f6a8c434fa65872",
+      "sha256": "78e0bffc59c4a3f009837d7207c0b6a462b74f02c97c76f80f6a8c434fa65872"
+    },
+    "games/cr-vs-leo/package.json": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/package.json",
+      "baseSha256": "f0e4df2cd43aa98fb52b965a9fb1ddd29cc331682adf9b834156e0d07e2a1617",
+      "sha256": "f0e4df2cd43aa98fb52b965a9fb1ddd29cc331682adf9b834156e0d07e2a1617"
+    },
+    "games/cr-vs-leo/stands.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/stands.ts",
+      "baseSha256": "979c68fa817decd5f3f33ac7c3394ae4544a8a2835380f9904499fbe39324a66",
+      "sha256": "979c68fa817decd5f3f33ac7c3394ae4544a8a2835380f9904499fbe39324a66"
+    },
+    "games/cr-vs-leo/tsconfig.json": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "games/cr-vs-leo/tsconfig.json",
+      "baseSha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de",
+      "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0",
+      "sha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        }
+      ]
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/crLeo.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/crLeo.ts",
+      "baseSha256": "a4ca6775d722c6c0c2968544086100422e9d77455225e53a108b02c0132f198c",
+      "sha256": "a4ca6775d722c6c0c2968544086100422e9d77455225e53a108b02c0132f198c"
+    },
+    "src/shared/dragonPathLayout.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/dragonPathLayout.ts",
+      "baseSha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458",
+      "sha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458"
+    },
+    "src/shared/dragonPathMath.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/dragonPathMath.ts",
+      "baseSha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e",
+      "sha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e"
+    },
+    "src/shared/dragonPathProtocol.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/dragonPathProtocol.ts",
+      "baseSha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca",
+      "sha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca"
+    },
+    "src/shared/dragonPathRound.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/dragonPathRound.ts",
+      "baseSha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794",
+      "sha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
+      "sha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
+      "sha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870"
+    },
+    "src/ui/ActionGameLayout.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/ui/ActionGameLayout.ts",
+      "baseSha256": "9b4697dee6b29e28cddf3a67d8d691b2eec0f3968daa8eb08c21b576d4fc12ea",
+      "sha256": "9b4697dee6b29e28cddf3a67d8d691b2eec0f3968daa8eb08c21b576d4fc12ea"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/GamePriorityPanel.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/ui/GamePriorityPanel.ts",
+      "baseSha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34",
+      "sha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34"
+    },
+    "src/ui/action-game-priorities.css": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/ui/action-game-priorities.css",
+      "baseSha256": "79f5ae4a93349b57a29b6387632923cdcf943b2df4fc35d55f9a997cac0c5f12",
+      "sha256": "79f5ae4a93349b57a29b6387632923cdcf943b2df4fc35d55f9a997cac0c5f12"
+    },
+    "src/ui/active-game-viewport.css": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/ui/active-game-viewport.css",
+      "baseSha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7",
+      "sha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7"
+    },
+    "src/ui/crLeoSprites.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/ui/crLeoSprites.ts",
+      "baseSha256": "67013625467f78241d5e0ce9098bc7dd950341b302e3d9fb6317e8addef7e427",
+      "sha256": "67013625467f78241d5e0ce9098bc7dd950341b302e3d9fb6317e8addef7e427"
+    },
+    "src/ui/game-priority-panel.css": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/ui/game-priority-panel.css",
+      "baseSha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1",
+      "sha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1"
+    },
+    "src/ui/operationFeedback.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/ui/operationFeedback.ts",
+      "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+      "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "74115c436e7efe30d2e862228203244be69fa460",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86",
+      "sha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86"
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>CR vs. Leo, редизайн</title>
+<style>
+/* Layout: one working game window in its real sizes, with a thin row of rehearsal controls above it. */
+:root{--bg:#e9ebdf;--fg:#142621;--soft:#55665a;--line:#c9cebf;--card:#f8f6eb;--accent:#d83b2e;--body:Arial,Helvetica,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101d18;--fg:#eef0e2;--soft:#a3b3a7;--line:#31463c;--card:#1a2c25;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101d18;--fg:#eef0e2;--soft:#a3b3a7;--line:#31463c;--card:#1a2c25;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);padding-block:16px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1104px;margin:0 auto;display:grid;gap:14px}.wrap>*{min-width:0}
+h1{font-size:20px;margin:0;letter-spacing:-.4px;font-weight:900}
+.bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;font-size:13px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}.seg button{border:0;background:var(--card);color:var(--fg);padding:10px 13px;font:700 13px var(--body);cursor:pointer}.seg button+button{border-left:1px solid var(--line)}.seg button[aria-pressed=true]{background:var(--fg);color:var(--bg)}
+.bar label{display:flex;gap:7px;align-items:center;color:var(--soft);font-weight:700}.bar select,.bar>button{font:700 13px var(--body);padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg)}.bar>button{cursor:pointer}
+.bar :focus-visible{outline:3px solid #e5a43d;outline-offset:2px}.note{margin:0;font-size:13px;line-height:1.5;color:var(--soft);max-width:72ch}
+#fit{overflow:hidden}#frame{transform-origin:0 0;border-radius:10px;overflow:hidden;box-shadow:0 8px 30px #0003}
+/*HUD*/
+</style>
+<div class="wrap">
+<h1>CR vs. Leo, редизайн</h1>
+<div class="bar"><div class="seg" role="group" aria-label="Размер окна"><button type="button" data-size="desk">Компьютер с чатом</button><button type="button" data-size="phone">Телефон</button><button type="button" data-size="land">Телефон боком</button></div>
+<label>Исход <select id="outcome"><option value="random">По шансам</option><option value="goal">Гол</option><option value="save">Сейв</option><option value="post">Штанга</option><option value="wide">Мимо</option><option value="wall">Стенка</option></select></label>
+<button type="button" id="final">Финал: пятый гол</button><label><input type="checkbox" id="slow"> Замедлить в 4 раза</label><label><input type="checkbox" id="calm"> Меньше движения</label></div>
+<div id="fit"><div id="frame" data-frame="desk"><section class="cr-leo" id="game" aria-label="CR vs. Leo"></section></div></div>
+<p class="note">Макет для просмотра: деньги ненастоящие, звука здесь нет. Шансы, множители и длительность удара такие же, как в игре. Выбор исхода и финала есть только в макете.</p>
+</div>
+<script src="mock.js"></script>

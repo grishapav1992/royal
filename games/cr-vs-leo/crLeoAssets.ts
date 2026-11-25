@@ -1,15 +1,23 @@
-import { extractSpriteFrames, type SpriteFrame } from './crLeoSprites';
+import { extractSpriteFrames, type SpriteFrame } from '../../src/ui/crLeoSprites';
 import { CR_LEO_ASSETS } from './crLeoAssetManifest';
 
 export type CrLeoAsset = { image: HTMLImageElement; frames?: SpriteFrame[] };
 type AssetSpec = { key: string; file: string; bytes: number };
 type LoadAsset = (spec: AssetSpec, progress: (fraction: number) => void, retry: boolean) => Promise<CrLeoAsset>;
 
+const PLATES = new Set(['plate', 'clouds', 'mask']);
+/** Heads of the last row reach above their cell, so whole figures are picked. Only a boot and a head touch. */
+function separated(image: HTMLImageElement): HTMLImageElement {
+  const sheet = document.createElement('canvas'), k = image.width / 1254; sheet.width = image.width; sheet.height = image.height;
+  const c = sheet.getContext('2d')!; c.drawImage(image, 0, 0); c.clearRect(690 * k, 620.5 * k, 180 * k, 3 * k);
+  return sheet as unknown as HTMLImageElement;
+}
+
 async function loadAsset(spec: AssetSpec, progress: (fraction: number) => void, retry: boolean): Promise<CrLeoAsset> {
   const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 45000);
   let url: string | undefined;
   try {
-    const response = await fetch('/assets/cr-vs-leo/v2/' + spec.file, { signal: controller.signal, cache: retry ? 'reload' : 'force-cache' });
+    const response = await fetch(spec.file, { signal: controller.signal, cache: retry ? 'reload' : 'force-cache' });
     if (!response.ok || !response.headers.get('Content-Type')?.startsWith('image/')) throw Error('Football image unavailable');
     const total = Number(response.headers.get('Content-Length')) || spec.bytes, chunks: BlobPart[] = [];
     if (response.body) {
@@ -26,10 +34,10 @@ async function loadAsset(spec: AssetSpec, progress: (fraction: number) => void, 
     // Let the progress bar paint before preparing the next atlas on the main thread.
     await new Promise(resolve => setTimeout(resolve, 0));
     const name = spec.key;
-    const frames = name.startsWith('stadium') ? undefined : extractSpriteFrames(image,
+    const frames = PLATES.has(name) ? undefined : extractSpriteFrames(name === 'cr' ? separated(image) : image,
       name.startsWith('keeper-') || name.startsWith('wall') ? 2 : 4,
       name.startsWith('keeper') || name.startsWith('wall') ? 2 : 4,
-      name === 'cr' || name === 'ball' || name.startsWith('wall'),
+      name === 'ball' || name.startsWith('wall'),
       name === 'keeper' ? [undefined,undefined,'left','left',undefined,'right','right',undefined] : name === 'keeper-reach' ? ['left','right','high','center'] : name === 'keeper-dive' ? ['left','right','left','right'] : undefined,
       name === 'wall-far' ? 3 : name === 'wall' ? 5 : 1);
     return { image, frames };
@@ -46,6 +54,7 @@ export class CrLeoAssetStore {
   private pending?: Promise<void>;
   private jobs: AssetSpec[] = [];
   constructor(private specs: readonly AssetSpec[] = CR_LEO_ASSETS, private load: LoadAsset = loadAsset) {}
+  keys() { return this.specs.map(spec => spec.key); }
   get(key: string) { return this.values.get(key); }
   state() {
     const specs = this.specs;

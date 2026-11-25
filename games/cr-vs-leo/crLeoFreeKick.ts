@@ -1,5 +1,5 @@
-import { shotZone, type PenaltyHero, type PenaltyRisk, type PenaltyShot } from '../shared/crLeo';
-import { createPitch } from './crLeoPitch';
+import { shotZone, type PenaltyHero, type PenaltyRisk, type PenaltyShot } from '../../src/shared/crLeo';
+import { createPitch, type Pitch } from './crLeoPitch';
 
 const clamp = (n: number) => Math.max(0, Math.min(1, n));
 const hermite = (a: number, b: number, start: number, end: number, v: number) => (2*v*v*v-3*v*v+1)*a+(v*v*v-2*v*v+v)*start+(-2*v*v*v+3*v*v)*b+(v*v*v-v*v)*end;
@@ -15,10 +15,12 @@ export function isWallHit(shot?: PenaltyShot, risk?: PenaltyRisk) {
 export function shotLayout(w: number, h: number, hero: PenaltyHero, risk: PenaltyRisk) {
   const near = risk === 'sharp', far = risk === 'extreme', free = near || far;
   const pitch = createPitch(w, h, hero, risk), { goal, ball } = pitch;
-  const crossing = wallCrossing(risk);
-  const wallZ = pitch.distance - 9.15, wallX = pitch.cameraX * wallZ / pitch.distance, wallGround = pitch.project(wallX, wallZ);
-  const wall: FreeKickWall | undefined = free ? { x: wallGround.x, bottom: wallGround.y, size: pitch.scale(wallZ) * 1.85 / .90, spacing: pitch.scale(wallZ) * .50, height: h, count: far ? 3 : 5, crossing, risk } : undefined;
-  return { near, far, free, goal, ball, wall, pitch };
+  return { near, far, free, goal, ball, wall: wallFor(pitch, h, risk), pitch };
+}
+export function wallFor(pitch: Pitch, h: number, risk: PenaltyRisk): FreeKickWall | undefined {
+  if (risk === 'safe') return undefined;
+  const wallZ = pitch.distance - 9.15, wallX = pitch.cameraX * wallZ / pitch.distance, ground = pitch.project(wallX, wallZ);
+  return { x: ground.x, bottom: ground.y, size: pitch.scale(wallZ) * 1.85 / .90, spacing: pitch.scale(wallZ) * .50, height: h, count: risk === 'extreme' ? 3 : 5, crossing: wallCrossing(risk), risk };
 }
 export function wallMotion(u: number, height: number, hit = false, crossing = WALL_CROSSING) {
   const impacted = hit && u >= crossing;

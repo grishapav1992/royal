@@ -7,7 +7,7 @@ const out=process.env.LAYOUT_ARTIFACTS_DIR||'artifacts/work/game-layout-final';
 const profiles={
  'royal-roulette':{root:'.rr-root',field:'.rr-wheel',main:'[data-rr-spin]',stake:'.rr-compact-stake select',essential:['[data-rr-selection]','[data-rr-payout]','[data-rr-balance]']},
  'github-crash':{root:'.last-exit',field:'.le-stage',main:'[data-start]:not([hidden]),[data-cashout]:not([hidden])',stake:'[data-stake]',essential:['[data-balance]','[data-value]']},
- 'original-cr-vs-leo':{root:'.cr-leo',field:'.cl-stage',main:'[data-shoot]',stake:'[data-stake]',essential:['[data-balance]','.cl-risks','.cl-progress','.cl-pips']},
+ 'original-cr-vs-leo':{root:'.cr-leo',field:'.cl-stage',main:'[data-shoot]',stake:'[data-stake]',essential:['[data-balance]','.cl-heroes','.cl-risks','.cl-track','[data-take]']},
  'original-jackie-chan':{root:'.jackie',field:'.jc-stage',main:'[data-fight]',stake:'[data-stake]',essential:['[data-balance]','.jc-risk-options','[data-path]','[data-takes]','.jc-collection-line']},
 };
 type Id=keyof typeof profiles;
@@ -54,9 +54,9 @@ for(const id of ids)test('field and essential actions without scrolling: '+id,as
 for(const id of ids)test('settings, paid round, reopen and lost response: '+id,async({page,roomPath})=>{
  await mkdir(out,{recursive:true});await enterGameHall(page,roomPath);await page.setViewportSize({width:393,height:852});await open(page,id);
  const p=profiles[id],root=page.locator(p.root),gear=root.locator('[data-options]'),panel=root.locator('.game-options-panel');const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ if(id==='original-cr-vs-leo')await root.locator('button[data-hero=leo]').click();
  await gear.click();await expect(panel).toBeVisible();
  if(id==='royal-roulette'){await panel.locator('[data-rr-value="17"]').click();await expect(panel.locator('[data-rr-value="17"]')).toHaveAttribute('aria-pressed','true');}
- if(id==='original-cr-vs-leo')await panel.locator('[data-hero=leo]').click();
  let location='';
  if(id==='original-jackie-chan'){await panel.locator('[data-location]').selectOption({index:1});location=await panel.locator('[data-location]').inputValue();await panel.locator('[data-speed]').click();}
  if(id==='royal-roulette'){

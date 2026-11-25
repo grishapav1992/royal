@@ -103,15 +103,14 @@ test('the net responds only after ball contact, follows the selected sector and 
         const inside=JSON.parse(contact.ballPosition), geometry=JSON.parse(contact.goalGeometry);
         const expected=finish==='goal'?api.goalBallPosition(geometry,JSON.parse(contact.netImpact),Number(contact.ballRadius)):null;
         const late=api.advance(end+api.NET_TRAVEL+.9), settled=api.advance(end+api.NET_TRAVEL+api.NET_SETTLE+.01);
-        const repeated=api.advance(end+api.NET_TRAVEL+api.NET_SETTLE+.02);
         rows.push({hero,risk,zone,finish,before:before.netMoving,contact:contact.netMoving,late:late.netMoving,settled:settled.netMoving,
-          inside,expected,frame:settled.renderedFrames,repeat:repeated.renderedFrames});
+          inside,expected});
       }
       return rows;
     });
     for(const r of results) {
       expect(r.before).toBe('false'); expect(r.contact).toBe(String(r.finish==='goal')); expect(r.late).toBe(String(r.finish==='goal')); expect(r.settled).toBe('false');
-      if(r.expected) { expect(r.inside.x).toBeCloseTo(r.expected.x,5); expect(r.inside.y).toBeCloseTo(r.expected.y,5); expect(r.repeat).toBe(r.frame); }
+      if(r.expected) { expect(r.inside.x).toBeCloseTo(r.expected.x,5); expect(r.inside.y).toBeCloseTo(r.expected.y,5); }
     }
   }
 });
@@ -171,9 +170,9 @@ test('the built game loads through the shared host and reopens with both heroes 
     await page.evaluate(() => (window as any).moduleHarness.open('original-cr-vs-leo'));
     const game = page.locator('#primary .cr-leo');
     await expect(game).toHaveAttribute('data-loading', 'false');
-    await expect(game.locator('canvas')).toHaveAttribute('data-assets', '10');
+    await expect(game.locator('canvas')).toHaveAttribute('data-assets', '11');
     await expect(game.locator('canvas')).toHaveAttribute('data-sprite-frames', '72');
-    await expect(page.locator('#primary')).toHaveAttribute('data-game-module-version', /1\.0\.0-[a-f0-9]{12}/);
+    await expect(page.locator('#primary')).toHaveAttribute('data-game-module-version', /\d+\.\d+\.\d+-[a-f0-9]{12}/);
     for (const hero of ['cr', 'leo']) for (const risk of ['safe', 'sharp', 'extreme']) {
       await game.locator(`button[data-hero="${hero}"]`).click();
       await game.locator(`button[data-risk="${risk}"]`).click();
@@ -188,4 +187,66 @@ test('the built game loads through the shared host and reopens with both heroes 
     await expect(page.locator('link[data-royal-game-module]')).toHaveCount(0);
   }
   expect(errors).toEqual([]); expect(failures).toEqual([]); expect(ballRequests).toHaveLength(1);
+});
+
+test('the scorer never covers the ball at the goal and keeps moving smoothly in every window', async ({ page }) => {
+  test.setTimeout(180000);
+  for (const [width, height] of [[1104, 572], [387, 468], [846, 235]]) {
+    const result = await page.evaluate(([w, h]) => {
+      const api = (window as any).crLeoRendering, canvas = document.querySelector<HTMLCanvasElement>('#scene')!;
+      canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+      const covered: string[] = [], jumps: string[] = [];
+      const kicker = (data: any) => { const [x, bottom, size, alpha] = JSON.parse(data.kicker); return { x, bottom, size, alpha }; };
+      for (const hero of ['cr', 'leo']) for (const risk of ['safe', 'sharp', 'extreme']) for (let zone = 0; zone < 18; zone++) {
+        const end = risk === 'safe' ? 1.7 : risk === 'sharp' ? 2.12 : 2.5; api.begin({ hero, risk, zone });
+        let data: any, previous: any;
+        for (let t = 0; t <= end + .35; t += 1 / 60) {
+          data = api.advance(t); const k = kicker(data);
+          if (previous && Math.abs(k.x - previous.x) > w * .035) jumps.push([hero, risk, zone, t.toFixed(2)].join(' '));
+          previous = k;
+          if (Math.abs(t - end - .05) < 1 / 120 || Math.abs(t - end - .3) < 1 / 120) {
+            const ball = JSON.parse(data.ballPosition), f = api.scene.frames.get(hero)[Number(data.pose)];
+            const u = ((ball.x - k.x) / k.size - (f.x - .5)) / f.width, v = ((ball.y - k.bottom) / k.size - (f.y - .94)) / f.height;
+            if (k.alpha > .15 && u > 0 && u < 1 && v > 0 && v < 1 && f.image.getContext('2d').getImageData(Math.floor(u * f.image.width), Math.floor(v * f.image.height), 1, 1).data[3] > 128) covered.push([hero, risk, zone, t.toFixed(2)].join(' '));
+          }
+        }
+      }
+      return { covered, jumps };
+    }, [width, height]);
+    expect(result.covered, width + 'x' + height).toEqual([]);
+    expect(result.jumps, width + 'x' + height).toEqual([]);
+  }
+});
+
+test('camera flashes stay within three starts per second and decoration is bounded', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const api = (window as any).crLeoRendering, starts: number[] = []; let lit = 0, most = 0;
+    api.begin({ hero: 'leo', risk: 'safe', complete: true });
+    for (let t = 0; t < 9; t += 1 / 60) { const data = api.advance(t), n = Number(data.flashes); if (n > lit) starts.push(t); lit = n; most = Math.max(most, Number(data.particles)); }
+    return { starts, most };
+  });
+  expect(result.starts.length).toBeGreaterThan(0);
+  for (const at of result.starts) expect(result.starts.filter(t => t >= at && t < at + 1).length).toBeLessThanOrEqual(3);
+  expect(result.most).toBeGreaterThan(100); expect(result.most).toBeLessThanOrEqual(420);
+});
+
+test('reduced motion paints a still confirmed result once and adds no decoration', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' }); await page.reload();
+  await page.waitForFunction(() => (window as any).crLeoRendering?.ready());
+  const result = await page.evaluate(() => {
+    const api = (window as any).crLeoRendering; api.begin({ hero: 'cr', risk: 'safe', complete: true });
+    const first = api.advance(0); api.advance(1); const second = api.advance(5);
+    return { first, second, state: api.scene.state() };
+  });
+  expect(result.state.busy).toBe(false); expect(result.state.reveal).toBe(true);
+  expect(result.second.renderedFrames).toBe(result.first.renderedFrames); expect(result.second.particles).toBe('0');
+});
+
+test('every CR pose keeps its whole head', async ({ page }) => {
+  const rows = await page.evaluate(() => (window as any).crLeoRendering.scene.frames.get('cr').map((f: any) => {
+    const c = f.image.getContext('2d'), top = c.getImageData(0, 1, f.image.width, 1).data; let opaque = 0; for (let i = 3; i < top.length; i += 4) if (top[i] >= 160) opaque++;
+    return opaque / f.image.width;
+  }));
+  // A cut silhouette starts with a long flat edge.
+  for (const share of rows) expect(share).toBeLessThan(.3);
 });

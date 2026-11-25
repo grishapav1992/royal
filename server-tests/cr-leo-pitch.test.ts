@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createPitch, pitchMarkings, PITCH } from '../src/ui/crLeoPitch';
-import { shotLayout } from '../src/ui/crLeoFreeKick';
-import { goalNetPoint } from '../src/ui/crLeoGoal';
+import { createPitch, pitchMarkings, PITCH } from '../games/cr-vs-leo/crLeoPitch';
+import { shotLayout } from '../games/cr-vs-leo/crLeoFreeKick';
+import { goalNetPoint } from '../games/cr-vs-leo/crLeoGoal';
 
 const close = (a: number, b: number) => assert(Math.abs(a - b) < 1e-7, `${a} != ${b}`);
 const sizes = [[320, 385], [390, 385], [643, 386], [1100, 560], [1440, 650]];
