@@ -1,0 +1,299 @@
+{
+ "format": 1,
+ "productionCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+ "moduleGames": [
+  "forest-heart"
+ ],
+ "moduleDependencies": {},
+ "moduleContracts": {
+  "studio-forest-heart": {
+   "apiVersion": 1,
+   "rulesVersion": 1,
+   "progressVersion": 1
+  }
+ },
+ "files": {
+  "games/forest-heart/ForestAudio.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestAudio.ts",
+   "baseSha256": "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210",
+   "sha256": "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210"
+  },
+  "games/forest-heart/ForestCharacter.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestCharacter.ts",
+   "baseSha256": "c284f926e7f510f960c0b25508a0f370df80f20f81cbc7503c80236f71e77504",
+   "sha256": "c284f926e7f510f960c0b25508a0f370df80f20f81cbc7503c80236f71e77504"
+  },
+  "games/forest-heart/ForestEffects.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestEffects.ts",
+   "baseSha256": "7f7b970d2a2059904990564b3e3cda7f8c7b5dbc0c005858836fc715dc250bd3",
+   "sha256": "7f7b970d2a2059904990564b3e3cda7f8c7b5dbc0c005858836fc715dc250bd3"
+  },
+  "games/forest-heart/ForestField.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestField.ts",
+   "baseSha256": "b9cadc99c4a1d671b9cfc619681521d7d67219ea6027c802c3507e111276725b",
+   "sha256": "b9cadc99c4a1d671b9cfc619681521d7d67219ea6027c802c3507e111276725b"
+  },
+  "games/forest-heart/ForestFrame.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestFrame.ts",
+   "baseSha256": "ec806ce1a9ad37e53c74b9e596935fb7d39421cb0d5f79b8c356c5560a849513",
+   "sha256": "ec806ce1a9ad37e53c74b9e596935fb7d39421cb0d5f79b8c356c5560a849513"
+  },
+  "games/forest-heart/ForestHeartUI.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestHeartUI.ts",
+   "baseSha256": "d4fd902259f030cce93c34c01bb476b84715b38eec3665ecda1094daf26ecdc2",
+   "sha256": "d4fd902259f030cce93c34c01bb476b84715b38eec3665ecda1094daf26ecdc2"
+  },
+  "games/forest-heart/ForestIdleMotion.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestIdleMotion.ts",
+   "baseSha256": "7c20ecba0059a94d25e067b3f809b80defe2a70c78668e82681ae037545b3888",
+   "sha256": "7c20ecba0059a94d25e067b3f809b80defe2a70c78668e82681ae037545b3888"
+  },
+  "games/forest-heart/ForestLayout.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestLayout.ts",
+   "baseSha256": "3cf67b415a27c2bbdaee5272e26cba6fe46bdf8a3b507daadf52df90070daf2d",
+   "sha256": "3cf67b415a27c2bbdaee5272e26cba6fe46bdf8a3b507daadf52df90070daf2d"
+  },
+  "games/forest-heart/ForestMusic.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestMusic.ts",
+   "baseSha256": "f92d5e187353dfa18a0f927bb6dbdd7751489419d1e9fb932dae5375ae00d615",
+   "sha256": "f92d5e187353dfa18a0f927bb6dbdd7751489419d1e9fb932dae5375ae00d615"
+  },
+  "games/forest-heart/ForestScene.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestScene.ts",
+   "baseSha256": "a1be6a1793f5c731c18a7e041feb53138c1680aba7a39ff804be6e67ab681993",
+   "sha256": "a1be6a1793f5c731c18a7e041feb53138c1680aba7a39ff804be6e67ab681993"
+  },
+  "games/forest-heart/ForestScore.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/ForestScore.ts",
+   "baseSha256": "ad249e30e099a4be139a9b8eb8c9845f1f4b99a96c97a4b9c76dfd4acb2bae52",
+   "sha256": "ad249e30e099a4be139a9b8eb8c9845f1f4b99a96c97a4b9c76dfd4acb2bae52"
+  },
+  "games/forest-heart/RootArtwork.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/RootArtwork.ts",
+   "baseSha256": "b7e27259f0fe62994da1b03739158563d6dbbe411c43550ef57db76cf79bdef6",
+   "sha256": "b7e27259f0fe62994da1b03739158563d6dbbe411c43550ef57db76cf79bdef6"
+  },
+  "games/forest-heart/autoplay.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/autoplay.ts",
+   "baseSha256": "041b9c0b2791d158196a0782c72b2a421960311370e22ca0257c4f921cdc4b55",
+   "sha256": "041b9c0b2791d158196a0782c72b2a421960311370e22ca0257c4f921cdc4b55"
+  },
+  "games/forest-heart/copy.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/copy.ts",
+   "baseSha256": "4b9b32d58e3231c282f171c12d5f68cd31dc3fb6a527d75f41d353a21f83e077",
+   "sha256": "4b9b32d58e3231c282f171c12d5f68cd31dc3fb6a527d75f41d353a21f83e077"
+  },
+  "games/forest-heart/entry.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/entry.ts",
+   "baseSha256": "90010bbcf736c472ea599600dc996c0ca1bfa5a0e0f984f72faae59f454e7536",
+   "sha256": "90010bbcf736c472ea599600dc996c0ca1bfa5a0e0f984f72faae59f454e7536"
+  },
+  "games/forest-heart/package.json": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/package.json",
+   "baseSha256": "09c60e848e54128ed1be5eccb663b864054ff59eccf314a14f61833282996b93",
+   "sha256": "09c60e848e54128ed1be5eccb663b864054ff59eccf314a14f61833282996b93"
+  },
+  "games/forest-heart/presentation.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/presentation.ts",
+   "baseSha256": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f",
+   "sha256": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f"
+  },
+  "games/forest-heart/priorityStyles.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/priorityStyles.ts",
+   "baseSha256": "0b0e6e8170b2fd2ec6b285aeb632b22e10e4c70651e52856e86b25dd42a8d6eb",
+   "sha256": "0b0e6e8170b2fd2ec6b285aeb632b22e10e4c70651e52856e86b25dd42a8d6eb"
+  },
+  "games/forest-heart/shell.css": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/shell.css",
+   "baseSha256": "4d5602b86c8f65ed38c793967501d83155eb1dd3e3a300763c3c802e28eea576",
+   "sha256": "4d5602b86c8f65ed38c793967501d83155eb1dd3e3a300763c3c802e28eea576"
+  },
+  "games/forest-heart/styles.ts": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/styles.ts",
+   "baseSha256": "0b5d9526f7ff760f18e93b842b5ca846b5a26077f061b45a9be4ba84029d2072",
+   "sha256": "0b5d9526f7ff760f18e93b842b5ca846b5a26077f061b45a9be4ba84029d2072"
+  },
+  "games/forest-heart/tsconfig.json": {
+   "commit": "8455e6bd8bb3fa54d4e11dffcf2e53078481642c",
+   "path": "games/forest-heart/tsconfig.json",
+   "baseSha256": "f742eff5a2a4d98532ce33a3f9a0ac0bcf1a8eb52a27a00df95baa74c33993ff",
+   "sha256": "f742eff5a2a4d98532ce33a3f9a0ac0bcf1a8eb52a27a00df95baa74c33993ff"
+  },
+  "src/modules/GameHostContract.ts": {
+   "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+   "path": "src/modules/GameHostContract.ts",
+   "baseSha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0",
+   "sha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0"
+  },
+  "src/modules/GameModuleCatalog.ts": {
+   "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+   "path": "src/modules/GameModuleCatalog.ts",
+   "patches": [
+    {
+     "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+     "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+    },
+    {
+     "from": "ion:1},\n] as con",
+     "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+    },
+    {
+     "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+     "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+    },
+    {
+     "from": ":2,",
+     "to": ":3,"
+    },
+    {
+     "from": ":3,",
+     "to": ":4,"
+    },
+    {
+     "from": "export const STUDIO_GAME_MODULES = [\n",
+     "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+    }
+   ],
+   "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+   "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1"
+  },
+  "src/shared/caribbeanTreasuresMath.ts": {
+   "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+   "path": "src/shared/caribbeanTreasuresMath.ts",
+   "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+   "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+  },
+  "src/shared/dragonPathLayout.ts": {
+   "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+   "path": "src/shared/dragonPathLayout.ts",
+   "baseSha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458",
+   "sha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458"
+  },
+  "src/shared/dragonPathMath.ts": {
+   "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+   "path": "src/shared/dragonPathMath.ts",
+   "baseSha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e",
+   "sha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e"
+  },
+  "src/shared/dragonPathProtocol.ts": {
+   "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+   "path": "src/shared/dragonPathProtocol.ts",
+   "baseSha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca",
+   "sha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca"
+  },
+  "src/shared/dragonPathRound.ts": {
+   "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+   "path": "src/shared/dragonPathRound.ts",
+   "baseSha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794",
+   "sha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794"
+  },
+  "src/shared/forestHeart.ts": {
+   "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+   "path": "src/shared/forestHeart.ts",
+   "baseSha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b",
+   "sha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b"
+  },
+  "src/shared/forestHeartMath.ts": {
+   "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+   "path": "src/shared/forestHeartMath.ts",
+   "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+   "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+  },
+  "src/shared/gameStakes.ts": {
+   "commit": "5899e91fd1ec3355f2620324557b5a58d50435e3",
+   "path": "src/shared/gameStakes.ts",
+   "baseSha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
+   "sha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b"
+  },
+  "src/shared/neopolisMath.ts": {
+   "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+   "path": "src/shared/neopolisMath.ts",
+   "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+   "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+  },
+  "src/shared/neopolisStakePayouts.ts": {
+   "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+   "path": "src/shared/neopolisStakePayouts.ts",
+   "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+   "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+  },
+  "src/shared/roundPrecision.ts": {
+   "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+   "path": "src/shared/roundPrecision.ts",
+   "baseSha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
+   "sha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870"
+  },
+  "src/ui/GameLayoutPolicy.ts": {
+   "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+   "path": "src/ui/GameLayoutPolicy.ts",
+   "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+   "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+  },
+  "src/ui/operationFeedback.ts": {
+   "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+   "path": "src/ui/operationFeedback.ts",
+   "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+   "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+  },
+  "src/ui/stakeRules.ts": {
+   "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+   "path": "src/ui/stakeRules.ts",
+   "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+   "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+  },
+  "src/ui/stakeSelection.ts": {
+   "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+   "path": "src/ui/stakeSelection.ts",
+   "baseSha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86",
+   "sha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86"
+  },
+  "tsconfig.json": {
+   "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+   "path": "tsconfig.json",
+   "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+   "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+  }
+ },
+ "moduleAssets": {
+  "public/assets/forest-heart/v1/background.webp": "48e85194b3904c0aa7186dfd94d08ceb33a6308cad4430e38c81ac1924258777",
+  "public/assets/forest-heart/v1/flower.webp": "c50a172c767eaba4335deeaf591229959c5be62db24fadb4acd79d2f9c0088f9",
+  "public/assets/forest-heart/v2/crystal.webp": "4b0bf9707207611030f16aa9ce2bb05b928956f3247445498776c843debce5b4",
+  "public/assets/forest-heart/v2/frame.webp": "6f3e2b40c31cf8b5a7c9be7a3553d71aeebf53c8c5c5b5aaeb1cc769400ffefb",
+  "public/assets/forest-heart/v2/title.webp": "0c990049844c3d1158acef91feb8431126d5e88947ba7138679931cb20b645ae",
+  "public/assets/forest-heart/v3/elf-big.webp": "18be015c682ade2f54f9856a1d1bc6dab4496014c373ce059646d333d6eddb5d",
+  "public/assets/forest-heart/v3/elf-blink.webp": "3cdf82c0ac64ed8e0a736373d20b27d14595150c321deeee9aa88d02625afa4f",
+  "public/assets/forest-heart/v3/elf-bonus.webp": "1f7b6895647674ecd579409b0ddb03f0e24b7e06d8b178db73717f07f4aa18cc",
+  "public/assets/forest-heart/v3/elf-channel.webp": "13e5a57ea08e28f4836febbcee14d43f9de48051b241c64f76d6496320f5a02c",
+  "public/assets/forest-heart/v3/elf-choice.webp": "ef0266937f395956464027c1a8bdd8776ddd46f58f50cb71fa728dd248b1c754",
+  "public/assets/forest-heart/v3/elf-flower.webp": "19b979424e6805494d5d8ce54868a3bdce9962da3f21127bba5e296a292b007f",
+  "public/assets/forest-heart/v3/elf-idle.webp": "180c90f9c6850bada1ce9a6a346dea4dcf4881f4325b394240f0d3defedb601b",
+  "public/assets/forest-heart/v3/elf-win.webp": "f0a6137cf5869244221f654f86a0a2c2e9931d10873a64c69a51c0456c97df64",
+  "public/assets/forest-heart/v4/roots.webp": "46c2cf9a554590b10ae3aa2d554125dcf7f03e5f869d51731926bcf7db1e4636",
+  "public/assets/forest-heart/v4/tile.webp": "6482a3612b938f0d587412bf42336bbd507dfd16ed05f21d6d45d2f8be919e13",
+  "public/assets/forest-heart/v5/blossom-gold.webp": "4f6a28bcc3393c64b7e1a3b48a65f1a8152b784fd3a19b45844999e246a28fd8",
+  "public/assets/forest-heart/v5/blossom-pink.webp": "24b50dcd34da4354ae1049667de69b02124f9834afc6fc579473dc0966012929",
+  "public/assets/forest-heart/v5/bud.webp": "2f13e058ddfccbfb6e1a5c3ee6bf58da8e405850b94e0558c047d94149a70883",
+  "public/assets/forest-heart/v5/gem-bottom.webp": "9a5ccce0b8e2ca3c012080711ce1f9cc9ca4f88570eb33c1b7e2df588139b719",
+  "public/assets/forest-heart/v5/gem-top.webp": "ad034f65d27fc8180d3e7bbf3cb3c7430e5b1e357753178b81ac2a094241f154"
+ }
+}
