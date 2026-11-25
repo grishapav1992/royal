@@ -1,8 +1,8 @@
-import { CrLeoScene } from '../../src/ui/CrLeoScene';
-import { drawFootball } from '../../src/ui/crLeoBall';
-import { CrLeoAudio } from '../../src/ui/CrLeoAudio';
+import { CrLeoScene } from '../../games/cr-vs-leo/CrLeoScene';
+import { drawFootball } from '../../games/cr-vs-leo/crLeoBall';
+import { CrLeoAudio } from '../../games/cr-vs-leo/CrLeoAudio';
 import { gameAudio } from '../../src/game/GameAudio';
-import { drawGoalFrame, drawGoalNet, goalNetPoint, goalBallPosition, NET_TRAVEL, NET_SETTLE } from '../../src/ui/crLeoGoal';
+import { drawGoalFrame, drawGoalNet, goalNetPoint, goalBallPosition, NET_TRAVEL, NET_SETTLE } from '../../games/cr-vs-leo/crLeoGoal';
 import { penaltyZone, type PenaltyHero, type PenaltyRisk, type PenaltyShot } from '../../src/shared/crLeo';
 
 const canvas = document.querySelector<HTMLCanvasElement>('#scene')!;

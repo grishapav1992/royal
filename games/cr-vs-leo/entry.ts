@@ -1,4 +1,4 @@
-import { CrLeoUI } from '../../src/ui/CrLeoUI';
+import { CrLeoUI } from './CrLeoUI';
 import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 export const gameId = 'original-cr-vs-leo';
 export const apiVersion = 1;

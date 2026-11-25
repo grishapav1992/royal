@@ -1,4 +1,4 @@
-import type { SpriteFrame } from './crLeoSprites';
+import type { SpriteFrame } from '../../src/ui/crLeoSprites';
 
 const buffers = new WeakMap<readonly SpriteFrame[], HTMLCanvasElement>();
 

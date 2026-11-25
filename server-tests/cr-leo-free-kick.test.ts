@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { penaltyZone, type PenaltyShot } from '../src/shared/crLeo';
-import { freeKickFlight, isWallHit, shotLayout, wallContact, wallMotion, wallCrossing, WALL_CROSSING } from '../src/ui/crLeoFreeKick';
-import { shotPose, shotTarget, shotTiming, shotBallRadius, shotBallRotation, PENALTY_CONTACT, strikePlacement, strikeAnchors } from '../src/ui/crLeoTimeline';
-import { goalNetPoint, NET_SETTLE } from '../src/ui/crLeoGoal';
+import { freeKickFlight, isWallHit, shotLayout, wallContact, wallMotion, wallCrossing, WALL_CROSSING } from '../games/cr-vs-leo/crLeoFreeKick';
+import { shotPose, shotTarget, shotTiming, shotBallRadius, shotBallRotation, PENALTY_CONTACT, strikePlacement, strikeAnchors } from '../games/cr-vs-leo/crLeoTimeline';
+import { goalNetPoint, NET_SETTLE } from '../games/cr-vs-leo/crLeoGoal';
 import { spriteParts } from '../src/ui/crLeoSprites';
 
 const shot = (zone: number, finish: PenaltyShot['finish'] = 'goal'): PenaltyShot => ({ index:0,goal:finish==='goal',finish,side:penaltyZone(zone).side,risk:'sharp',zone });

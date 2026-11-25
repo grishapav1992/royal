@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { goalBallPosition, goalNetPoint, NET_TRAVEL, NET_SETTLE } from '../src/ui/crLeoGoal';
-import { shotLayout } from '../src/ui/crLeoFreeKick';
-import { shotBallRadius } from '../src/ui/crLeoTimeline';
+import { goalBallPosition, goalNetPoint, NET_TRAVEL, NET_SETTLE } from '../games/cr-vs-leo/crLeoGoal';
+import { shotLayout } from '../games/cr-vs-leo/crLeoFreeKick';
+import { shotBallRadius } from '../games/cr-vs-leo/crLeoTimeline';
 import { penaltyZone } from '../src/shared/crLeo';
 const distance = (a: {x:number;y:number}, b: {x:number;y:number}) => Math.hypot(a.x-b.x,a.y-b.y);
 const goal = shotLayout(1100,560,'cr','safe').goal;

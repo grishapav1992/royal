@@ -1,5 +1,5 @@
-import { gameAudio } from '../game/GameAudio';
-import type { PenaltyHero } from '../shared/crLeo';
+import { gameAudio } from '../../src/game/GameAudio';
+import type { PenaltyHero } from '../../src/shared/crLeo';
 
 export const CR_LEO_SOUNDS = ['stadium', 'goal', 'miss', 'siuuu', 'ankara-messi', 'kick'] as const;
 type Clip = typeof CR_LEO_SOUNDS[number];

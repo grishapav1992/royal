@@ -1,4 +1,4 @@
-import { shotZone, type PenaltyHero, type PenaltyRisk, type PenaltyShot } from '../shared/crLeo';
+import { shotZone, type PenaltyHero, type PenaltyRisk, type PenaltyShot } from '../../src/shared/crLeo';
 import { isWallHit, wallCrossing } from './crLeoFreeKick';
 
 export const PENALTY_CONTACT = 1.12;
@@ -73,4 +73,10 @@ export function shotTarget(shot: PenaltyShot, goal: GoalGeometry) {
 /** Align the actual glove centroid with the ball, regardless of keeper pose or height. */
 export function keeperPlacement(ball: {x:number;y:number}, hand: {x:number;y:number}, size: number) {
   return { x: ball.x - (hand.x - .5) * size, bottom: ball.y - (hand.y - .94) * size };
+}
+/** Keeps the accepted end time; the last metres are slightly slower so the goal line reads. */
+export function easeFlight(u: number, risk: PenaltyRisk, blocked: boolean) {
+  if (blocked || u <= 0 || u >= 1) return u;
+  const from = risk === 'safe' ? 0 : wallCrossing(risk); if (u <= from) return u;
+  const v = (u - from) / (1 - from); return from + (1 - from) * (v + .62 * v * v * (1 - v));
 }

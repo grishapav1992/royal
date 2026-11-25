@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { PENALTY_RISKS, PENALTY_BETS, penaltyQuote, penaltyPathQuote, penaltyZone, validPenaltySettings, validPenaltyView, type PenaltyRisk, type PenaltyHero } from '../src/shared/crLeo';
 import { validExpansionAction } from '../src/shared/casinoExpansion';
 import { startPenalty, movePenalty } from '../server/games/crLeo';
-import { celebrationPose, celebrationTime, celebrationDuration, CR_SIUU_AT, CR_JUMP_TAKEOFF, CR_JUMP_LANDING, flightPosition, keeperPlacement, PENALTY_CONTACT, PENALTY_RESULT, shotPose, shotTarget, strikePlacement, strikeAnchors } from '../src/ui/crLeoTimeline';
+import { celebrationPose, celebrationTime, celebrationDuration, CR_SIUU_AT, CR_JUMP_TAKEOFF, CR_JUMP_LANDING, flightPosition, keeperPlacement, PENALTY_CONTACT, PENALTY_RESULT, shotPose, shotTarget, strikePlacement, strikeAnchors } from '../games/cr-vs-leo/crLeoTimeline';
 import { spriteParts } from '../src/ui/crLeoSprites';
 
 test('each risk has its exact advertised chance and both heroes share the outcome distribution', () => {
