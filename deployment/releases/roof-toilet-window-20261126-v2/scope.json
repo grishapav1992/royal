@@ -1,0 +1,40 @@
+{
+  "activeBefore": [
+    "panda-dragon-preview",
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge"
+  ],
+  "backend": {
+    "src/shared/toilet.ts": "388d5a4c1027d83801a8c79e8a2cd006ccce181e4ac6d68900f8c46808a153e6"
+  },
+  "backendBuildInputs": {
+    "package.json": "69b61b2bd2717c3b201f3bdb290ff32be76afc29cf10a1707b8cddbf2902fa17",
+    "src/i18n/en.ts": "8f3990b31f85037221688e4d906d41225ad5649a62f5c98834ce55bbec6e65c7",
+    "tsconfig.json": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+    "src/i18n/progressionEn.ts": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4",
+    "src/i18n/volcanicPlinkoEn.ts": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
+  },
+  "host": {
+    "src/shared/toilet.ts": "388d5a4c1027d83801a8c79e8a2cd006ccce181e4ac6d68900f8c46808a153e6",
+    "src/game/RoomScene.ts": "f50cf64ae3288061ba4303352c45e787fe191e7c668ebf60e6671283e0626471",
+    "src/game/RooftopRenderer.ts": "f0f59f0ce9ffc7048e9b1dbfe1f9120a64906d33370916b943f15cad9b9d5d9d",
+    "src/game/ToiletRenderer.ts": "dfc2f3b71d83d992b84b7964ca3f7327f0f2d229111210556e1aaf4c7a8264fa"
+  }
+}
