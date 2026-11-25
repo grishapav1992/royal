@@ -1,5 +1,7 @@
 # Hong Kong Warrior: available-stage layout
 
+Version 1.3.0 keeps the controls below the scene in every size, chooses the location from pictures and gives the result card a constant place above the hero. See [the current description](../game-layout/hong-kong-warrior-action/README.md). The text below describes earlier versions.
+
 The module uses the actual host stage width and height, including the space reserved for the connected chat and the hall toolbar. It does not scale text with the shared minimum-width fitter. Wide stages show the scene beside a control column; portrait stages put the controls below the scene. Settings scroll within that column, while the fight and cash-out buttons stay at its bottom with at least 44 CSS pixels of height. Changing the viewport does not remount the game or submit an operation.
 
 The location picker has an opaque dark background, light text, explicit native dark color scheme and 14 CSS pixel text. Its options use the same foreground and background. The result occupies a separate row above the canvas so it cannot cover a face when the available height is small. These are game-specific design choices, not measured usability thresholds.
