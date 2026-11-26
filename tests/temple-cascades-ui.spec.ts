@@ -2,7 +2,8 @@ import {test,expect,request as apiRequest,type Page,type Route} from '@playwrigh
 import {Client} from '@colyseus/sdk';
 import {mkdir,writeFile} from 'node:fs/promises';
 import sharp from 'sharp';
-const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/temple-cascades-stage4';
+import {walletSnapshot} from './wallet-snapshot';
+const entry='/tests/fixtures/temple-preview.html',review=process.env.TEMPLE_REVIEW_DIR||'artifacts/work/temple-cascades-stage4';
 const game=(p:Page)=>p.frameLocator('.temple-frame');
 const state=(p:Page)=>p.evaluate(()=>(window as any).templePreview.state());
 const session=(p:Page)=>p.evaluate(()=>(window as any).templePreview.client.sessions.find((s:any)=>s.gameId==='studio-flooded-temple'));
@@ -98,9 +99,34 @@ test('real Royal host keeps connected chat, heroine lane, controls and close/reo
     for(const [width,height]of[[1440,1000],[1000,1100],[768,1024],[390,844]]){
       await page.setViewportSize({width,height});await expect.poll(async()=>await page.locator('#mini-dialog #chat-input').isVisible()||await page.getByRole('button',{name:/^Open chat/}).first().isVisible()).toBe(true);
       const g=await game(page).locator('.ebb').evaluate(root=>({width:root.clientWidth,scroll:root.scrollWidth,board:root.querySelector('.ebb-grid')!.getBoundingClientRect().toJSON(),console:root.querySelector('.ebb-console')!.getBoundingClientRect().toJSON()}));expect(g.scroll).toBeLessThanOrEqual(g.width+1);expect(g.board.bottom).toBeLessThanOrEqual(g.console.top);
-      await game(page).locator('[data-ft=primary]').scrollIntoViewIfNeeded();await expect(game(page).locator('[data-ft=primary]')).toBeInViewport();await mkdir('docs/assets/flooded-temple',{recursive:true});if(width===1440||width===390)await sharp(await page.screenshot()).webp({quality:82}).toFile(`docs/assets/flooded-temple/ebb-host-${width}.webp`);
+      await game(page).locator('[data-ft=primary]').scrollIntoViewIfNeeded();await expect(game(page).locator('[data-ft=primary]')).toBeInViewport();await mkdir(review,{recursive:true});if(width===1440||width===390)await sharp(await page.screenshot()).webp({quality:82}).toFile(`${review}/ebb-host-${width}.webp`);
     }
     await page.locator('#studio-game-list').click();await page.locator('[data-platform-game=studio-flooded-temple]').click();await expect(game(page).locator('.ebb-console em')).toHaveText('Net −0.10');expect(paid.length).toBe(1);
+    if(process.env.TEMPLE_RELEASE_VERSION)await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-version',process.env.TEMPLE_RELEASE_VERSION);
+    for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+      await page.setViewportSize(viewport);
+      const before=await walletSnapshot(page),attempts=paid.length;
+      let acceptedId='';
+      await page.route('**/api/demo-wallet/expansion',async route=>{
+        const r=route.request();
+        if(acceptedId||r.method()!=='POST'||r.postDataJSON().action!=='start'){await route.continue();return;}
+        expect(r.postDataJSON().stakeUnits).toBe('10');
+        const reply=await route.fetch();expect(reply.ok()).toBe(true);
+        acceptedId=(await reply.json()).session.id;await route.abort('failed');
+      });
+      await game(page).locator('[data-ft=primary]').click();
+      await expect(game(page).locator('[data-ft=primary]')).toHaveText('Check round');
+      await page.locator('#studio-game-list').click();
+      await page.locator('[data-platform-game=studio-flooded-temple]').click();
+      const retry=game(page).locator('[data-ft=primary]');
+      await expect(retry).toHaveText('Check round');await retry.click();
+      await expect(game(page).locator('.ebb-console em')).toHaveText('Net −0.10');
+      const after=await walletSnapshot(page);
+      expect(paid.slice(attempts)).toEqual([acceptedId,acceptedId]);
+      expect(after.entries.filter((e:any)=>e.kind==='bet').length-before.entries.filter((e:any)=>e.kind==='bet').length).toBe(1);
+      expect(Math.round(after.balance*100)).toBe(Math.round(before.balance*100)-10);
+      await page.unroute('**/api/demo-wallet/expansion');
+    }
     await page.locator('#mini-dialog .mini-top [data-close]').click();await expect(page.locator('#club-chat-dock')).toBeVisible();expect(errors).toEqual([]);
   }finally{await peer.leave();await api.dispose();}
 });
