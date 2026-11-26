@@ -4,7 +4,7 @@ import sharp from 'sharp';
 const game=(p:Page)=>p.frameLocator('.temple-frame');
 const state=(p:Page)=>p.evaluate(()=>(window as any).templePreview.state());
 const session=(p:Page)=>p.evaluate(()=>(window as any).templePreview.client.sessions.find((s:any)=>s.gameId==='studio-flooded-temple'));
-const scope='artifacts/work/temple-ebb';
+const scope=process.env.TEMPLE_REVIEW_DIR||'artifacts/work/temple-ebb';
 async function ready(p:Page,seed='15',reduced=false){await p.context().setExtraHTTPHeaders({'x-temple-test-case':'cascade-seed-'+seed});await p.emulateMedia({reducedMotion:reduced?'reduce':'no-preference'});await p.goto('/tests/fixtures/temple-preview.html?lang=en');await expect(game(p).locator('[data-ft=primary]')).toBeEnabled();await expect.poll(async()=>(await state(p)).ready).toBe(true);await game(p).locator('[data-ft=stake]').selectOption('1000');await expect.poll(async()=>(await state(p)).selectedStakeUnits).toBe('1000');}
 async function sound(p:Page){await p.evaluate(()=>(window as any).templePreview.audio.setMuted(true));await game(p).locator('[data-ft=mute]').click();await expect.poll(async()=>(await state(p)).audio.ready).toBe(true);}
 async function done(p:Page){await expect.poll(async()=>{const s=await state(p);return s.completed&&!s.presenting&&!s.busy;},{timeout:60000}).toBe(true);}
