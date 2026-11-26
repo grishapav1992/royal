@@ -9,14 +9,16 @@ const out=process.env.LAYOUT_ARTIFACTS_DIR||'artifacts/work/game-layout-iframes'
 const profiles={
  'studio-dracona':{root:'.game',board:'#board',primary:'#spin',stake:'.bet-control',essential:['#reserve-grid','#bonus-description']},
  'studio-forest-heart':{root:'.fh',board:'.fh-board',primary:'.fh-primary>button:not([hidden])',stake:'.fh-bet',essential:['.fh-source','.fh-flowers']},
- 'studio-flooded-temple':{root:'.ft-cascade',board:'.ft-reels',primary:'[data-ft=primary]',stake:'.ft-stake',essential:['.ft-multiplier','[data-free-count]']},
+ 'studio-flooded-temple':{root:'.ebb',board:'.ebb-grid',primary:'[data-ft=primary]',stake:'.ebb-console .stake',essential:['.ebb-top','.ebb-console .pay']},
 };
 type Id=keyof typeof profiles;
 const ids=Object.keys(profiles) as Id[];
 const sizes=[[1440,900],[1280,720],[768,1024],[1024,768],[393,852],[852,393],[320,568],[568,320]];
 async function open(page:Page,id:Id){
  await chooseGame(page,id);const handle=await page.locator('#mini-game iframe').elementHandle(),frame=(await handle!.contentFrame())!;
- await expect(frame.locator(profiles[id].board)).toBeVisible();await expect(frame.locator(profiles[id].root)).toHaveAttribute('data-frame-layout',/full|portrait|landscape/);
+ await expect(frame.locator(profiles[id].board)).toBeVisible();
+ if(id==='studio-flooded-temple')await expect(frame.locator('.ebb')).toHaveCSS('--sw',/^[1-9][\d.]*px$/);
+ else await expect(frame.locator(profiles[id].root)).toHaveAttribute('data-frame-layout',/full|portrait|landscape/);
  return frame;
 }
 async function fit(page:Page,frame:Frame,id:Id,modal=false){
@@ -67,13 +69,13 @@ for(const id of ids)test('iframe settings, accepted round and recovery: '+id,asy
  await enterGameHall(page,roomPath);await page.setViewportSize({width:393,height:852});let frame=await open(page,id);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  // Dracona keeps every control in view. Its only panel opens autoplay.
- const gear=()=>frame.locator(id==='studio-dracona'?'#autoplay':id==='studio-forest-heart'?'[data-fh=settings]':'[data-ft=settings]');
+ const gear=()=>frame.locator(id==='studio-dracona'?'#autoplay':id==='studio-forest-heart'?'[data-fh=settings]':'[data-ft=rules]');
  const panel=()=>frame.locator(id==='studio-dracona'?'#auto-dialog':id==='studio-forest-heart'?'.fh-dialog':'.ft-dialog');
  if(id==='studio-forest-heart')await frame.locator('[data-fh=fast]').check();
+ if(id==='studio-flooded-temple'){await frame.locator('[data-ft=fast]').click();await frame.locator('[data-ft=auto-count]').selectOption('25');}
  await gear().click();
  if(id==='studio-dracona')await frame.locator('[data-auto-count="25"]').click();
- else if(id==='studio-forest-heart')await expect(panel()).toBeVisible();
- else{await panel().locator('[data-ft=fast]').click();await panel().locator('[data-ft=auto-count]').selectOption('25');}
+ else await expect(panel()).toBeVisible();
  await page.screenshot({path:out+'/'+id+'-options.png'});await page.setViewportSize({width:852,height:393});await frame.locator('body').press('Escape');await expect(panel()).toBeHidden();await expect(gear()).toBeFocused();
  await fit(page,frame,id);await page.setViewportSize({width:1440,height:900});await fit(page,frame,id);await page.setViewportSize({width:393,height:852});
  let release!:()=>void,seen=false;const gate=new Promise<void>(r=>release=r);
@@ -135,7 +137,7 @@ test('accepted Temple v1 route and rope remain usable before returning to cascad
  const revision=(await session(page,id)).view.temple.revision;await frame.locator('[data-ft=primary]').click();await expect.poll(async()=>(await session(page,id)).view.temple.revision).toBeGreaterThan(revision);
  await expect(frame.locator('[data-ft=primary]')).toBeEnabled();await page.screenshot({path:out+'/temple-legacy-landscape.png'});
  await frame.locator('[data-ft=settings]').click();await frame.locator('.ft-dialog [data-ft=finish]').click();await frame.locator('.ft-dialog [data-ft=confirm-finish]').click();
- await expect(frame.locator('.ft-cascade')).toBeVisible();expect((await session(page,id)).rulesVersion).toBe(1);expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
+ await expect(frame.locator('.ebb')).toBeVisible();expect((await session(page,id)).rulesVersion).toBe(1);expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
  await frame.locator('[data-ft=primary]').click();await finish(page,frame,id);expect((await session(page,id)).rulesVersion).toBe(2);expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(2);
 });
 
@@ -144,7 +146,7 @@ test('iframe animations keep their field and actions through both orientations',
  for(const id of ids){
   await page.setViewportSize({width:393,height:852});const frame=await open(page,id);await page.emulateMedia({reducedMotion:'no-preference'});
   await frame.locator(profiles[id].primary).click();
-  await expect.poll(()=>frame.evaluate(id=>id==='studio-dracona'?document.querySelector('.game')?.getAttribute('data-phase')!=='idle':id==='studio-forest-heart'?document.querySelector('.fh')?.classList.contains('fh-presenting'):document.querySelector('.ft')?.getAttribute('data-feedback')!=='idle',id)).toBe(true);
+  await expect.poll(()=>frame.evaluate(id=>id==='studio-dracona'?document.querySelector('.game')?.getAttribute('data-phase')!=='idle':id==='studio-forest-heart'?document.querySelector('.fh')?.classList.contains('fh-presenting'):!!document.querySelector('.ebb-spin.run,.ebb-spin.skip'),id)).toBe(true);
   await page.setViewportSize({width:852,height:393});await fit(page,frame,id);await page.setViewportSize({width:393,height:852});await fit(page,frame,id);
   await page.emulateMedia({reducedMotion:'reduce'});await finish(page,frame,id);
  }

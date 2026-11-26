@@ -1,0 +1,528 @@
+{
+  "format": 1,
+  "productionCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "moduleGames": [
+    "flooded-temple"
+  ],
+  "moduleContracts": {
+    "studio-flooded-temple": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 2
+    }
+  },
+  "moduleAssets": {
+    "public/assets/flooded-temple/audio/ambience.wav": "48e222f9c07a97cf38e2a17bdf9332291e069ada35a559049372ead7e068a113",
+    "public/assets/flooded-temple/audio/big.wav": "0ddfe64008f05947bb323ede040303680e050689e4e3ffbc8ed771584b578cbf",
+    "public/assets/flooded-temple/audio/cascadeBonus.wav": "5263e9d29800147992db4733447f1ee46917a6c017b87845fc490311945c57cc",
+    "public/assets/flooded-temple/audio/cascadeBreakA.wav": "f4301b707282927d8da96c9da868c06069dd2e9148fcee2cf684c048000dc2c4",
+    "public/assets/flooded-temple/audio/cascadeBreakB.wav": "aa2956d8ed57765ec057bc5cd153258e9a5af3e125baca0047a6c60408bd37fc",
+    "public/assets/flooded-temple/audio/cascadeLandA.wav": "e73f63c9c96d672f726d4156cab7221213e5119d156084d8061318007a88b81b",
+    "public/assets/flooded-temple/audio/cascadeLandB.wav": "008c514c32a1d54ad83759fd557cf1b4b845065e4f2f7c82e006bb2d7bcded8f",
+    "public/assets/flooded-temple/audio/cascadeLandC.wav": "db27764bb07d0ce498e608214e13d738c453323bb4e6a318a5df965daaf50b52",
+    "public/assets/flooded-temple/audio/cascadeReturn.wav": "b7f8a249775e771dc08bb8acc54b5d53640b758967ca5a527ec41de28db1e68a",
+    "public/assets/flooded-temple/audio/chest.wav": "7162204ff8eb08b4e337136239d73ba255eda68a7d950dabcb0657e5d4d73130",
+    "public/assets/flooded-temple/audio/lever.wav": "f4cbd22ba8a69a37d10d6a10483efc5109a048318e6a3d0d9c57fc76cb86d454",
+    "public/assets/flooded-temple/audio/music.mp3": "1ad908e4c0e0c2a311300f6b69f2587f9161e15990ee01f18e00992f25d1b252",
+    "public/assets/flooded-temple/audio/neutral.wav": "9a5c3bf17cd7c6dff075f4363fae8b08dc39c6fa3c834ef835e74b588aab76b6",
+    "public/assets/flooded-temple/audio/relic.wav": "1d76b83d1c123ac6324a74577bae719d1ccefc4e244adeda88d8bf8a5656b1e8",
+    "public/assets/flooded-temple/audio/return.wav": "0cdb477fbb13571af5114d97b43061e519279e734293b36abfea75257d2db468",
+    "public/assets/flooded-temple/audio/rope.wav": "b2dae66ba5dafafabaed3f7b768b37714d2934cf11830bfa2a28181ec5096540",
+    "public/assets/flooded-temple/audio/scrape.wav": "204ae91dc7e5578fd98f743b31375d8d8ddee583c0fc0b39a5d271dd10978357",
+    "public/assets/flooded-temple/audio/step.wav": "0c635e96d578558d25d5cb007ea96d8dc2f2a392e648dee0aecd043597b944a0",
+    "public/assets/flooded-temple/audio/stone.wav": "afa11e806960de01eea313da926f8e2b9f159ef55a57830a9911fd72ab6930a5",
+    "public/assets/flooded-temple/audio/win.wav": "93a92b6f2986dc0e95655e3995e981d5be6f8f51d12e696ff720858f48287177",
+    "public/assets/flooded-temple/carving.webp": "b62b65dc3933e65ae214ed65f10a9dda0e050e58228dae067ef6b2924d816a1d",
+    "public/assets/flooded-temple/cascade-symbols.webp": "4749337ac615814558c0fc9f1dd42a63e84b4509acf0029bda15354666506771",
+    "public/assets/flooded-temple/character/brace.webp": "82944dc74720c264fd1b25adaa96f8941b0a8f941073bb36edd9c7ad7b0c4fd7",
+    "public/assets/flooded-temple/character/celebrate.webp": "5c6943ad5abca5a4c0a1dfd6302b1aa85f697d0386e0fd4feb8a0ca760ef4c7d",
+    "public/assets/flooded-temple/character/discover.webp": "bbc0885c312dcba79125b2a11a80cd8ae19b2cb03df3bab74562f9a360d33541",
+    "public/assets/flooded-temple/character/idle.webp": "73742d1b1af72eb5f8b2e06f1b44119060c49c1ee375141e4da79f1e75a92494",
+    "public/assets/flooded-temple/character/observe.webp": "e898f98c37e8ea42d30224bd188670cc4bc820a584c5b4f6ceb1314010e4d345",
+    "public/assets/flooded-temple/character/reflect.webp": "1788c5b5d16b3ee01b4ef54de3be61f4ab910da7c1aaf8c130e53d428296ee3b",
+    "public/assets/flooded-temple/ebb/hero-body.webp": "c2cce8bb8b4dac780e6b235072a156f576b60a1984f750f26a571b3050fedbf9",
+    "public/assets/flooded-temple/ebb/hero-lantern.webp": "cba2dfe88aaa975535eab9b1f2d959d7233ca6056ad24038e943ba223c6e2fa1",
+    "public/assets/flooded-temple/ebb/hero-left.webp": "dfc13e1fb5202f4e0b44753fe72374e3687722f51e85caf11c2d6aba3ddc3b11",
+    "public/assets/flooded-temple/ebb/hero-right.webp": "15d3f0bf5bb730854527a398c5d1f4ca72774961669ea6b7f1bf62f9381095cb",
+    "public/assets/flooded-temple/ebb/poses/cheer.webp": "746631de173e25e58598c8ee5a25293f6774d8e8a6d48611e9b13d17874f7273",
+    "public/assets/flooded-temple/ebb/poses/haul.webp": "ad8cdf4824d71ea6fbdd50fe7cbdefa7e3f82c04b9a1d11b79c16c254225c734",
+    "public/assets/flooded-temple/ebb/poses/jump.webp": "feb3a95b2a09cbbdfc8c6d5bf0248a9db7defe2b1c62673ac3c0a06b3fc0d984",
+    "public/assets/flooded-temple/ebb/poses/land.webp": "5cb392bb5088bd6a8eb7d2912fa77c92254e96798c3638906f7c0fb3db88236b",
+    "public/assets/flooded-temple/ebb/poses/map.webp": "4a9e327a59ff91e911dd0f17e5770cc7e151b5d4fb3e0e0dd5dbe079f515a014",
+    "public/assets/flooded-temple/ebb/poses/pull.webp": "3122cec7c7ec2bdafad4495043fc11ee0c99aa344a799ca6bbb8cc08f58e75d9",
+    "public/assets/flooded-temple/ebb/poses/relic.webp": "e88ace373ec39e028f69740e851c2490c85fb962669ab1be346a3ff05ff9cb35",
+    "public/assets/flooded-temple/ebb/poses/shield.webp": "2a8cd010eeabb6a1714e3ad57564578744fe82dbbc59d4794b8723a70b4eeda5",
+    "public/assets/flooded-temple/ebb/poses/sit.webp": "65552cfbaf989296ee9cf816822409e95e6599f0227ba5707aca685aebe24886",
+    "public/assets/flooded-temple/ebb/poses/throw.webp": "44aea47b012016fff52c0aadd8ed1bef53b6f6fee3481cdc10e0b6223ec84333",
+    "public/assets/flooded-temple/ebb/poses/triumph.webp": "f624d438728d68ba56bc1b614e10e4752fe25c895e2c2b771178eab017a5b1f7",
+    "public/assets/flooded-temple/ebb/poses/watch.webp": "351c7940183c535e9e682d4255438d6578669ebf9da78c63bdf70e59dd47f13e",
+    "public/assets/flooded-temple/ebb/poses/windup.webp": "fe659b93847683c89dceaf03b1b493a085529985f20b2e7a87cd05e1adb86c4b",
+    "public/assets/flooded-temple/ebb/poses/wring.webp": "5711dacd264a2a99c9d1468afbf14229f73b28246fd6642274c78266da4e57b5",
+    "public/assets/flooded-temple/ebb/temple-mask.webp": "351ba50901fa7d67999f0aed4c995e8d6878f3332131e96b1f8fd63a6fce49a6",
+    "public/assets/flooded-temple/frame.webp": "d3c22468e4a667eccf0789e340d4b23b7f56cf2919154e65e99900654c391ce3",
+    "public/assets/flooded-temple/props/chest-open.webp": "18fbcd1a848ce2b249dd5e1d01f7916eb4a0fc98206e32180772771a1ab5cadc",
+    "public/assets/flooded-temple/props/chest.webp": "59341c3e7b4fafe2faf2d46546f83d6f1f81df31096fab435f10018feb5dfc84",
+    "public/assets/flooded-temple/props/compass.webp": "40088b6ff5f02527824f4fcdf286adb13299385af2fcd5975ea529136e7e6a1a",
+    "public/assets/flooded-temple/props/gate.webp": "838a9009eca17a33ad439d276ade82a0b53766db4acd656e9f6302b73719d9e1",
+    "public/assets/flooded-temple/props/lever-pulled.webp": "674fec681641da49304e4c76bf59e3c6064e72972334b1167e0c3d5e3ebf54f1",
+    "public/assets/flooded-temple/props/lever.webp": "b1953d266659eb2b72020777c092869bf414df2598bc6128d2184771142f89d3",
+    "public/assets/flooded-temple/props/relic.webp": "39c3b976422e12a7bdc59976a2fcdff51a401431ba5e7bf81c06b0959330b466",
+    "public/assets/flooded-temple/props/rope.webp": "5627fe53bf4ab987fca1b6b2ba4c578f2b1e6f76ca5d69c1850f4a7f176a6d8c",
+    "public/assets/flooded-temple/rooms.webp": "3e6b1fdba1c01915b5bf41c2ae0a6a4e78714128c3da310812da5a319540a2b5",
+    "public/assets/flooded-temple/temple.webp": "858f02a7a50d4bcc08e28f0aaa37a03dec27bf183658a5a69d225ed71bee55d9"
+  },
+  "files": {
+    "games/flooded-temple/CascadeUI.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/CascadeUI.ts",
+      "baseSha256": "1fff6dff6c73c74b94ccdedb89d727ea55d6647d6347deaaa9f4da9fc5108e90",
+      "sha256": "1fff6dff6c73c74b94ccdedb89d727ea55d6647d6347deaaa9f4da9fc5108e90"
+    },
+    "games/flooded-temple/CharacterMotion.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/CharacterMotion.ts",
+      "baseSha256": "4b95387da8280ef5546b696c800cdf07b75be29798ce6763179ea4f5715c8932",
+      "sha256": "4b95387da8280ef5546b696c800cdf07b75be29798ce6763179ea4f5715c8932"
+    },
+    "games/flooded-temple/TempleAudio.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/TempleAudio.ts",
+      "baseSha256": "aff757eb3cd790e49311dad2a9737df1a1ca369c201a8c57e6623296099042c2",
+      "sha256": "aff757eb3cd790e49311dad2a9737df1a1ca369c201a8c57e6623296099042c2"
+    },
+    "games/flooded-temple/TempleCharacter.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/TempleCharacter.ts",
+      "baseSha256": "b646a1606ca1d797c0b1b354af957794395c0ba580b67bf58d70f4b4a9e5528d",
+      "sha256": "b646a1606ca1d797c0b1b354af957794395c0ba580b67bf58d70f4b4a9e5528d"
+    },
+    "games/flooded-temple/TempleEffects.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/TempleEffects.ts",
+      "baseSha256": "187f721e78c1ef67ed2cb617efd155b838777d5508df13ef430a9486bb65ae8a",
+      "sha256": "187f721e78c1ef67ed2cb617efd155b838777d5508df13ef430a9486bb65ae8a"
+    },
+    "games/flooded-temple/TempleMusic.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/TempleMusic.ts",
+      "baseSha256": "a240391f069eb83305880955af9fb754239558e1a810651e3c705522751adf63",
+      "sha256": "a240391f069eb83305880955af9fb754239558e1a810651e3c705522751adf63"
+    },
+    "games/flooded-temple/TemplePortrait.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/TemplePortrait.ts",
+      "baseSha256": "0984a3fbb54356e61861dc7e15f024bf629f26ae540dbc96aab82074f46c3d2e",
+      "sha256": "0984a3fbb54356e61861dc7e15f024bf629f26ae540dbc96aab82074f46c3d2e"
+    },
+    "games/flooded-temple/TempleTimeline.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/TempleTimeline.ts",
+      "baseSha256": "3d0cfe1f78069ba9a7eb2c720fbfcda91db8202aa1f4c0b524ffa14aaaeabd5b",
+      "sha256": "3d0cfe1f78069ba9a7eb2c720fbfcda91db8202aa1f4c0b524ffa14aaaeabd5b"
+    },
+    "games/flooded-temple/TempleUI.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/TempleUI.ts",
+      "baseSha256": "346bb32ecfe3835472ec0a628d997a616b8e007c9648d32bf77120ea1c7eeb9c",
+      "sha256": "346bb32ecfe3835472ec0a628d997a616b8e007c9648d32bf77120ea1c7eeb9c"
+    },
+    "games/flooded-temple/art.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/art.ts",
+      "baseSha256": "eca72b0ef13e6e9a6e60b45f5ace439cc48f8ad9a26c939872bdf07691037255",
+      "sha256": "eca72b0ef13e6e9a6e60b45f5ace439cc48f8ad9a26c939872bdf07691037255"
+    },
+    "games/flooded-temple/audioClock.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/audioClock.ts",
+      "baseSha256": "edcbd168558ba52530acd067c87cd83519fd75a4c9e6584c8c497adc93d5f39a",
+      "sha256": "edcbd168558ba52530acd067c87cd83519fd75a4c9e6584c8c497adc93d5f39a"
+    },
+    "games/flooded-temple/audioCredits.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/audioCredits.ts",
+      "baseSha256": "fdfbbc6822e72ac5f104a7d952e57a8c2638c13d864f9ed65affe34cb473516d",
+      "sha256": "fdfbbc6822e72ac5f104a7d952e57a8c2638c13d864f9ed65affe34cb473516d"
+    },
+    "games/flooded-temple/board.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/board.ts",
+      "baseSha256": "8ec14ffe73cab97abcd6b3116083f2f137860c5466b966778b9ebc06f9d4951c",
+      "sha256": "8ec14ffe73cab97abcd6b3116083f2f137860c5466b966778b9ebc06f9d4951c"
+    },
+    "games/flooded-temple/cascadeFeedbackStyles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/cascadeFeedbackStyles.ts",
+      "baseSha256": "e26da7c5a63663832314b6da4645fe84ab837245eda58618c2e2d2ac4d7f7d20",
+      "sha256": "e26da7c5a63663832314b6da4645fe84ab837245eda58618c2e2d2ac4d7f7d20"
+    },
+    "games/flooded-temple/cascadeLayoutStyles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/cascadeLayoutStyles.ts",
+      "baseSha256": "27a4f981fafcb1bc06b912432a06eef72354dd86a9a05f5035d5119965203501",
+      "sha256": "27a4f981fafcb1bc06b912432a06eef72354dd86a9a05f5035d5119965203501"
+    },
+    "games/flooded-temple/cascadePresentation.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/cascadePresentation.ts",
+      "baseSha256": "cc43d63ba200e02625d5bd256956fff2c4cffd31dbfc5589263bfb725a3b479c",
+      "sha256": "cc43d63ba200e02625d5bd256956fff2c4cffd31dbfc5589263bfb725a3b479c"
+    },
+    "games/flooded-temple/cascadeResultStyles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/cascadeResultStyles.ts",
+      "baseSha256": "15e83146bab4148478f054e96542085e637c9fcad43b18b92ac3149a4d18487d",
+      "sha256": "15e83146bab4148478f054e96542085e637c9fcad43b18b92ac3149a4d18487d"
+    },
+    "games/flooded-temple/cascadeSounds.json": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/cascadeSounds.json",
+      "baseSha256": "7f7efbf62042d36e50ef647002960ca639dbd90c18dd1765c52808c5a815be77",
+      "sha256": "7f7efbf62042d36e50ef647002960ca639dbd90c18dd1765c52808c5a815be77"
+    },
+    "games/flooded-temple/cascadeStyles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/cascadeStyles.ts",
+      "baseSha256": "0243bf066ddf4f7206beffb1b5af6813b730c998d19f1979125cfb6da4d43789",
+      "sha256": "0243bf066ddf4f7206beffb1b5af6813b730c998d19f1979125cfb6da4d43789"
+    },
+    "games/flooded-temple/character.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/character.ts",
+      "baseSha256": "7a1e656f2eedc49f9078629e1ca4b6e86c20fd421011b6cfa9683da28548130f",
+      "sha256": "7a1e656f2eedc49f9078629e1ca4b6e86c20fd421011b6cfa9683da28548130f"
+    },
+    "games/flooded-temple/characterStyles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/characterStyles.ts",
+      "baseSha256": "00ea703e26c5732b4df9aedd6067e59beca59fbd6d869bffb7f21e9d0152db0e",
+      "sha256": "00ea703e26c5732b4df9aedd6067e59beca59fbd6d869bffb7f21e9d0152db0e"
+    },
+    "games/flooded-temple/ebb/clock.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/ebb/clock.ts",
+      "baseSha256": "96a2b62dd084ef5173d3cfe97169bff6f0775f5daf2d15a38f99d04a96de3219",
+      "sha256": "96a2b62dd084ef5173d3cfe97169bff6f0775f5daf2d15a38f99d04a96de3219"
+    },
+    "games/flooded-temple/ebb/fx.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/ebb/fx.ts",
+      "baseSha256": "ad9ae85074be8b70731b80b8ce98c9845db41e22a054ba5a492413ad5ada3b5b",
+      "sha256": "ad9ae85074be8b70731b80b8ce98c9845db41e22a054ba5a492413ad5ada3b5b"
+    },
+    "games/flooded-temple/ebb/gl.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/ebb/gl.ts",
+      "baseSha256": "d7cee90bf9ec7b64248930d3f439dc6515ec3f69a10732f22a5fc831710984ff",
+      "sha256": "d7cee90bf9ec7b64248930d3f439dc6515ec3f69a10732f22a5fc831710984ff"
+    },
+    "games/flooded-temple/ebb/hero.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/ebb/hero.ts",
+      "baseSha256": "38980118e806b4ef4442f2ea68678aea96d91ca551444b7ef9d02dcde3bc78eb",
+      "sha256": "38980118e806b4ef4442f2ea68678aea96d91ca551444b7ef9d02dcde3bc78eb"
+    },
+    "games/flooded-temple/ebb/lock.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/ebb/lock.ts",
+      "baseSha256": "346ed20c0662607210ca0b77608d8a6d4fcfe24a79408dcbac74f3a4e1d55965",
+      "sha256": "346ed20c0662607210ca0b77608d8a6d4fcfe24a79408dcbac74f3a4e1d55965"
+    },
+    "games/flooded-temple/ebb/poses.json": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/ebb/poses.json",
+      "baseSha256": "2068e213f77ff62bf596e0d444547ae156dd6d894f7753976ed3eab26ddb3253",
+      "sha256": "2068e213f77ff62bf596e0d444547ae156dd6d894f7753976ed3eab26ddb3253"
+    },
+    "games/flooded-temple/ebb/show.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/ebb/show.ts",
+      "baseSha256": "3fb982c997c1777cc15195065bbc9ea1435f971b7831e0a606620fead7fd6672",
+      "sha256": "3fb982c997c1777cc15195065bbc9ea1435f971b7831e0a606620fead7fd6672"
+    },
+    "games/flooded-temple/ebb/stage.ts": {
+      "commit": "31ede55f31793b6d276d15e66e18b1831a3a2052",
+      "path": "games/flooded-temple/ebb/stage.ts",
+      "baseSha256": "803f96aa1cb98244ed84e7859ed24f478704ba1e1beba03ec638efd212e69804",
+      "sha256": "803f96aa1cb98244ed84e7859ed24f478704ba1e1beba03ec638efd212e69804"
+    },
+    "games/flooded-temple/ebb/symbols.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/ebb/symbols.ts",
+      "baseSha256": "1ce0d07caef5c0831f7620ff0a68e1b6a00a9c2f944044e30ccae3cb1bc2cf30",
+      "sha256": "1ce0d07caef5c0831f7620ff0a68e1b6a00a9c2f944044e30ccae3cb1bc2cf30"
+    },
+    "games/flooded-temple/ebb/temple.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/ebb/temple.ts",
+      "baseSha256": "7b6c9d9be2d9d75698f42c1888a86f56613f3560c7ed1aa549c10506b6678389",
+      "sha256": "7b6c9d9be2d9d75698f42c1888a86f56613f3560c7ed1aa549c10506b6678389"
+    },
+    "games/flooded-temple/ebbStyles.ts": {
+      "commit": "31ede55f31793b6d276d15e66e18b1831a3a2052",
+      "path": "games/flooded-temple/ebbStyles.ts",
+      "baseSha256": "beebfe78e6e41daef9c8cfdac5c226521e8071e72a32611f783144766031880e",
+      "sha256": "beebfe78e6e41daef9c8cfdac5c226521e8071e72a32611f783144766031880e"
+    },
+    "games/flooded-temple/entry.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/entry.ts",
+      "baseSha256": "5eae96f75ab6160c34055afbde8a7bf595c6725fdffb18dc1bd7087a1637ac1a",
+      "sha256": "5eae96f75ab6160c34055afbde8a7bf595c6725fdffb18dc1bd7087a1637ac1a"
+    },
+    "games/flooded-temple/feedbackStyles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/feedbackStyles.ts",
+      "baseSha256": "32978c590360c924936905e2c7e8e761f8cc3565651ec4764cc7f4391ffb1401",
+      "sha256": "32978c590360c924936905e2c7e8e761f8cc3565651ec4764cc7f4391ffb1401"
+    },
+    "games/flooded-temple/navigation.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/navigation.ts",
+      "baseSha256": "471067b28e8bd3878a35dd86e24062cbbd01dfed4ee03c0f74457e0acfa245fc",
+      "sha256": "471067b28e8bd3878a35dd86e24062cbbd01dfed4ee03c0f74457e0acfa245fc"
+    },
+    "games/flooded-temple/navigationStyles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/navigationStyles.ts",
+      "baseSha256": "71c710b3572f0f8c1a3f13112a6209f475ca9d5917ddfd784238c9e53a7232ef",
+      "sha256": "71c710b3572f0f8c1a3f13112a6209f475ca9d5917ddfd784238c9e53a7232ef"
+    },
+    "games/flooded-temple/package.json": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/package.json",
+      "baseSha256": "8d5874c303d4563bb654ab4ec660822d98a2d96491174894af763a6a3f5895a1",
+      "sha256": "8d5874c303d4563bb654ab4ec660822d98a2d96491174894af763a6a3f5895a1"
+    },
+    "games/flooded-temple/playbackStyles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/playbackStyles.ts",
+      "baseSha256": "5cf68b3c5410f86020876585573182264c0d9eb38886caf904ec44cc05239405",
+      "sha256": "5cf68b3c5410f86020876585573182264c0d9eb38886caf904ec44cc05239405"
+    },
+    "games/flooded-temple/presentation.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/presentation.ts",
+      "baseSha256": "3a08e0281fcb35bc4116b69d6d53273c75f0403396c2ca05e721b352ee49d236",
+      "sha256": "3a08e0281fcb35bc4116b69d6d53273c75f0403396c2ca05e721b352ee49d236"
+    },
+    "games/flooded-temple/priorityStyles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/priorityStyles.ts",
+      "baseSha256": "dbbe7bc944ed6eac5f04b209dcdebc68f2b30ac1dcbd9af47ae8649af7c4896c",
+      "sha256": "dbbe7bc944ed6eac5f04b209dcdebc68f2b30ac1dcbd9af47ae8649af7c4896c"
+    },
+    "games/flooded-temple/referenceStyles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/referenceStyles.ts",
+      "baseSha256": "3fd13805f74a2d59b866ae6a01399c266612c1d1eafe761e9ffa74ab9a0e360f",
+      "sha256": "3fd13805f74a2d59b866ae6a01399c266612c1d1eafe761e9ffa74ab9a0e360f"
+    },
+    "games/flooded-temple/shell.css": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/shell.css",
+      "baseSha256": "f81eef85893df1f23ea38daa487d3f303724c6daa16f6d08e6a441d488aeb805",
+      "sha256": "f81eef85893df1f23ea38daa487d3f303724c6daa16f6d08e6a441d488aeb805"
+    },
+    "games/flooded-temple/sounds.json": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/sounds.json",
+      "baseSha256": "cc7673b3bf9e7395ae1751d27b6b579a6e1e5fcf6aaab6b2cd83977cb2cb646e",
+      "sha256": "cc7673b3bf9e7395ae1751d27b6b579a6e1e5fcf6aaab6b2cd83977cb2cb646e"
+    },
+    "games/flooded-temple/styles.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/styles.ts",
+      "baseSha256": "9d98b74213acc4e00662373589395fb533cd87ae592c10b98f2ffc0460a4e57c",
+      "sha256": "9d98b74213acc4e00662373589395fb533cd87ae592c10b98f2ffc0460a4e57c"
+    },
+    "games/flooded-temple/tsconfig.json": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "games/flooded-temple/tsconfig.json",
+      "baseSha256": "f742eff5a2a4d98532ce33a3f9a0ac0bcf1a8eb52a27a00df95baa74c33993ff",
+      "sha256": "f742eff5a2a4d98532ce33a3f9a0ac0bcf1a8eb52a27a00df95baa74c33993ff"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0",
+      "sha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "c30c2056c5e5f4e9de50fb6cc0a022581448512938e6d8eed6d6d1817523c835",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        },
+        {
+          "from": "/** Independent client packages",
+          "to": "import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol.ts';\n\n/** Independent client packages"
+        },
+        {
+          "from": "export const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES] as const;",
+          "to": "export const DRAGON_PATH = { gameId: DRAGON_PATH_GAME, slug: 'panda-dragon', apiVersion: 1, rulesVersion: DRAGON_PATH_RULES_VERSION, progressVersion: 2, title: DRAGON_PATH_TITLE } as const;\nexport const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES, DRAGON_PATH] as const;"
+        },
+        {
+          "from": "import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol.ts';",
+          "to": "const DRAGON_PATH_GAME = 'panda-dragon-preview';\nconst DRAGON_PATH_RULES_VERSION = 1;\nconst DRAGON_PATH_TITLE = 'Путь дракона';"
+        }
+      ]
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/dragonPathLayout.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/dragonPathLayout.ts",
+      "baseSha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458",
+      "sha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458"
+    },
+    "src/shared/dragonPathMath.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/dragonPathMath.ts",
+      "baseSha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e",
+      "sha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e"
+    },
+    "src/shared/dragonPathProtocol.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/dragonPathProtocol.ts",
+      "baseSha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca",
+      "sha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca"
+    },
+    "src/shared/dragonPathRound.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/dragonPathRound.ts",
+      "baseSha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794",
+      "sha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794"
+    },
+    "src/shared/floodedTemple.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/floodedTemple.ts",
+      "baseSha256": "1c1369bd31afb101871e37b45373fbdaee0db09a631e4e4a242c24b396becb5b",
+      "sha256": "1c1369bd31afb101871e37b45373fbdaee0db09a631e4e4a242c24b396becb5b"
+    },
+    "src/shared/floodedTempleCascade.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/floodedTempleCascade.ts",
+      "baseSha256": "4eeca742538d793bb5efdf79c9b15389ad827716e8728f385e0c9090ec727cde",
+      "sha256": "4eeca742538d793bb5efdf79c9b15389ad827716e8728f385e0c9090ec727cde"
+    },
+    "src/shared/floodedTempleCascadeData.json": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/floodedTempleCascadeData.json",
+      "baseSha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a",
+      "sha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a"
+    },
+    "src/shared/floodedTempleCascadeMath.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/floodedTempleCascadeMath.ts",
+      "baseSha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604",
+      "sha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604"
+    },
+    "src/shared/floodedTempleData.json": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/floodedTempleData.json",
+      "baseSha256": "0033975e51c12770b84dbe04146ad9f474276e783ee7c2ed2c6179ad3ee437dc",
+      "sha256": "0033975e51c12770b84dbe04146ad9f474276e783ee7c2ed2c6179ad3ee437dc"
+    },
+    "src/shared/floodedTempleMath.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/floodedTempleMath.ts",
+      "baseSha256": "514c0156493f4bfa94b7d4c56dcbc03d9d35e4430216eea359c4e02632fb7ac1",
+      "sha256": "514c0156493f4bfa94b7d4c56dcbc03d9d35e4430216eea359c4e02632fb7ac1"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
+      "sha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
+      "sha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/iframeKit/FrameLayout.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/ui/iframeKit/FrameLayout.ts",
+      "baseSha256": "a8f900a6c381f66659d93789940aca11ef95ae1517beb2e91f171f47fa08286b",
+      "sha256": "a8f900a6c381f66659d93789940aca11ef95ae1517beb2e91f171f47fa08286b"
+    },
+    "src/ui/operationFeedback.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/ui/operationFeedback.ts",
+      "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+      "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86",
+      "sha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86"
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    }
+  }
+}

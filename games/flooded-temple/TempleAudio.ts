@@ -28,7 +28,7 @@ export class TempleAudio{
   private unsubscribe:()=>void;
   private music:TempleMusic;
   constructor(private host:GameHostV1['gameAudio'],private doc:Document,cascades=false){
-    this.cues=cascades?{ambience:manifest.cues.ambience,neutral:manifest.cues.neutral,return:manifest.cues.return,win:manifest.cues.win,big:manifest.cues.big,...cascadeManifest.cues}:manifest.cues;
+    this.cues=cascades?{...manifest.cues,...cascadeManifest.cues}:manifest.cues;
     this.music=new TempleMusic(doc,()=>this.enabled());
     this.unsubscribe=host.onPreferences(p=>{if(p.muted||p.volume===0)this.cancel();else this.ambience();});
     for(const spec of Object.values(this.cues)){void loadBytes('/assets/flooded-temple/audio/'+spec.file).catch(()=>{});}
@@ -62,6 +62,8 @@ export class TempleAudio{
     }
     return anchor;
   }
+  /** Plays a cue whose audible accent lands with the frame being drawn now. */
+  now(cue:TempleCue){const spec=this.cues[cue];if(spec)this.schedule(cue,performance.now()+this.clock().latencyMs+spec.accent*1000+12);}
   oneShot(cue:TempleCue){this.schedule(cue,performance.now()+this.lead());}
   private voice(buffer:AudioBuffer,start:number,output:AudioNode,loop:boolean,level:number):Voice{
     const c=this.context!,source=c.createBufferSource(),gain=c.createGain();source.buffer=buffer;source.loop=loop;gain.gain.value=level;source.connect(gain);gain.connect(output);
