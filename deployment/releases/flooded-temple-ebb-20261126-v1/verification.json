@@ -1,0 +1,239 @@
+{
+  "published": true,
+  "release": "flooded-temple-ebb-20261126-v1",
+  "sourceCommit": "86cd756ffce6d9f16500a8a93b9e659f7f8712ac",
+  "baseCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/flooded-temple-ebb-20261126-v1/source.tgz",
+    "sha256": "d57a9c2454b7ec28533fee9faa8a225de585df9c83fe67ab85c7ca4a6145f90f",
+    "bytes": 73358,
+    "oldVersion": "0.10.1-af661ae908a0",
+    "imageTag": "royal-game:before-flooded-temple-ebb-20261126-v1",
+    "image": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/flooded-temple/ebb/clock.ts",
+      "games/flooded-temple/ebb/fx.ts",
+      "games/flooded-temple/ebb/gl.ts",
+      "games/flooded-temple/ebb/hero.ts",
+      "games/flooded-temple/ebb/lock.ts",
+      "games/flooded-temple/ebb/poses.json",
+      "games/flooded-temple/ebb/show.ts",
+      "games/flooded-temple/ebb/stage.ts",
+      "games/flooded-temple/ebb/symbols.ts",
+      "games/flooded-temple/ebb/temple.ts",
+      "games/flooded-temple/ebbStyles.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-flooded-temple",
+    "version": "0.11.0-77ebc531cf0a",
+    "bytes": 23694464,
+    "files": 60,
+    "beforeSha256": "f33ec8b42b60aab21ceac6f30c25f78bfd224bcf25f1005d73dc46abf52728e0",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "603209d9846a3f258c9ae0acd79467af85bdd992e57a4f35605a2f23f7218e9c",
+    "history": "/opt/royal-game-modules-state/history/20261126T192317-d85d82ce9d37465c9602dbf9a8b1c6bf.json"
+  },
+  "freeBefore": 10980777984,
+  "freeAfter": 10956677120,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8845,
+  "servicesPreserved": 11,
+  "verifiedAt": "2026-11-26T19:23:40.997546+00:00",
+  "previousVersion": "0.10.1-af661ae908a0",
+  "contracts": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 2
+  },
+  "wrapperSourceCommit": "86cd756ffce6d9f16500a8a93b9e659f7f8712ac",
+  "pointerSha256": "603209d9846a3f258c9ae0acd79467af85bdd992e57a4f35605a2f23f7218e9c",
+  "priorPointerSha256": "f33ec8b42b60aab21ceac6f30c25f78bfd224bcf25f1005d73dc46abf52728e0",
+  "releaseManifestSha256": "15854f94f099544e10a1806d2aa46ce2071d91345ddc72ebcfed4726692138d5",
+  "receiptSha256": "facfc835b31abfbf7f56b0aa477fee062f5e810f68c1e46e64b0d4e60de35d6b",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "installedSourceFiles": 45,
+  "changedExistingSources": [
+    "games/flooded-temple/CascadeUI.ts",
+    "games/flooded-temple/TempleAudio.ts",
+    "games/flooded-temple/entry.ts",
+    "games/flooded-temple/package.json"
+  ],
+  "newPackageAssets": [
+    "media/flooded-temple/ebb/hero-body.webp",
+    "media/flooded-temple/ebb/hero-lantern.webp",
+    "media/flooded-temple/ebb/hero-left.webp",
+    "media/flooded-temple/ebb/hero-right.webp",
+    "media/flooded-temple/ebb/poses/cheer.webp",
+    "media/flooded-temple/ebb/poses/haul.webp",
+    "media/flooded-temple/ebb/poses/jump.webp",
+    "media/flooded-temple/ebb/poses/land.webp",
+    "media/flooded-temple/ebb/poses/map.webp",
+    "media/flooded-temple/ebb/poses/pull.webp",
+    "media/flooded-temple/ebb/poses/relic.webp",
+    "media/flooded-temple/ebb/poses/shield.webp",
+    "media/flooded-temple/ebb/poses/sit.webp",
+    "media/flooded-temple/ebb/poses/throw.webp",
+    "media/flooded-temple/ebb/poses/triumph.webp",
+    "media/flooded-temple/ebb/poses/watch.webp",
+    "media/flooded-temple/ebb/poses/windup.webp",
+    "media/flooded-temple/ebb/poses/wring.webp",
+    "media/flooded-temple/ebb/temple-mask.webp"
+  ],
+  "publicChecks": {
+    "at": "2026-11-26T19:26:40.076251+00:00",
+    "health": 200,
+    "version": "0.11.0-77ebc531cf0a",
+    "previous": "0.10.1-af661ae908a0",
+    "files": 60,
+    "previousFiles": 41,
+    "manifestSha256": "917edeed55ede40587b4b3de4f534b1a1c2d839f49ba19e2991b4b8484311e93",
+    "pointerSha256": "603209d9846a3f258c9ae0acd79467af85bdd992e57a4f35605a2f23f7218e9c",
+    "activeModulePointers": 125,
+    "changedPointers": [
+      "/opt/royal-game-modules/studio-flooded-temple/active.json"
+    ],
+    "hostUnchanged": true,
+    "backendUnchanged": true,
+    "transport": "Public HTTPS hostname with normal certificate validation from the server network",
+    "home": 200,
+    "productionAccountsUsed": false,
+    "realWagers": false,
+    "postMaintenanceHealth": 200,
+    "postMaintenanceActiveManifest": "917edeed55ede40587b4b3de4f534b1a1c2d839f49ba19e2991b4b8484311e93",
+    "verifiedAlsoFromWorkstationAt": "2026-11-26T19:27:47.772Z"
+  },
+  "browserReport": {
+    "version": "0.11.0-77ebc531cf0a",
+    "moduleManifestSha256": "917edeed55ede40587b4b3de4f534b1a1c2d839f49ba19e2991b4b8484311e93",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "uniqueBrowserScenariosPassed": [
+      "RU/EN rules, payline table, stake entry and responsive framing without overflow",
+      "a paid chain shows the lever, landings, crumble and the next water mark with their sounds",
+      "accepted legacy expedition finishes under v1 before the next paid cascade round",
+      "cap frames show confirmed order, multiplier, exact payout and quiet restore",
+      "closing an active bonus cancels owned feedback and reopen resumes without another paid start",
+      "finite autoplay spends exactly ten stakes; stop and pause cancel future stakes",
+      "free spins continue automatically across batches, retry a lost continuation and credit once",
+      "lost start survives reload and checks the same UUID without a second wager",
+      "ordinary playback displays every confirmed frame in order and quick play has the same result",
+      "partial return uses full-round net, reduced motion stays still and account change clears the result",
+      "real Royal host keeps connected chat, heroine lane, controls and close/reopen on desktop and phone",
+      "reduced motion presents the same confirmed round without particles or a moving heroine",
+      "skipping a bonus shows its confirmed end once, keeps the paid start single and credits once"
+    ],
+    "connectedLayoutAndCompatibility": [
+      "iframe field and essential actions fit: studio-flooded-temple",
+      "iframe settings, accepted round and recovery: studio-flooded-temple",
+      "accepted Temple v1 route and rope remain usable before returning to cascades"
+    ],
+    "viewports": [
+      [
+        1440,
+        900
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        1024,
+        768
+      ],
+      [
+        393,
+        852
+      ],
+      [
+        852,
+        393
+      ],
+      [
+        320,
+        568
+      ],
+      [
+        568,
+        320
+      ]
+    ],
+    "exactProductionShellWithLocalBackend": {
+      "indexSha256": "7c0dab42b5c33a810d1b8bca193a0d888894a4b349e4bb70e6930412eb468fce",
+      "verifiedHostFiles": 68,
+      "temporaryDatabase": true,
+      "views": [
+        {
+          "width": 1440,
+          "height": 900,
+          "connected": true,
+          "chat": true,
+          "packageVersion": "0.11.0-77ebc531cf0a",
+          "visibleCards": 20,
+          "oneDebit": true,
+          "sameOperation": true
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "connected": true,
+          "chat": true,
+          "packageVersion": "0.11.0-77ebc531cf0a",
+          "visibleCards": 20,
+          "oneDebit": true,
+          "sameOperation": true
+        }
+      ]
+    },
+    "testNotes": [
+      "The connected host test initially reached the entry button before it was enabled. Rerun after waiting for the enabled control passed.",
+      "The isolated production shell requested a speculative preload for the neighbouring Cosmic module, absent from the scoped fixture. Both Temple launches and account settlements passed."
+    ],
+    "physicalHardware": false,
+    "audioListening": false
+  },
+  "checks": {
+    "rtpProfiles": 39,
+    "stakePolicies": 21,
+    "stakeAdmissions": 21,
+    "typecheck": true,
+    "releaseVerifyGithub": true,
+    "templeServerTests": 60,
+    "walletTests": 19,
+    "modulePublisherTests": 11,
+    "walletCommand": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+    "connectedHostTestFixCommit": "90ddd61b438b551742dbd2ae094dc34fd0208a28",
+    "browserReportSha256": "4c6159d6f2141ab08d3e3e4e9a41c3834a4a9cdda49882dd8f59060d74115d1f",
+    "releaseEntrypointSha256": "4c5f6d7bc09ffc3fd35df3b56f09384d170f465c3d3521555e62c7f71f392763",
+    "githubReceiptRemoteMain": "a08b63a36fb67ea482414814fc4b70e91896ab26",
+    "browser": "Google Chrome",
+    "safariTested": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 84.96,
+    "freeBefore": 10952232960,
+    "freeAfter": 10948587520,
+    "finishedAt": 1795721126.311732,
+    "currentImage": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+    "rollbackImage": "sha256:138fb4ab06218c31ee91645c566980e756e45da1228291c06cbfef06b8419e52",
+    "healthOk": true,
+    "containersUnchanged": true,
+    "timerEnabled": true,
+    "timerActive": true
+  }
+}
