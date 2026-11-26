@@ -7,6 +7,15 @@
 <header class="desk-heading"><div><h1>Star Spin</h1><p>Сравнение версий</p></div>
 <nav id="views" aria-label="Режим просмотра"><button data-view="compare" aria-pressed="true">Рядом</button><button data-view="old">Текущий экран</button><button data-view="new">Редизайн</button></nav></header>
 <main>
+<section class="screen-tools" aria-labelledby="screen-heading">
+  <div class="screen-bar">
+    <h2 id="screen-heading">Разрешение игрового окна</h2>
+    <div class="screen-current"><output id="screen-readout" aria-live="polite"></output>
+      <button type="button" id="rotate-screen"><span aria-hidden="true">↻</span> Повернуть</button>
+    </div>
+  </div>
+  <div id="screen-sizes" role="group" aria-labelledby="screen-heading"></div>
+</section>
 <div id="stages" class="stages" data-view="compare">
 <article class="panel" data-panel="old"><header><h2>Текущий экран</h2><button class="expand" data-expand="old" aria-label="Развернуть текущий экран">Развернуть ↗</button></header><div class="viewport"><div class="mount"></div></div></article>
 <article class="panel" data-panel="new"><header><h2>Редизайн</h2><button class="expand" data-expand="new" aria-label="Развернуть редизайн">Развернуть ↗</button></header><div class="viewport"><div class="mount"></div></div></article>

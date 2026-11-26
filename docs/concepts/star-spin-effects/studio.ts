@@ -13,6 +13,32 @@ const finish = select<HTMLButtonElement>("#finish");
 const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
 reduced.checked = motionPreference.matches;
 const scenes = new Map<Variant, Scene>();
+const screenSizes = [
+ { label: "Малый телефон", width: 320, height: 568 },
+ { label: "Телефон", width: 390, height: 844 },
+ { label: "Короткое окно", width: 707, height: 447 },
+ { label: "Планшет", width: 768, height: 1024 },
+ { label: "Ноутбук", width: 1280, height: 720 },
+ { label: "ПК", width: 1440, height: 900 },
+ { label: "Full HD", width: 1920, height: 1080 },
+];
+const rotateScreen = select<HTMLButtonElement>("#rotate-screen");
+const screenReadout = select<HTMLOutputElement>("#screen-readout");
+let selectedSize: typeof screenSizes[number] | undefined;
+let rotated = false;
+const presetBar = select("#screen-sizes");
+for (const preset of [undefined, ...screenSizes]) {
+ const button = document.createElement("button");
+ button.type = "button";
+ button.dataset.size = preset ? `${preset.width}x${preset.height}` : "auto";
+ const label = document.createElement("span");
+ label.textContent = preset?.label ?? "Авто";
+ const dimensions = document.createElement("small");
+ dimensions.textContent = preset ? `${preset.width} × ${preset.height}` : "По окну";
+ button.append(label, dimensions);
+ button.onclick = () => { selectedSize = preset; rotated = false; updateScreenSize(); };
+ presetBar.append(button);
+}
 let view: string = "compare";
 let scenario: ScenarioId = "lift";
 let activeHero: HeroId = "lyra";
@@ -60,17 +86,39 @@ function play(id: ScenarioId) {
  render();
 }
 function fitAll() {
- const pair = view==="compare" && innerWidth>=900;
+ const size = selectedSize;
+ let caption = "";
  for (const scene of scenes.values()) {
   const mount = scene.root.parentElement!, frame = mount.parentElement!;
-  const miniature = pair && frame.clientWidth < 900;
-  const width = miniature ? 1000 : frame.clientWidth;
-  const height = miniature ? 625 : frame.clientHeight;
+  if (!frame.clientWidth || !frame.clientHeight) continue;
+  const width = size ? (rotated ? size.height : size.width) : frame.clientWidth;
+  const height = size ? (rotated ? size.width : size.height) : frame.clientHeight;
+  const scale = Math.min(1, frame.clientWidth / width, frame.clientHeight / height);
   mount.style.width = width + "px"; mount.style.height = height + "px";
-  mount.style.transform = miniature ? "scale(" + frame.clientWidth/width + ")" : "none";
+  mount.style.transform = `translate(-50%, -50%) scale(${scale})`;
   scene.fit();
+  caption = `${width} × ${height} px`;
  }
+ if (caption && screenReadout.value !== caption) screenReadout.value = caption;
 }
+function updateScreenSize() {
+ const size = selectedSize;
+ rotateScreen.disabled = !size;
+ stages.dataset.fixedSize = String(Boolean(size));
+ if (size) {
+  const width = rotated ? size.height : size.width, height = rotated ? size.width : size.height;
+  stages.style.setProperty("--screen-ratio", `${width} / ${height}`);
+  stages.style.setProperty("--screen-height", height + "px");
+ }
+ const active = size ? `${size.width}x${size.height}` : "auto";
+ for (const button of presetBar.querySelectorAll("button")) {
+  button.setAttribute("aria-pressed", String(button.dataset.size === active));
+  if (size && button.dataset.size === active && rotated) button.querySelector("small")!.textContent = `${size.height} × ${size.width}`;
+  else if (button.dataset.size !== "auto") button.querySelector("small")!.textContent = button.dataset.size!.replace("x", " × ");
+ }
+ fitAll();
+}
+rotateScreen.onclick = () => { rotated = !rotated; updateScreenSize(); };
 function setView(next:string) {
  view = next; stages.dataset.view = next;
  for (const [variant, scene] of scenes) scene.setPanelVisible(view === "compare" || variant === view);
@@ -100,4 +148,6 @@ motionPreference.onchange=()=>{reduced.checked=motionPreference.matches;settings
 const resize=new ResizeObserver(fitAll);for(const f of document.querySelectorAll(".viewport"))resize.observe(f);
 window.addEventListener("pagehide",()=>{for(const scene of scenes.values())scene.destroy();resize.disconnect();sharedAudio.setEnabled(false);},{once:true});
 document.addEventListener("visibilitychange",()=>{if(document.hidden)finishAll();sharedAudio.cancel();for(const s of scenes.values())s.setSettings({fast:fast.checked,reduced:document.hidden||reduced.checked||motionPreference.matches});});
-setView(matchMedia("(max-width:899px)").matches?"new":"compare");settings();changeHero("lyra");render();
+const compact = matchMedia("(max-width:899px)").matches;
+selectedSize = screenSizes.find(size => size.width === (compact ? 390 : 1280));
+setView(compact ? "new" : "compare");updateScreenSize();settings();changeHero("lyra");render();

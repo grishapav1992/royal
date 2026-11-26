@@ -80,3 +80,23 @@ body.studio{margin:0;background:#0a1019;color:var(--paper)}
 .desk #scenarios button,.desk #actions button{border-color:#394b59;background:#172430}
 .desk #scenarios button[aria-pressed=true]{color:#c4f9f4;background:#23434b;border-color:#62979a}
 @media(prefers-reduced-motion:reduce){.gn *,.gn *::before,.gn *::after{animation:none!important;transition:none!important}}
+.screen-tools {margin:0 0 16px;padding:12px 15px 14px;border:1px solid var(--line);border-radius:12px;background:#111c27}
+.screen-bar,.screen-current {display:flex;align-items:center;justify-content:space-between;gap:12px}
+.screen-bar {margin-bottom:8px}.screen-bar h2 {margin:0;font:600 15px/1.25 system-ui}
+.screen-current {color:var(--aqua);font-size:13px;font-variant-numeric:tabular-nums}
+.screen-tools button {min-height:38px;border:1px solid #394a59;border-radius:7px;background:#172430;color:var(--paper);font:inherit;cursor:pointer}
+.screen-tools button:hover:not(:disabled){border-color:#70acae}
+#rotate-screen {padding:4px 10px;font-size:13px}
+#rotate-screen span {font-size:17px;vertical-align:-1px}
+#rotate-screen:disabled{opacity:.42;cursor:default}
+#screen-sizes {display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
+#screen-sizes button {display:grid;align-content:center;gap:2px;text-align:left;padding:6px 10px;min-height:45px}
+#screen-sizes span {font-size:13px;font-weight:550}
+#screen-sizes small {color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
+#screen-sizes button[aria-pressed=true] {border-color:#87bcbf;background:#21414b;color:#ddfaf6}
+#screen-sizes button[aria-pressed=true] small {color:#bfedec}
+#stages .mount {inset:50% auto auto 50%;transform-origin:center;container-type:inline-size}
+#stages .mount>.gn[data-layout=full]{padding-inline:clamp(12px,2cqw,32px)}
+#stages[data-fixed-size=true] .viewport {width:100%;height:auto;aspect-ratio:var(--screen-ratio);max-height:min(var(--screen-height),clamp(320px,72svh,860px));background-color:#0b131d;background-image:radial-gradient(#4a59692e .8px,transparent .9px);background-size:10px 10px}
+@media(max-width:1050px){#screen-sizes{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:640px){.screen-tools{padding:10px;margin-bottom:10px}.screen-bar{flex-wrap:wrap;gap:4px}.screen-current{gap:7px}.screen-bar h2{font-size:14px}.screen-current output{font-size:12px}#screen-sizes{gap:4px}#screen-sizes button{padding:5px 6px;min-height:44px}#screen-sizes span,#screen-sizes small{font-size:11px}#rotate-screen{min-height:36px}#stages[data-fixed-size=true] .viewport{max-height:min(var(--screen-height),max(320px,78svh))}}
