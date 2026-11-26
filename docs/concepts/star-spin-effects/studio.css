@@ -74,8 +74,10 @@ body.studio{margin:0;background:#0a1019;color:var(--paper)}
 @keyframes spin-icon{to{transform:rotate(360deg)}}@keyframes button-edge{to{opacity:.28}}
 .gn.nx-reduced *, .gn.nx-reduced *::before,.gn.nx-reduced *::after{animation:none!important;transition:none!important}
 .gn.nx-reduced .nx-sky{opacity:.5}
-.nx-reduced[data-accent] .gn-board{outline:2px solid color-mix(in srgb,var(--cyan) 55%,transparent)}
-.nx-reduced:is([data-accent=o_positive],[data-accent=o_large],[data-accent=bonusEnter]) .gn-board{outline-color:var(--gold)}
+.nx-reduced[data-outcome] .gn-board{outline:2px solid color-mix(in srgb,var(--cyan) 55%,transparent)}
+.nx-reduced:is([data-outcome=positive],[data-outcome=large]) .gn-board{outline-color:var(--gold)}
+.gn.nx-reduced .gn-spinning .gn-roll{display:none}
+.gn.nx-reduced .gn-spinning :is(.gn-track,.gn-multiplier){visibility:visible}
 .desk #scenarios button,.desk #actions button{border-color:#394b59;background:#172430}
 .desk #scenarios button[aria-pressed=true]{color:#c4f9f4;background:#23434b;border-color:#62979a}
 @media(prefers-reduced-motion:reduce){.gn *,.gn *::before,.gn *::after{animation:none!important;transition:none!important}}

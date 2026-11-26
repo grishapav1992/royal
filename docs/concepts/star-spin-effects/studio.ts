@@ -1,4 +1,4 @@
-import { Scene, type ScenarioId, type Variant } from "./scene";
+import { Scene, type ScenarioId, type Variant, type View } from "./scene";
 import { HEROES, type HeroId } from "./fixtures";
 import { sharedAudio } from "./audio";
 import { assetUrl } from "./media";
@@ -49,7 +49,7 @@ const groups: [string, Example[]][] = [
  ["Итог раунда", [
   ["o_none","Без выплаты","Выплата 0,00 USDT."],["o_partial","Частичный возврат","Выплата 0,02 USDT при ставке 0,10."],["o_return","Возврат ставки","Выплата 0,10 USDT. Чистый итог 0,00."],["o_positive","Положительный","Выплата 0,16 USDT. Чистый итог +0,06."],["o_large","Крупный","Пробный порог от 20× полной ставки. В этом примере выплата 2,26 USDT, или 22,6×."]]],
  ["Перегрузка реактора", [
-  ["bonusEnter","Вход в бонус","Три портала дают восемь бесплатных вращений."],["bonusFree","Бесплатное вращение","Счётчик 8 → 7. Нового списания нет."],["bonusEnd","Завершение бонуса","Выплата за весь демонстрационный раунд 0,02 USDT."]]],
+  ["bonusEnter","Вход в бонус","Три портала дают восемь бесплатных вращений."],["bonusFree","Бесплатное вращение","Каждое бесплатное вращение уменьшает остаток на одно. Первая выплата в примере составляет 0,02 USDT."],["bonusEnd","Завершение бонуса","Выплата за весь демонстрационный раунд 0,02 USDT."]]],
  ["Атмосфера", [
   ["wait","Ожидание ответа","Исход ещё неизвестен. Для выхода выберите любой другой сценарий."],["ship","Огни корабля","Огни проходят вдали за игровым полем."],["glow","Свет за героиней","Мягкий акцент цвета выбранной стороны."],["palette","Смена стороны","Свет и Тьма. Сравните переход палитры и реакцию героини."]]]
 ];
@@ -66,7 +66,7 @@ for (const [name, items] of groups) {
 }
 function render() {
  const busy = [...scenes.values()].filter(s => s.running);
- finish.disabled = !busy.length || busy.some(s => s.waiting || s.root.dataset.phase === "request");
+ finish.disabled = !busy.length || busy.some(s => !s.canFinish);
  sound.checked = sharedAudio.enabled;
  for (const s of scenes.values()) s.syncSound();
  for (const b of buttons.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.scene === scenario));
@@ -78,11 +78,11 @@ function changeHero(id: HeroId) {
  for (const scene of scenes.values()) scene.setHero(id);
 }
 function finishAll() { for (const scene of scenes.values()) if (scene.running) scene.finish(); render(); }
-function play(id: ScenarioId) {
+function play(id: ScenarioId, bonusStart?: View) {
  scenario = id;
  if (id === "palette") {
   finishAll(); changeHero(HEROES.find(x=>x.id===activeHero)?.side==="light"?"vespera":"lyra");
- } else for (const scene of scenes.values()) void scene.run(id).then(render);
+ } else for (const scene of scenes.values()) void scene.run(id, bonusStart).then(render);
  render();
 }
 function fitAll() {
@@ -130,7 +130,13 @@ for (const h of HEROES) hero.add(new Option(h.name,h.id));
 document.documentElement.style.setProperty("--hangar", "url('" + assetUrl("background.webp") + "')");
 for(const v of ["old","new"] as const){
  const scene = new Scene(select('[data-panel="'+v+'"] .mount'),v,{
-  audible:()=>view==="old"?v==="old":v==="new", onSpin:()=>play(scenario==="wait"?"lift":scenario),onSkip:()=>{if(!finish.disabled)finishAll();},
+  audible:()=>view==="old"?v==="old":v==="new",
+  onSpin:bonusStart=>{
+    if (bonusStart) play("bonusFree", bonusStart);
+    else if (["bonusFree","bonusEnd","wait","ship","glow","palette"].includes(scenario)) play("lift");
+    else play(scenario);
+  },
+  onSkip:()=>{if(!finish.disabled)finishAll();},
   onCrew:()=>{hero.focus(); try{hero.showPicker()}catch{}}, onChange:render,
   onSide:s=>changeHero(HEROES.find(h=>h.side===s)!.id)
  }); scenes.set(v,scene);

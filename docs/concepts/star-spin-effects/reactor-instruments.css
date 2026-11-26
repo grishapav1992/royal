@@ -265,3 +265,44 @@
 .nx .gn-board.nx-dimmed .nx-relic i,.nx .gn-board.nx-dimmed .gn-tower,.nx .gn-spinning .nx-relic i{animation-play-state:paused}
 .nx .gn-reel.gn-spinning{background:linear-gradient(180deg,#051018 0%,var(--glass) 23%,#16353b 51%,var(--glass) 77%,#051018)}
 .nx .gn-reel.gn-spinning{mask:linear-gradient(180deg,#000a,#000 12%,#000 88%,#000a)}
+
+.nx-line-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--pale-alloy);
+  font: 600 11px/1 system-ui;
+  font-variant-numeric: tabular-nums;
+}
+.nx-line-picker button {
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  min-height: 24px;
+  padding: 0 7px;
+  color: var(--pale-alloy);
+  background: #122431;
+  border: 1px solid #82735e;
+  border-radius: 4px;
+  font: 22px/.8 system-ui;
+}
+.nx-line-picker button:focus-visible {outline: 2px solid var(--luminous); outline-offset: 1px}
+.nx-line-picker [data-gn=selected-line] {min-width: 11ch; text-align: center}
+.nx .nx-float {text-align:center; line-height:1.05; white-space:nowrap}
+.nx-float small {display:block; font:650 clamp(12px,1.8cqw,19px)/1.25 system-ui; color:#fff3d0; text-shadow:0 1px 4px #08121c}
+.nx-float strong {font:inherit}
+.nx-even .gn-payline polyline,.nx-even .gn-payline .nx-beam {stroke:#a4bdc6;stroke-width:2;filter:none}
+.nx-even .nx-dot {fill:#cbdde0;filter:none}
+.gn.nx-even .gn-cell:is(.nx-hit,.gn-paid) {outline:1px solid #9eb7bc8a;outline-offset:-2px;box-shadow:none}
+.gn.nx-even .nx-dimmed .gn-cell.nx-hit>.nx-relic {scale:1;filter:none}
+.nx-even .nx-route {color:#e0ebee;border-color:#729199;background:#14222a}
+.nx-even .nx-route b {background:#a9bfc4}
+.nx[data-layout=portrait] :is(.nx-armillary,.nx-sky,.nx-atmosphere) {transition:opacity .3s}
+.nx[data-layout=portrait] .nx-hangar {transition:filter .3s}
+.nx[data-layout=portrait]:is([data-phase=reveal],[data-phase=nudge],[data-phase=lines],[data-phase=result]) {
+  & .nx-armillary {opacity:.16}
+  & .nx-atmosphere {opacity:.24}
+  & .nx-sky {opacity:.32}
+  & .nx-hangar {filter:brightness(.57)}
+  & .ss-companion::before {opacity:.16}
+}

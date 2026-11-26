@@ -22,7 +22,7 @@ const SPIN_FIXTURE: Partial<Record<ScenarioId, keyof typeof FIXTURES>> = {
   o_none: "zero", o_partial: "partial", o_return: "even", o_positive: "multi", o_large: "large",
 };
 
-interface View { cells: number[]; mults: number[]; lines: LineWin[]; balance: number; payout: number; net: number | null; bonus: number | null; note: string; status: string; phase: string }
+export interface View { cells: number[]; mults: number[]; lines: LineWin[]; balance: number; payout: number; net: number | null; bonus: number | null; note: string; status: string; phase: string }
 
 const ABORT = Symbol("abort");
 const OVERDRIVE = "Режим перегрузки. Продолжение бесплатно.";
@@ -30,7 +30,10 @@ function resultText(payout: number) {
   const net = payout - STAKE_CENTS;
   return net > 0 ? "Положительный итог раунда." : net === 0 ? "Стоимость раунда возвращена." : payout > 0 ? "Частичный возврат. Выплата меньше ставки." : "Раунд завершён без выплаты.";
 }
-const noteFor = (f: Fixture) => (f.lines.length ? "Оплачено линий: " + f.lines.length : "Доводка повышает заряд WILD");
+function noteFor(f: Fixture) {
+  if (f.lines.length) return "Оплачено линий: " + f.lines.length;
+  return f.nudges.length ? "Доводка повышает заряд WILD" : "Оплаченных линий нет";
+}
 const finalMults = (f: Fixture) => { const m = [1, 1, 1, 1, 1]; for (const n of f.nudges) m[n[0]] = n[3]; return m; };
 const towerTop = (c: number[]) => { const k = c.filter((x) => x === 6).length; if (!k) return null; if (k === 3) return 0; return c[0] === 6 ? k - 3 : 3 - k; };
 const layoutFor = (w: number, h: number) => (w >= 900 && h >= 600 ? "full" : w > h && h < 600 ? "landscape" : "portrait");
@@ -43,9 +46,15 @@ function settledView(f: Fixture): View {
   const p = payoutCents(f);
   return { cells: [...f.rows], mults: finalMults(f), lines: [...f.lines], balance: START_BALANCE_CENTS - STAKE_CENTS + p, payout: p, net: p - STAKE_CENTS, bonus: null, note: noteFor(f), status: resultText(p), phase: "result" };
 }
-function bonusEnterView(): View { const f = FIXTURES.bonus; return { ...settledView(f), balance: START_BALANCE_CENTS - STAKE_CENTS, net: null, bonus: 8, status: OVERDRIVE, phase: "bonus", note: "Доводка повышает заряд WILD" }; }
-function bonusFreeView(): View { const f = FIXTURES.partial; return { ...settledView(f), balance: START_BALANCE_CENTS - STAKE_CENTS, net: null, bonus: 7, status: OVERDRIVE, phase: "bonus" }; }
-function bonusEndView(): View { const v = settledView(FIXTURES.partial); return { ...v, status: "Перегрузка завершена. " + resultText(v.payout) }; }
+function bonusEnterView(): View {
+  return { ...settledView(FIXTURES.bonus), balance: START_BALANCE_CENTS - STAKE_CENTS, net: null, bonus: 8, status: OVERDRIVE, phase: "bonus", note: "Три портала открыли перегрузку" };
+}
+function freeSpinView(start: View, f: Fixture): View {
+  return { ...settledView(f), balance: start.balance, payout: start.payout + payoutCents(f), net: null, bonus: start.bonus! - 1, status: OVERDRIVE, phase: "bonus" };
+}
+function bonusEndView(last: View): View {
+  return { ...last, balance: last.balance + last.payout, net: last.payout - STAKE_CENTS, bonus: null, phase: "result", status: "Перегрузка завершена. " + resultText(last.payout) };
+}
 
 export class Scene {
   readonly root: HTMLElement;
@@ -56,14 +65,16 @@ export class Scene {
   private anims = new Set<Animation>();
   private ro: ResizeObserver;
   private view: View = initialView();
-  private current: ScenarioId | null = null;
+  private confirmed: View | null = null;
+  private selectedLine = 0;
   private hero: HeroId = "lyra";
   private skyRaf = 0; private stars: { x: number; y: number; z: number }[] = []; private ship = -1;
   private panelVisible = true;
   settings: Settings = { reduced: false, fast: false };
   running = false; waiting = false;
+  get canFinish() { return this.running && this.confirmed !== null; }
 
-  constructor(private host: HTMLElement, readonly variant: Variant, private hooks: { audible: () => boolean; onSpin: () => void; onSide: (s: Side) => void; onCrew: () => void; onSkip: () => void; onChange: () => void }) {
+  constructor(private host: HTMLElement, readonly variant: Variant, private hooks: { audible: () => boolean; onSpin: (bonusStart?: View) => void; onSide: (s: Side) => void; onCrew: () => void; onSkip: () => void; onChange: () => void }) {
     this.root = document.createElement("section");
     this.root.className = "gn" + (variant === "new" ? " nx" : "");
     this.root.tabIndex = 0;
@@ -100,6 +111,14 @@ export class Scene {
 
   private el<T extends Element = HTMLElement>(k: string) { return this.root.querySelector(`[data-gn="${k}"]`) as unknown as T; }
   private fitInstruments() {
+    const picker = document.createElement("div");
+    picker.className = "nx-line-picker";
+    picker.dataset.gn = "line-picker";
+    picker.hidden = true;
+    picker.setAttribute("role", "group");
+    picker.setAttribute("aria-label", "Просмотр оплаченных линий");
+    picker.innerHTML = '<button data-gn="previous-line" aria-label="Предыдущая линия">‹</button><span data-gn="selected-line" aria-live="polite"></span><button data-gn="next-line" aria-label="Следующая линия">›</button>';
+    this.el("field-note").after(picker);
     const cradle = document.createElement("div");
     cradle.className = "nx-cradle";
     const board = this.el("board");
@@ -139,7 +158,10 @@ export class Scene {
   private onClick = (e: MouseEvent) => {
     const b = (e.target as HTMLElement).closest("button"); if (!b || b.getAttribute("aria-disabled") === "true") return;
     const gn = b.dataset["gn"]; const ss = b.dataset["ss"];
-    if (gn === "spin") this.hooks.onSpin();
+    if (gn === "spin") this.hooks.onSpin(this.view.bonus ? this.view : undefined);
+    else if (gn === "previous-line" || gn === "next-line") {
+      this.paintStatic(this.view.lines, this.selectedLine + (gn === "next-line" ? 1 : -1), true);
+    }
     else if (gn === "skip") this.hooks.onSkip();
     else if (gn === "sound") { sharedAudio.setEnabled(!sharedAudio.enabled); this.hooks.onChange(); }
     else if (gn === "crew" || ss === "open") this.hooks.onCrew();
@@ -197,11 +219,18 @@ export class Scene {
 
   setSettings(s: Settings) {
     const changedReduced = s.reduced !== this.settings.reduced;
-    if (this.running) this.finish();
     this.settings = s;
     this.root.classList.toggle("nx-reduced", s.reduced);
     this.root.classList.toggle("nx-fast", s.fast);
-    if (changedReduced) { this.setHero(this.hero); if (this.nx) this.startSky(); }
+    if (changedReduced) {
+      this.setHero(this.hero);
+      if (this.nx) this.startSky();
+      if (s.reduced) {
+        if (this.confirmed) this.finish();
+        else if (this.running) this.anims.forEach(animation => animation.cancel());
+      }
+      if (this.waiting) this.root.querySelectorAll("[data-reel]").forEach(reel => reel.classList.toggle("gn-spinning", this.motion));
+    }
   }
   syncSound() { this.el("sound").setAttribute("aria-pressed", String(sharedAudio.enabled)); }
 
@@ -224,19 +253,29 @@ export class Scene {
     reel.setAttribute("aria-label", `Барабан ${z + 1}: ${cells.map((c) => SYMBOL_NAMES[c]).join(", ")}${m.hidden ? "" : " ×" + mult}`);
     reel.classList.toggle("nx-live", this.nx && cells.includes(6));
   }
-  private clearLines() {
+  private clearLines(keepPicker = false) {
+    if (this.nx && !keepPicker) {
+      this.el("line-picker").hidden = true;
+      this.el("field-note").hidden = false;
+    }
     this.el("payline").replaceChildren();
     this.root.querySelectorAll(".gn-paid,.nx-hit").forEach((c) => c.classList.remove("gn-paid", "nx-hit"));
     this.el("board").classList.remove("nx-dimmed");
   }
   private pts(l: LineWin) { return LINES[l[0] - 1]!.slice(0, l[1]).map((r, i) => [i * 100 + 50, r * 100 + 50] as const); }
   private markCells(l: LineWin, cls: string) { this.pts(l).forEach((_, i) => this.root.querySelector(`[data-reel="${i}"] [data-row="${LINES[l[0] - 1]![i]}"]`)?.classList.add(cls)); }
-  private paintStatic(lines: LineWin[]) {
-    this.clearLines(); if (!lines.length) return;
-    const svg = this.el("payline");
-    const shown = this.nx ? lines : [[...lines].sort((a, b) => b[2] - a[2])[0]!];
-    svg.innerHTML = shown.map((l) => `<polyline${this.nx && shown.length > 1 ? ' class="nx-rest"' : ""} points="${this.pts(l).map((p) => p.join(",")).join(" ")}"/>`).join("");
-    shown.forEach((l) => this.markCells(l, "gn-paid"));
+  private paintStatic(lines: LineWin[], index = 0, browse = false) {
+    const showPicker = this.nx && browse && lines.length > 1;
+    this.clearLines(showPicker); if (!lines.length) return;
+    this.selectedLine = (index + lines.length) % lines.length;
+    const line = this.nx ? lines[this.selectedLine]! : [...lines].sort((a, b) => b[2] - a[2])[0]!;
+    this.el("payline").innerHTML = `<polyline points="${this.pts(line).map((p) => p.join(",")).join(" ")}"/>`;
+    this.markCells(line, "gn-paid");
+    if (showPicker) {
+      this.el("selected-line").textContent = `Линия № ${line[0]} · ${this.selectedLine + 1} из ${lines.length}`;
+      this.el("field-note").hidden = true;
+      this.el("line-picker").hidden = false;
+    }
   }
   private setMoney(k: "balance" | "payout" | "net", v: number | null) { this.el(k).textContent = v === null ? "…" : (k === "net" && v > 0 ? "+" : "") + formatMoney(v); }
   private setBonus(rem: number | null) {
@@ -253,7 +292,10 @@ export class Scene {
     this.view = v;
     v.cells.length && [0, 1, 2, 3, 4].forEach((z) => this.renderColumn(z, column(v.cells, z), v.mults[z]!));
     this.root.querySelectorAll(".gn-spinning,.gn-charging").forEach((r) => r.classList.remove("gn-spinning", "gn-charging"));
-    this.paintStatic(v.lines);
+    this.paintStatic(v.lines, 0, true);
+    this.root.classList.toggle("nx-even", this.nx && v.net === 0);
+    if (v.net !== null) this.root.dataset.outcome = classify(v.payout);
+    else delete this.root.dataset.outcome;
     this.setMoney("balance", v.balance); this.setMoney("payout", v.payout); this.setMoney("net", v.net);
     this.setBonus(v.bonus); this.setStatus(v.status);
     this.el("field-note").textContent = v.note;
@@ -303,8 +345,8 @@ export class Scene {
   private sound(c: "stop" | "nudge" | "positive") { if (this.hooks.audible()) sharedAudio.play(c); }
 
   cancel() {
+    this.confirmed = null;
     this.ac.abort(); this.ac = new AbortController(); this.root.classList.remove("nx-static-glow");
-    delete this.root.dataset.accent;
     this.timers.forEach(clearTimeout); this.timers.clear();
     this.rafs.forEach(cancelAnimationFrame); this.rafs.clear();
     this.anims.forEach((a) => a.cancel()); this.anims.clear();
@@ -327,76 +369,97 @@ export class Scene {
   }
   /** Моментально завершает показ до точного готового состояния. */
   finish() {
-    if (this.waiting) { this.cancel(); this.applyView(this.preWait); this.hooks.onChange(); return; }
+    const result = this.confirmed;
+    if (!result) return;
     this.cancel();
-    if (this.current) this.applyView(this.finalView(this.current));
+    this.applyView(result);
     this.hooks.onChange();
   }
-  private preWait: View = initialView();
 
-  private finalView(id: ScenarioId): View {
-    const fk = SPIN_FIXTURE[id];
-    if (fk) return settledView(FIXTURES[fk]);
-    if (id === "bonusEnter") return bonusEnterView();
-    if (id === "bonusFree") return bonusFreeView();
-    if (id === "bonusEnd") return bonusEndView();
-    return this.view;
-  }
-
-  async run(id: ScenarioId) {
+  async run(id: ScenarioId, bonusStart?: View) {
     this.cancel();
-    this.current = id;
     if (["ship", "glow", "palette"].includes(id)) { this.applyView(this.view); return this.atmosphere(id); }
-    const final = this.finalView(id);
     const signal = this.ac.signal;
-    if (!this.motion && id !== "wait") {
-      this.applyView(final);
-      this.root.dataset.accent = id; this.hooks.onChange(); return;
-    }
     this.running = true; this.hooks.onChange();
     try {
       const fk = SPIN_FIXTURE[id];
-      if (fk) { this.applyView(initialView()); await this.spin(FIXTURES[fk], true); await this.outcome(FIXTURES[fk]); }
-      else if (id === "bonusEnter") { this.applyView(initialView()); await this.spin(FIXTURES.bonus, true); await this.bonusEnter(); }
-      else if (id === "bonusFree") { this.applyView(bonusEnterView()); await this.spin(FIXTURES.partial, false); await this.freeDone(); }
-      else if (id === "bonusEnd") { this.applyView({ ...bonusFreeView(), bonus: 0, status: OVERDRIVE }); await this.wait(this.t(450, 150)); await this.bonusEnd(); }
-      else if (id === "wait") { this.preWait = initialView(); this.applyView(this.preWait); await this.waitOnly(); return; }
-      if (signal.aborted) return;
-      this.cancel(); this.applyView(final);
+      if (fk) {
+        const fixture = FIXTURES[fk];
+        this.applyView(initialView());
+        await this.spin(fixture, true, settledView(fixture));
+        await this.outcome(fixture);
+      } else if (id === "bonusEnter") {
+        this.applyView(initialView());
+        await this.spin(FIXTURES.bonus, true, bonusEnterView());
+        await this.bonusEnter();
+      } else if (id === "bonusFree") {
+        const start = bonusStart ?? bonusEnterView();
+        // The first free example pays two cents. The remaining recorded boards pay zero.
+        const fixture = start.bonus === 8 ? FIXTURES.partial : FIXTURES.zero;
+        const next = freeSpinView(start, fixture);
+        const final = next.bonus === 0 ? bonusEndView(next) : next;
+        this.applyView(start);
+        await this.spin(fixture, false, final);
+        await this.freeDone(next);
+        if (next.bonus === 0) await this.bonusEnd(final);
+      } else if (id === "bonusEnd") {
+        const last = { ...freeSpinView(bonusEnterView(), FIXTURES.partial), bonus: 0 };
+        this.applyView(last);
+        this.el<HTMLButtonElement>("spin").disabled = true;
+        this.confirmed = bonusEndView(last);
+        if (this.motion) await this.bonusEnd(this.confirmed);
+      } else if (id === "wait") {
+        this.applyView(initialView()); this.waitOnly(); return;
+      }
+      if (!signal.aborted) this.finish();
     } catch (e) { if (e !== ABORT) throw e; }
-    if (signal.aborted) return;
-    this.running = false; this.hooks.onChange();
   }
 
   // ---------- вращение ----------
-  private startSpin(debit: boolean) {
+  private startSpin() {
     this.clearLines();
+    this.root.classList.remove("nx-even");
+    delete this.root.dataset.outcome;
     this.root.dataset["phase"] = "request"; this.setBase("spin_wait");
     this.setStatus("Вращение…"); this.setMoney("net", null);
     const spin = this.el("spin") as HTMLButtonElement; spin.disabled = true;
     if (this.nx) spin.classList.add("nx-wait");
-    const from = this.view.balance, to = debit ? from - STAKE_CENTS : from;
-    this.view = { ...this.view, balance: to };
-    if (!debit) { /* в бонусе без новой ставки */ } else if (this.nx) void this.count("balance", from, to, 600).catch(() => {}); else this.setMoney("balance", to);
     if (this.view.bonus === null) this.setMoney("payout", 0);
   }
-  private async waitOnly() {
+  private waitOnly() {
     this.running = true; this.waiting = true; this.hooks.onChange();
-    this.startSpin(false);
+    this.startSpin();
     this.setStatus("Ожидание результата…");
     if (this.motion) this.root.querySelectorAll("[data-reel]").forEach((r) => r.classList.add("gn-spinning"));
   }
-  private async spin(f: Fixture, debit: boolean) {
-    this.startSpin(debit);
+  private async spin(f: Fixture, debit: boolean, final: View) {
+    this.startSpin();
     const reels = [0, 1, 2, 3, 4].map((z) => this.reel(z));
+    // This timer represents the reply to the demo request. Presentation settings cannot resolve it.
+    const reply = this.wait(650);
+    // Start the lift and the response timer together, including their cancellation handlers.
+    await Promise.all([reply, this.startReels(reels)]);
+    this.confirmed = final;
+    this.root.dataset.phase = "reveal";
+    if (!this.motion || document.hidden) { this.finish(); throw ABORT; }
+    if (debit) {
+      const from = this.view.balance;
+      this.view = { ...this.view, balance: from - STAKE_CENTS };
+      void this.count("balance", from, this.view.balance, this.t(500, 180)).catch(() => {});
+    }
+    this.el("controls").classList.add("gn-action-overlay"); this.el("skip").hidden = false;
+    this.hooks.onChange();
+    await this.reveal(f, reels, debit);
+  }
+
+  private async startReels(reels: HTMLElement[]) {
     if (this.nx) {
       await Promise.all(reels.map((r, z) => { const c = this.el("board").clientWidth / 5; return this.anim(r.querySelector(".gn-track")!, [{ transform: `translateY(${-c}px)` }, { transform: `translateY(${-c - c * 0.16}px)` }], { duration: this.t(200, 90), delay: z * 30, easing: "ease-out" }); }));
     }
     reels.forEach((r) => r.classList.add("gn-spinning"));
-    await this.wait(this.t(this.nx ? 700 : 600, 220));
-    this.el("controls").classList.add("gn-action-overlay"); this.el("skip").hidden = false;
-    this.root.dataset["phase"] = "reveal"; this.hooks.onChange();
-    const gap = this.t(260, 110);
+  }
+
+  private async reveal(f: Fixture, reels: HTMLElement[], debit: boolean) {
     for (let z = 0; z < 5; z++) {
       const r = reels[z]!;
       r.classList.remove("gn-spinning");
@@ -407,7 +470,7 @@ export class Scene {
         void this.anim(r.querySelector(".nx-stopline")!, [{ opacity: 0, transform: "scaleX(.3)" }, { opacity: 1, transform: "scaleX(1)", offset: 0.3 }, { opacity: 0, transform: "scaleX(1)" }], { duration: this.t(520, 260) }, false);
         void this.anim(this.root.querySelector(`[data-seg="${z}"]`)!, [{ opacity: 0 }, { opacity: 1, offset: 0.3 }, { opacity: 0 }], { duration: this.t(560, 280) }, false);
         this.sound("stop");
-        await this.wait(gap); // фиксированное расписание: порталы на него не влияют
+        await this.wait(this.t(260, 110));
       } else {
         this.sound("stop");
         await this.anim(r, [{ filter: "brightness(1.3)" }, { filter: "brightness(1)" }], { duration: this.t(130, 60) });
@@ -441,20 +504,27 @@ export class Scene {
     reels.forEach((r) => r.classList.remove("gn-spinning"));
     this.el("spin").classList.remove("nx-wait");
     this.el("field-note").textContent = noteFor(f);
-    if (this.nx) await this.routes(f.lines); else this.paintStatic(f.lines);
+    if (this.nx) await this.routes(f.lines, debit && payoutCents(f) === STAKE_CENTS); else this.paintStatic(f.lines);
   }
 
-  private async routes(lines: LineWin[]) {
+  private async routes(lines: LineWin[], stakeReturned: boolean) {
     if (!lines.length) return;
     const svg = this.el("payline"), route = this.el("route") as HTMLElement, label = this.el("route-label"), bar = this.el("route-bar");
     const board = this.el("board");
+    this.root.dataset.phase = "lines";
+    if (stakeReturned) {
+      this.root.classList.add("nx-even");
+      this.setMoney("payout", STAKE_CENTS);
+      this.setMoney("net", 0);
+      this.setStatus("Возврат ставки · чистый итог 0,00");
+    }
     route.hidden = false;
     for (let i = 0; i < lines.length; i++) {
       const l = lines[i]!; const p = this.pts(l);
       this.root.querySelectorAll(".nx-hit").forEach((c) => c.classList.remove("nx-hit"));
       board.classList.add("nx-dimmed");
       label.textContent = `Маршрут ${l[0]} · ${i + 1} из ${lines.length}`;
-      this.setStatus(`Оплаченная линия № ${l[0]}. Показ ${i + 1} из ${lines.length}.`);
+      if (!stakeReturned) this.setStatus(`Оплаченная линия № ${l[0]}. Показ ${i + 1} из ${lines.length}.`);
       bar.style.width = ((i + 1) / lines.length) * 100 + "%";
       const pl = `<polyline class="nx-beam" points="${p.map((q) => q.join(",")).join(" ")}"/><circle class="nx-dot" r="7" cx="${p[0]![0]}" cy="${p[0]![1]}"/>`;
       svg.innerHTML = pl;
@@ -463,7 +533,8 @@ export class Scene {
       const total = segLen.reduce((a, b) => a + b, 0);
       poly.style.strokeDasharray = String(total);
       let lit = -1;
-      await this.frame(this.t(260 * p.length, 110 * p.length), (k) => {
+      const duration = stakeReturned ? this.t(400, 180) : this.t(260 * p.length, 110 * p.length);
+      await this.frame(duration, (k) => {
         const d = total * k; poly.style.strokeDashoffset = String(total - d);
         let acc = 0, s = 0; while (s < segLen.length && acc + segLen[s]! < d) { acc += segLen[s]!; s++; }
         const a = p[Math.min(s, p.length - 1)]!, b = p[Math.min(s + 1, p.length - 1)]!; const f = segLen[s] ? (d - acc) / segLen[s]! : 0;
@@ -471,7 +542,7 @@ export class Scene {
         const col = Math.min(p.length - 1, Math.floor((a[0] + (b[0] - a[0]) * f + 1) / 100));
         while (lit < col) { lit++; this.root.querySelector(`[data-reel="${lit}"] [data-row="${LINES[l[0] - 1]![lit]}"]`)?.classList.add("nx-hit"); }
       });
-      await this.wait(this.t(380, 120));
+      await this.wait(stakeReturned ? this.t(220, 90) : this.t(380, 120));
     }
     route.hidden = true;
     this.paintStatic(lines);
@@ -486,6 +557,8 @@ export class Scene {
     if (pay === STAKE_CENTS && this.hooks.audible()) sharedAudio.play("even");
     if (!this.nx) { if (pay > STAKE_CENTS) this.sound("positive"); this.setMoney("payout", pay); this.setMoney("net", final.net); this.setMoney("balance", final.balance); this.setStatus(final.status); return; }
     const board = this.el("board");
+    this.setMoney("net", final.net);
+    this.setStatus(final.status);
     if (cls === "none" || cls === "partial") {
       board.classList.add("nx-quiet");
       await this.count("payout", 0, pay, this.t(500, 200));
@@ -499,7 +572,6 @@ export class Scene {
       this.sound("positive");
       await this.flyToPayout(pay, cls === "large");
     }
-    this.setMoney("net", final.net); this.setStatus(final.status);
     await this.count("balance", this.view.balance, final.balance, this.t(700, 250));
     this.view = final;
     await this.wait(this.t(600, 200));
@@ -508,7 +580,8 @@ export class Scene {
     const fl = this.el("float") as HTMLElement, target = this.el("payout");
     const root = this.root.getBoundingClientRect(), b = this.el("board").getBoundingClientRect(), t = target.getBoundingClientRect();
     const scale = root.width / this.root.offsetWidth || 1;
-    fl.textContent = "+" + formatMoney(pay); fl.hidden = false;
+    fl.innerHTML = `<small>Выплата</small> <strong>${formatMoney(pay)}</strong>`;
+    fl.hidden = false;
     const x0 = (b.left + b.width / 2 - root.left) / scale, y0 = (b.top + b.height * 0.42 - root.top) / scale;
     const x1 = (t.left + t.width / 2 - root.left) / scale, y1 = (t.top + t.height / 2 - root.top) / scale;
     fl.style.left = x0 + "px"; fl.style.top = y0 + "px"; fl.classList.toggle("nx-big", large);
@@ -574,19 +647,18 @@ export class Scene {
     await this.anim(h, [{ opacity: 1 }, { opacity: 0 }], { duration: this.t(500, 200), fill: "forwards" });
     h.remove();
   }
-  private async freeDone() {
+  private async freeDone(next: View) {
     const rem = this.el("remaining");
     if (this.nx) {
       await this.anim(rem, [{ transform: "rotateX(0)" }, { transform: "rotateX(90deg)" }], { duration: this.t(200, 90) });
-      this.setBonus(7);
+      this.setBonus(next.bonus);
       await this.anim(rem, [{ transform: "rotateX(-90deg)" }, { transform: "rotateX(0)" }], { duration: this.t(200, 90) });
-      await this.count("payout", 0, payoutCents(FIXTURES.partial), this.t(500, 200));
-    } else { this.setBonus(7); this.setMoney("payout", payoutCents(FIXTURES.partial)); }
+      await this.count("payout", this.view.payout, next.payout, this.t(500, 200));
+    } else { this.setBonus(next.bonus); this.setMoney("payout", next.payout); }
     this.setStatus(OVERDRIVE);
     await this.wait(this.t(500, 150));
   }
-  private async bonusEnd() {
-    const v = bonusEndView();
+  private async bonusEnd(v: View) {
     if (!this.nx) { this.setBonus(null); this.root.dataset["phase"] = "result"; this.applyView(v); return; }
     const h = this.holo("Перегрузка завершена", "Итог раунда " + formatMoney(v.payout) + " USDT");
     await this.anim(h, [{ opacity: 0, transform: "translate(-50%,-50%) scaleY(.6)" }, { opacity: 1, transform: "translate(-50%,-50%) scaleY(1)" }], { duration: this.t(420, 160), fill: "forwards" });
