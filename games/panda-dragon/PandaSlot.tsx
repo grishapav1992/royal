@@ -2,13 +2,15 @@ import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, typ
 import { isUserMessage, t, tr } from "../../src/i18n/index";
 import { DRAGON_PATH_FREE_SPIN } from "../../src/shared/dragonPathProtocol";
 import { DRAGON_PATH_FREE_MULTIPLIER } from "../../src/shared/dragonPathMath";
+import { dragonPathBeltProgress, type DragonPathBelt } from "../../src/shared/dragonPathBelt";
 import { formatCents, validFreePicks, type SlotStatus } from "../../templates/slot-primitive/src/index.ts";
 import type { SlotActionsV1, SlotFeedback } from "../../templates/slot-primitive/src/actions.ts";
 import { paylineCells } from "../../templates/slot-primitive/src/paylines.ts";
 import { PANDA_LAYOUT, SYMBOLS } from "./layout";
 import type { PandaView } from "./PandaView";
 import type { PandaState } from "./mountPanda";
-import { heroStrikeUrl, heroTiptoeUrl, heroUrl, symbolImages } from "./assets";
+import { heroImages, symbolImages } from "./assets";
+import { usePandaBelt } from "./usePandaBelt";
 import { GameInfo, RoundDetails } from "./GameInfo";
 import { StakeControl } from "./StakeControl";
 import { Icon } from "./Icons";
@@ -72,6 +74,7 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
   const [running, setRunning] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<SlotFeedback<PandaView> | null>(null);
+  const [beltNotice, setBeltNotice] = useState('');
   const sending = useRef(false);
   const [motion, setMotion] = useState(false);
   useLayoutEffect(() => {
@@ -93,6 +96,7 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
     sending.current = true;
     audio.cancel();
     setFeedback(null);
+    setBeltNotice('');
     setFailure(null);
     setMotion(animate);
     setRunning(true);
@@ -201,6 +205,26 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
   const manualBonus = !auto.active && !paused && confirmed && round?.state === 'settled'
     && round.revision === 3 && round.id !== dismissedBonus ? round : null;
   const bonusResult = paused ? null : auto.bonusResult ?? manualBonus;
+  const [presentedRoundId, setPresentedRoundId] = useState<string | null>(null);
+  const [beltRounds, setBeltRounds] = useState<number>();
+  const mayChangeBelt = settled && status !== 'recover' && !paused && !striking && !celebrate && !bonusResult;
+  const completedRoundId = round?.state === 'settled' ? round.id : null;
+  useEffect(() => {
+    if (!mayChangeBelt || !completedRoundId || presentedRoundId === completedRoundId) return;
+    const timer = setTimeout(() => setPresentedRoundId(completedRoundId), 0);
+    return () => clearTimeout(timer);
+  }, [mayChangeBelt, completedRoundId, presentedRoundId]);
+  const beltProfile = usePandaBelt(account(), presentedRoundId);
+  const belt = dragonPathBeltProgress(beltRounds ?? 0);
+  useEffect(() => {
+    if (!mayChangeBelt || !beltProfile || beltProfile.rounds === beltRounds) return;
+    const next = dragonPathBeltProgress(beltProfile.rounds).current;
+    if (beltRounds !== undefined && next.rounds > belt.current.rounds && confirmed?.round.id === beltProfile.roundId) {
+      setBeltNotice(tr`Новый пояс: ${t(next.label)}`);
+    }
+    setBeltRounds(beltProfile.rounds);
+  }, [beltProfile, beltRounds, belt.current.rounds, mayChangeBelt, confirmed]);
+
   function finishBonus(resume: boolean) {
     if (!bonusResult) return;
     setDismissedBonus(bonusResult.id);
@@ -269,11 +293,17 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
 
   return (
     <div className="panda-game" data-hero={heroOn ? undefined : "off"}>
-      {heroOn ? <HeroPanel mood={mood} line={line} striking={striking} moving={spinning.some(Boolean)} /> : null}
+      {heroOn ? <HeroPanel mood={mood} line={line} belt={belt.current.id} striking={striking} moving={spinning.some(Boolean)} /> : null}
 
       <section aria-label={title} className="panda-board">
         <header className="panda-topbar">
-          <div><h1>{title}</h1><span className="panda-mode">{t('Виртуальные ставки')}</span></div>
+          <div>
+            <h1>{title}</h1><span className="panda-mode">{t('Виртуальные ставки')}</span>
+            {beltRounds !== undefined && <div className="panda-belt" data-belt={belt.current.id}>
+              <span>{t(belt.current.label)}</span>
+              {belt.remaining !== null && <small>{tr`До следующего пояса: ${belt.remaining}`}</small>}
+            </div>}
+          </div>
           <div className="panda-topbar-actions">
             <button
               type="button"
@@ -314,7 +344,7 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
         <div className="panda-bar">
           <div className="panda-console">
             <dl className="panda-stat">
-              <div><dt>{t('Виртуальный баланс')}</dt><dd>{balanceLabel ?? "–"}</dd></div>
+              <div><dt title={t('Виртуальный баланс')}>{t('Баланс')}</dt><dd>{balanceLabel ?? "–"}</dd></div>
               <div><dt>{t('Возврат')}</dt><dd>{formatCents(winCents)}</dd></div>
             </dl>
 
@@ -335,6 +365,7 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
         <div className="panda-feedback">
           <p role="status" className="panda-status">{statusText}</p>
           <p role="alert" className="panda-error">{errorText}</p>
+          <p aria-live="polite" className="panda-belt-notice">{beltNotice}</p>
         </div>
         {bonusResult && <BonusResult round={bonusResult} onConfirm={() => finishBonus(true)} onDismiss={() => finishBonus(false)} />}
       </section>
@@ -342,16 +373,17 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
   );
 }
 
-function HeroPanel({ mood, line, striking, moving }: { mood: Mood; line: string; striking: boolean; moving: boolean }) {
+function HeroPanel({ mood, line, belt, striking, moving }: { mood: Mood; line: string; belt: DragonPathBelt; striking: boolean; moving: boolean }) {
+  const images = heroImages[belt];
   return (
-    <aside aria-label={t('Персонаж')} className="panda-hero-wrap panda-hero-side">
+    <aside aria-label={t('Персонаж')} className="panda-hero-wrap panda-hero-side" data-belt={belt}>
       <div
         className="panda-hero-stage"
         data-striking={striking || undefined}
         data-tiptoe={moving || undefined}
       >
         {moving && <img
-          src={heroTiptoeUrl}
+          src={images.run}
           alt=""
           aria-hidden="true"
           className="panda-hero panda-hero-tiptoe"
@@ -359,7 +391,7 @@ function HeroPanel({ mood, line, striking, moving }: { mood: Mood; line: string;
           height={440}
         />}
         <img
-          src={heroUrl}
+          src={images.idle}
           alt={t('Мастер-панда с посохом')}
           data-mood={mood}
           className="panda-hero"
@@ -367,7 +399,7 @@ function HeroPanel({ mood, line, striking, moving }: { mood: Mood; line: string;
           height={440}
         />
         <img
-          src={heroStrikeUrl}
+          src={images.strike}
           alt=""
           aria-hidden="true"
           className="panda-hero panda-hero-strike"
