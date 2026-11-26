@@ -118,7 +118,7 @@ test('Royal: десять сотых, потеря ответа, восстан�
 });
 
 for (const width of [390, 320]) {
-  test(`узкое окно ${width} пикселей: ставка и мобильный чат`, async ({ page }) => {
+  test(`узкое окно ${width} пикселей: ставка и мобильный чат`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 812 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await enterRoyal(page);
@@ -127,6 +127,8 @@ for (const width of [390, 320]) {
     await expect(plus).toBeInViewport();
     await expect(mini.getByRole('combobox', { name: 'Быстрый выбор ставки' })).toBeEnabled();
     await expect(mini.locator('.panda-valley-motion')).toHaveCount(0);
+    await expect(mini.locator('.panda-training-monk')).toHaveCount(0);
+    await expect(mini.locator('.panda-belt')).toContainText('Зелёный пояс');
     for (const control of [plus, mini.getByRole('combobox', { name: 'Быстрый выбор ставки' }), mini.getByRole('button', { name: 'Вращать' })]) {
       const box = await control.boundingBox();
       expect(box!.width).toBeGreaterThanOrEqual(44);
@@ -140,6 +142,7 @@ for (const width of [390, 320]) {
     await expect(mini.getByRole('button', { name: 'Вращать' }).or(mini.getByRole('button', { name: 'Фриспин', exact: true }))).toBeEnabled();
     await expect(mini.locator('.panda-reel[data-spinning], .panda-hero-tiptoe')).toHaveCount(0);
     expect(await mini.locator('.panda-page').evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
+    if (process.env.PANDA_CAPTURE === '1') await page.screenshot({ path: info.outputPath('компоновка.png') });
     await mini.locator('.game-chat-toggle').click();
     await expect(mini.locator('#chat-input')).toBeInViewport();
     await expect(mini.locator('#chat-input')).toBeEnabled();
@@ -159,6 +162,8 @@ test('английский язык Royal применяется к карточ
   await expect(mini.locator('#mini-title')).toHaveText('Dragon Path');
   await expect(mini.getByRole('heading', { name: 'Dragon Path', exact: true, level: 1 })).toBeVisible();
   await expect(mini.getByRole('combobox', { name: 'Quick stakes' })).toBeEnabled();
+  await expect(mini.locator('.panda-belt')).toContainText('Green belt');
+  await expect(mini.locator('.panda-belt')).toContainText('Rounds to next belt: 10');
   await mini.getByRole('button', { name: 'About the game' }).click();
   await expect(mini.getByRole('dialog', { name: 'About the game' })).toContainText('Three Dragon Scrolls trigger the bonus.');
   await mini.getByText('Paytable', { exact: true }).click();
@@ -190,6 +195,9 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 
     const mini = await openDragonPath(page);
     await expect(mini).toHaveAttribute('data-game-viewport', 'layout');
     await expectFitted(mini);
+    // Переднего плана нет: сцена — только закатный фон долины.
+    await expect(mini.locator('.panda-temple')).toHaveCount(0);
+    await expect(mini.locator('.panda-training')).toHaveCount(0);
     if (viewport.width > 1000) {
       await expect(mini.locator('#chat-input')).toBeVisible();
       const valley = mini.locator('.panda-valley');
@@ -220,6 +228,53 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 
     if (process.env.PANDA_CAPTURE === '1') await page.screenshot({ path: info.outputPath('компоновка.png') });
   });
 }
+
+test('пояс меняется после результата и переживает закрытие окна', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await enterRoyal(page);
+  let rounds = 9;
+  let unavailable = false;
+  await page.route('**/api/dragon-path-progress', route => unavailable
+    ? route.fulfill({ status: 503, json: { error: 'progress-unavailable' } })
+    : route.fulfill({ json: { completedRounds: rounds } }));
+  await page.route('**/api/demo-wallet/expansion', async route => {
+    if (route.request().method() !== 'POST') return route.continue();
+    const op = route.request().postDataJSON();
+    if (op.gameId !== gameId || op.action !== 'start') return route.continue();
+    const tickets = [5, 9, 14, 22, 31, 41, 52];
+    let i = 0;
+    const result = startDragonPath(op.stakeUnits, () => {
+      const position = i++;
+      return tickets[(position % 5 + Math.floor(position / 5) * 2) % tickets.length];
+    });
+    const precision = makeRoundPrecision(dragonPathFinalAward(result.round), result.baseCreditUnits, () => 0);
+    const wallet = { balance: (4990 + Number(precision.creditedUnits)) / 100, entries: [] };
+    expect(result.ended).toBe(true);
+    rounds = 10;
+    const session = { id: op.id, gameId, rulesVersion: 1, state: 'settled', stakeUnits: op.stakeUnits,
+      spentUnits: op.stakeUnits, returnedUnits: precision.creditedUnits, view: dragonPathExpansionView(result), precision };
+    await route.fulfill({ json: { wallet, session, sessions: [session], replayed: false } });
+  });
+  const mini = await openDragonPath(page);
+  const label = mini.locator('.panda-belt');
+  const hero = mini.locator('.panda-hero-wrap');
+  await expect(label).toContainText('До следующего пояса: 1');
+  await expect(hero).toHaveAttribute('data-belt', 'green');
+  await mini.getByRole('button', { name: 'Вращать' }).click();
+  const running = hero.locator('.panda-hero-tiptoe');
+  await expect(running).toHaveAttribute('src', /panda-tiptoe-fast\.webp$/);
+  await expect(label).toHaveAttribute('data-belt', 'blue');
+  await expect(hero.locator('img:not([aria-hidden])')).toHaveAttribute('src', /panda-hero-blue\.webp$/);
+  await expect(mini.locator('.panda-belt-notice')).toHaveText('Новый пояс: Синий пояс');
+  await mini.locator('.mini-top [data-close]').click();
+  await openDragonPath(page);
+  await expect(label).toHaveAttribute('data-belt', 'blue');
+  await expect(mini.locator('.panda-belt-notice')).toBeEmpty();
+  unavailable = true;
+  await mini.locator('.mini-top [data-close]').click();
+  await openDragonPath(page);
+  await expect(mini.getByRole('button', { name: 'Вращать' })).toBeEnabled();
+});
 
 test('отказ по балансу остаётся видим после обновления кошелька', async ({ page }) => {
   await enterRoyal(page, 'ru', false);

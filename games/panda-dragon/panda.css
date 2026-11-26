@@ -97,10 +97,17 @@
   82% { opacity: .65; }
   100% { transform: translate(92px, 155px) rotate(200deg); opacity: 0; }
 }
+#mini-dialog[data-game="panda-dragon-preview"][data-game-viewport="flow"] .game-viewport-plane {
+  display: grid;
+  min-height: 100%;
+}
+#mini-dialog[data-game-viewport="flow"] #mini-game:has(> .panda-page) { display: grid; }
+#mini-dialog[data-game-viewport="flow"] .panda-page { padding-block-end: 58px; }
 #mini-dialog[data-game-viewport="layout"] #mini-game > .panda-page {
   --panda-field-limit: min(552px, calc(var(--slot-layout-height) - 275px));
   container-type: size;
   height: 100%;
+  padding-block: 10px;
   display: grid;
   align-items: center;
   overflow: auto;
@@ -787,6 +794,31 @@
 
 .panda-topbar h1, .panda-reward-title { font-family: var(--font-display); color: var(--primary); }
 .panda-mode { color: var(--muted-foreground); font-size: 0.75rem; }
+.panda-belt {
+  --panda-belt-color: #64ac86;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .1em .55em;
+  padding-block-start: .18rem;
+  color: #f5e4c5;
+  font: 650 .75rem/1.15 system-ui, sans-serif;
+  text-shadow: 0 1px 3px #142220;
+}
+.panda-belt[data-belt="blue"] { --panda-belt-color: #72acd9; }
+.panda-belt[data-belt="red"] { --panda-belt-color: #d67759; }
+.panda-belt[data-belt="black"] { --panda-belt-color: #25282b; }
+.panda-belt > span { display: inline-flex; align-items: center; gap: .35em; }
+.panda-belt > span::before {
+  content: '';
+  width: .85em;
+  height: .5em;
+  background: var(--panda-belt-color);
+  border: 1px solid #c9b588;
+  transform: skewX(-12deg);
+}
+.panda-belt small { color: #e8d7b5; font-size: .94em; font-weight: 500; }
+.panda-belt-notice { margin: 0; color: #efe0c0; }
 .panda-stat, .panda-stat dd, .panda-topbar h1 { margin: 0; }
 .panda-stat dd { color: var(--gold); }
 .panda-stake-controls { display: flex; align-items: center; gap: 0.25rem; }

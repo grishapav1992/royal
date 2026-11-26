@@ -6,6 +6,7 @@ import {installCaribbeanCrew} from './caribbeanCrewRoutes';
 import {installStarSpinCollection} from './starSpinCollectionRoutes';
 import {installCosmicCrew} from './cosmicCrewRoutes';
 import {installCaribbeanVoyage} from './caribbeanVoyageRoutes';
+import { installDragonPathProgress } from './dragonPathProgressRoutes';
 import { installGameModuleAssets } from './gameModuleAssets';
 import { installCasinoApiPro } from './casinoApiProRoutes';
 import { installCryptoWallet } from './cryptoWalletRoutes';
@@ -53,6 +54,7 @@ const server = defineServer({
     installStarSpinCollection(app);
     installCosmicCrew(app);
     installCaribbeanVoyage(app);
+    installDragonPathProgress(app);
     installFinanceAdmin(app);
     installDemoWallet(app);
     installClubFineRoutes(app);
