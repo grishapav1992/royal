@@ -1,0 +1,106 @@
+{
+  "published": true,
+  "release": "last-exit-traffic-20261126-v1",
+  "sourceCommit": "e12a1694e9cbc0c9912511f780038b85eff31d12",
+  "baseCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/last-exit-traffic-20261126-v1/source.tgz",
+    "sha256": "a67b486bc3d3b8f5b41c4bd5d09a0a152ba501a7046f79e8aac61a49a08c9b84",
+    "bytes": 64531,
+    "oldVersion": "1.2.1-8c2c8e17bac1",
+    "imageTag": "royal-game:before-last-exit-traffic-20261126-v1",
+    "image": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/last-exit/scene-traffic.ts",
+      "games/last-exit/scene-wheels.ts",
+      "games/last-exit/traffic.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "github-crash",
+    "version": "1.3.0-69d79445b45b",
+    "bytes": 3311140,
+    "files": 15,
+    "beforeSha256": "d19194585efdbee086f1cdb23763f25076346e45c5b6ce8e9b23a3ac856caf6d",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "d14d6a95a75987f39cc0200785bbc9cb55773b684bf8f72878072e640eca6f7f",
+    "history": "/opt/royal-game-modules-state/history/20261126T104455-9bcefed22b924dfeb63bea57914dcea1.json"
+  },
+  "freeBefore": 11019485184,
+  "freeAfter": 11015983104,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8845,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "e12a1694e9cbc0c9912511f780038b85eff31d12",
+  "previousVersion": "1.2.1-8c2c8e17bac1",
+  "pointerSha256": "d14d6a95a75987f39cc0200785bbc9cb55773b684bf8f72878072e640eca6f7f",
+  "priorPointerSha256": "d19194585efdbee086f1cdb23763f25076346e45c5b6ce8e9b23a3ac856caf6d",
+  "releaseManifestSha256": "b450a9952b043559166df28e2253986609af0d86e61707dbb5925063451d91cf",
+  "receiptSha256": "84a554015409613cdc39b5064678dff3b4aad573d55e6edb70e430e7df3d4cc2",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "note": "Receipt lists all twenty-four game sources, three of them new (scene-traffic.ts, scene-wheels.ts, traffic.ts). Six sources changed. The package was prepared on host 3b59bfdc; the Forest Heart wide window module was published meanwhile, so before.json was retaken without changing the package bytes.",
+  "publicChecks": {
+    "health": 200,
+    "home": 200,
+    "packageFilesMatched": 15,
+    "manifestMatched": true,
+    "pointersChecked": 125,
+    "pointersChanged": [
+      "github-crash"
+    ],
+    "previousPackageServed": true,
+    "hostProgramUnchanged": true,
+    "productionAccountsUsed": false,
+    "realWagers": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 82.43,
+    "freeAfter": 11020447744,
+    "finishedAt": 1795690039.6798463,
+    "timerEnabled": true,
+    "timerActive": true
+  },
+  "browserReport": {
+    "release": "last-exit-traffic-20261126-v1",
+    "version": "1.3.0-69d79445b45b",
+    "sourceCommit": "e12a1694e9cbc0c9912511f780038b85eff31d12",
+    "moduleManifestSha256": "ff96e3e2cddf7194a8c995bae96a5bccbc958171a911176581367b78fdee698e",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "moduleBrowserTests": 11,
+    "hostLayoutTests": 2,
+    "connectedScenarios": 1,
+    "serverTests": 43,
+    "walletTests": 19,
+    "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+    "browser": "Google Chrome",
+    "scenarios": [
+      "field and actions without scrolling in eight sizes with chat",
+      "settings, minimum start debits 0.10, reopen and lost response",
+      "two paid runs with chat at 1440x900 and 393x852",
+      "module recovery, audio, loading, wall-clock smoothness and layout suite"
+    ],
+    "notTested": [
+      "Safari",
+      "physical phones"
+    ],
+    "productionBase": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+    "checks": {
+      "rtp": "39 profiles, 21 stake policies",
+      "typecheck": true,
+      "releaseVerifyGithub": true,
+      "walletCommand": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts"
+    }
+  }
+}
