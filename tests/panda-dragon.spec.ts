@@ -127,8 +127,8 @@ for (const width of [390, 320]) {
     await expect(plus).toBeInViewport();
     await expect(mini.getByRole('combobox', { name: 'Быстрый выбор ставки' })).toBeEnabled();
     await expect(mini.locator('.panda-valley-motion')).toHaveCount(0);
-    await expect(mini.locator('.panda-training-torch')).toBeInViewport();
-    await expect(mini.locator('.panda-torch-flame')).toHaveAttribute('href', /\/monastery-flame-still\.webp$/);
+    await expect(mini.locator('.panda-temple-courtyard')).toBeInViewport();
+    await expect(mini.locator('.panda-temple-column').first()).toBeHidden();
     await expect(mini.locator('.panda-training-monk')).toHaveCount(0);
     await expect(mini.locator('.panda-belt')).toContainText('Зелёный пояс');
     for (const control of [plus, mini.getByRole('combobox', { name: 'Быстрый выбор ставки' }), mini.getByRole('button', { name: 'Вращать' })]) {
@@ -194,22 +194,36 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 
   test(`поле и кнопки помещаются в ${viewport.width}×${viewport.height}`, async ({ page }, info) => {
     await page.setViewportSize(viewport);
     await enterRoyal(page);
-    const flameRequests = new Map<string, number>();
+    const assetRequests = new Map<string, number>();
     page.on('response', response => {
       const file = new URL(response.url()).pathname.split('/').at(-1);
-      if (file?.startsWith('monastery-flame')) flameRequests.set(file, response.status());
+      if (file?.startsWith('temple-')) assetRequests.set(file, response.status());
     });
     const mini = await openDragonPath(page);
     await expect(mini).toHaveAttribute('data-game-viewport', 'layout');
     await expectFitted(mini);
-    await expect(mini.locator('.panda-training-torch')).toBeInViewport();
+    await expect(mini.locator('.panda-temple-courtyard')).toBeInViewport();
+    await expect(mini.locator('.panda-temple-beam')).toBeInViewport();
+    await expect.poll(() => assetRequests.get('temple-courtyard.svg')).toBe(200);
+    await expect.poll(() => assetRequests.get('temple-column.svg')).toBe(200);
+    const columns = mini.locator('.panda-temple-column');
+    await expect(columns).toHaveCount(2);
+    if (await columns.first().isVisible()) {
+      // Колонны обрамляют сцену, но не закрывают проём: игра и персонаж видны через окно храма.
+      const field = await mini.locator('.panda-frame').boundingBox();
+      const left = await columns.first().boundingBox();
+      const right = await columns.last().boundingBox();
+      expect(left!.x + left!.width).toBeLessThanOrEqual(field!.x + 2);
+      expect(right!.x).toBeGreaterThanOrEqual(field!.x + field!.width - 2);
+      const hero = await mini.locator('.panda-hero-wrap').boundingBox();
+      if (hero) expect(left!.x + left!.width).toBeLessThanOrEqual(hero!.x + 2);
+    } else {
+      await expect(columns.first()).toBeHidden();
+    }
     if (viewport.width > 1000) {
       await expect(mini.locator('#chat-input')).toBeVisible();
       const valley = mini.locator('.panda-valley');
       const waterfall = valley.locator('.panda-valley-water');
-      const flame = valley.locator('.panda-torch-flame');
-      await expect(flame).toHaveAttribute('href', /\/monastery-flame\.webp$/);
-      await expect.poll(() => flameRequests.get('monastery-flame.webp')).toBe(200);
       await expect(valley).toHaveCSS('pointer-events', 'none');
       await expect(waterfall).toHaveCSS('animation-play-state', 'running');
       await page.evaluate(() => {
@@ -217,25 +231,17 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 
         document.dispatchEvent(new Event('visibilitychange'));
       });
       await expect(waterfall).toHaveCSS('animation-play-state', 'paused');
-      await expect(flame).toHaveAttribute('href', /\/monastery-flame-still\.webp$/);
-      await expect.poll(() => flameRequests.get('monastery-flame-still.webp')).toBe(200);
       await page.evaluate(() => {
         Reflect.deleteProperty(document, 'hidden');
         document.dispatchEvent(new Event('visibilitychange'));
       });
       await expect(waterfall).toHaveCSS('animation-play-state', 'running');
-      await expect(flame).toHaveAttribute('href', /\/monastery-flame\.webp$/);
       await mini.getByRole('button', { name: 'Скрыть героя' }).click();
       await expect(mini.locator('.panda-hero-wrap')).toHaveCount(0);
       await expectFitted(mini);
       await mini.getByRole('button', { name: 'Показать героя' }).click();
       await expect(mini.locator('.panda-hero-wrap')).toBeVisible();
     } else {
-      const torch = await mini.locator('.panda-training-torch').boundingBox();
-      const field = await mini.locator('.panda-frame').boundingBox();
-      const controls = await mini.locator('.panda-bar').boundingBox();
-      expect(torch!.x + 2).toBeGreaterThanOrEqual(field!.x + field!.width);
-      expect(torch!.y + 2).toBeGreaterThanOrEqual(controls!.y + controls!.height);
       await mini.locator('.game-chat-toggle').click();
       await expect(mini.locator('#chat-input')).toBeEnabled();
       await mini.locator('.game-chat-close').click();

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 900">
+  <defs>
+    <linearGradient id="lacquer" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#57201c"/>
+      <stop offset=".24" stop-color="#8c352c"/>
+      <stop offset=".62" stop-color="#bb5741"/>
+      <stop offset=".82" stop-color="#96402f"/>
+      <stop offset="1" stop-color="#6a2620"/>
+    </linearGradient>
+    <linearGradient id="lacquerDark" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#2c1512"/>
+      <stop offset=".55" stop-color="#51201c"/>
+      <stop offset=".8" stop-color="#6b2a22"/>
+      <stop offset="1" stop-color="#391714"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#8a5c2c"/>
+      <stop offset=".45" stop-color="#e6bd6d"/>
+      <stop offset=".75" stop-color="#c9964a"/>
+      <stop offset="1" stop-color="#7c5228"/>
+    </linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#3a2b28"/>
+      <stop offset=".5" stop-color="#5a4137"/>
+      <stop offset=".82" stop-color="#6b4d3e"/>
+      <stop offset="1" stop-color="#3f2d28"/>
+    </linearGradient>
+    <linearGradient id="shadeTop" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#1c0f0d" stop-opacity=".55"/>
+      <stop offset=".18" stop-color="#1c0f0d" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="shadeBottom" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".62" stop-color="#1c0f0d" stop-opacity="0"/>
+      <stop offset="1" stop-color="#1c0f0d" stop-opacity=".45"/>
+    </linearGradient>
+    <filter id="grain" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".16 .04" numOctaves="3" seed="5"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+
+  <!-- Капитель: двойная доска-капитель с консолью -->
+  <path fill="url(#lacquerDark)" d="M6 0h108v16H6Z"/>
+  <path fill="url(#gold)" d="M10 16h100v7H10Z"/>
+  <path fill="url(#lacquerDark)" d="M14 23h92v22H14Z"/>
+  <path fill="url(#lacquer)" d="M22 45h76v26H22Z"/>
+  <path fill="#2a1210" opacity=".55" d="M22 71h76v9H22Z"/>
+  <path fill="url(#gold)" opacity=".55" d="M26 27h68v3H26Z"/>
+
+  <!-- Ствол колонны -->
+  <path fill="url(#lacquer)" d="M34 74h52v740H34Z"/>
+  <path fill="#2b100e" opacity=".18" d="M34 74h12v740H34Z"/>
+  <path fill="#ffd0a0" opacity=".12" d="M74 74h6v740h-6Z"/>
+
+  <!-- Золотые кольца -->
+  <path fill="url(#gold)" d="M33 108h54v13H33Z"/>
+  <path fill="#2b100e" opacity=".35" d="M33 119h54v3H33Z"/>
+  <path fill="url(#gold)" d="M33 786h54v15H33Z"/>
+  <path fill="#2b100e" opacity=".35" d="M33 798h54v3H33Z"/>
+
+  <!-- Каменное основание -->
+  <path fill="url(#stone)" d="M26 812h68v88H26Z"/>
+  <path fill="#7a5947" opacity=".55" d="M26 812h68v9H26Z"/>
+  <path fill="#241816" opacity=".45" d="M26 856h68v6H26Z"/>
+  <path fill="none" stroke="#8a6650" stroke-opacity=".3" stroke-width="1.4" d="M26 830h68M44 812v88M76 812v88"/>
+
+  <rect width="120" height="900" fill="url(#shadeTop)"/>
+  <rect width="120" height="900" fill="url(#shadeBottom)"/>
+  <rect width="120" height="900" filter="url(#grain)" opacity=".08"/>
+</svg>

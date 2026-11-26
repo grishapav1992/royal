@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 130" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="lacquer" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#6a2822"/><stop offset=".5" stop-color="#a34536"/><stop offset=".8" stop-color="#7d3028"/><stop offset="1" stop-color="#4d1d18"/>
+    </linearGradient>
+    <linearGradient id="lacquerDark" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#2e1512"/><stop offset=".6" stop-color="#54211c"/><stop offset="1" stop-color="#351714"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#20100e"/><stop offset=".35" stop-color="#4a1e19"/><stop offset=".78" stop-color="#6b2a22"/><stop offset="1" stop-color="#8c3529"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#f0cd82"/><stop offset=".55" stop-color="#c9964a"/><stop offset="1" stop-color="#8a5c2c"/>
+    </linearGradient>
+    <linearGradient id="cast" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#1a0d10" stop-opacity=".42"/><stop offset="1" stop-color="#1a0d10" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="grain" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".1 .05" numOctaves="3" seed="11"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="44" fill="url(#beam)"/>
+  <rect y="38" width="1600" height="6" fill="url(#gold)" opacity=".72"/>
+  <g>
+<path fill="url(#lacquerDark)" d="M30 44h100v14H30Z"/>
+<path fill="url(#lacquer)" d="M44 58h72v22H44Z"/>
+<path fill="url(#lacquerDark)" d="M60 80h40v30H60Z"/>
+<path fill="url(#gold)" opacity=".5" d="M46 60h68v3H46Z"/>
+<path fill="url(#lacquerDark)" d="M190 44h100v14H190Z"/>
+<path fill="url(#lacquer)" d="M204 58h72v22H204Z"/>
+<path fill="url(#lacquerDark)" d="M220 80h40v30H220Z"/>
+<path fill="url(#gold)" opacity=".5" d="M206 60h68v3H206Z"/>
+<path fill="url(#lacquerDark)" d="M350 44h100v14H350Z"/>
+<path fill="url(#lacquer)" d="M364 58h72v22H364Z"/>
+<path fill="url(#lacquerDark)" d="M380 80h40v30H380Z"/>
+<path fill="url(#gold)" opacity=".5" d="M366 60h68v3H366Z"/>
+<path fill="url(#lacquerDark)" d="M510 44h100v14H510Z"/>
+<path fill="url(#lacquer)" d="M524 58h72v22H524Z"/>
+<path fill="url(#lacquerDark)" d="M540 80h40v30H540Z"/>
+<path fill="url(#gold)" opacity=".5" d="M526 60h68v3H526Z"/>
+<path fill="url(#lacquerDark)" d="M670 44h100v14H670Z"/>
+<path fill="url(#lacquer)" d="M684 58h72v22H684Z"/>
+<path fill="url(#lacquerDark)" d="M700 80h40v30H700Z"/>
+<path fill="url(#gold)" opacity=".5" d="M686 60h68v3H686Z"/>
+<path fill="url(#lacquerDark)" d="M830 44h100v14H830Z"/>
+<path fill="url(#lacquer)" d="M844 58h72v22H844Z"/>
+<path fill="url(#lacquerDark)" d="M860 80h40v30H860Z"/>
+<path fill="url(#gold)" opacity=".5" d="M846 60h68v3H846Z"/>
+<path fill="url(#lacquerDark)" d="M990 44h100v14H990Z"/>
+<path fill="url(#lacquer)" d="M1004 58h72v22H1004Z"/>
+<path fill="url(#lacquerDark)" d="M1020 80h40v30H1020Z"/>
+<path fill="url(#gold)" opacity=".5" d="M1006 60h68v3H1006Z"/>
+<path fill="url(#lacquerDark)" d="M1150 44h100v14H1150Z"/>
+<path fill="url(#lacquer)" d="M1164 58h72v22H1164Z"/>
+<path fill="url(#lacquerDark)" d="M1180 80h40v30H1180Z"/>
+<path fill="url(#gold)" opacity=".5" d="M1166 60h68v3H1166Z"/>
+<path fill="url(#lacquerDark)" d="M1310 44h100v14H1310Z"/>
+<path fill="url(#lacquer)" d="M1324 58h72v22H1324Z"/>
+<path fill="url(#lacquerDark)" d="M1340 80h40v30H1340Z"/>
+<path fill="url(#gold)" opacity=".5" d="M1326 60h68v3H1326Z"/>
+<path fill="url(#lacquerDark)" d="M1470 44h100v14H1470Z"/>
+<path fill="url(#lacquer)" d="M1484 58h72v22H1484Z"/>
+<path fill="url(#lacquerDark)" d="M1500 80h40v30H1500Z"/>
+<path fill="url(#gold)" opacity=".5" d="M1486 60h68v3H1486Z"/>
+  </g>
+  <rect y="108" width="1600" height="22" fill="url(#cast)"/>
+  <rect width="1600" height="110" filter="url(#grain)" opacity=".07"/>
+</svg>
