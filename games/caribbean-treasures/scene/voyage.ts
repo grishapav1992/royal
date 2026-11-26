@@ -96,7 +96,7 @@ export class Voyage{
     her.tint=[.04,.03,.05];
     void clock.tween(T(.3),u=>{pc.style.opacity=String(u);},ease.lin);
     await clock.tween(T(.7),u=>{s.up=u;},ease.out);
-    if(!alive())return;her.show('win',2.2);her.gesture('win');
+    if(!alive())return;her.live=this.hooks.reduced()?0:1;her.react('meet');
     await clock.tween(T(.5),u=>{her.tint=[lerp(.04,1,u),lerp(.03,1,u),lerp(.05,1,u)];s.show=u;},ease.io);
     if(!alive())return;clock.hurry=false;pc.style.opacity='1';skip.remove();
     const rv=el.querySelector('.ct-rv')!;rv.classList.remove('off');
@@ -110,7 +110,7 @@ export class Voyage{
   }
   private cx(){return this.hooks.mode()==='short'?this.rv!.W*.3:this.rv!.W/2;}
   step(dt:number){
-    if(!this.open)return;this.clock.step(dt);const v=this.rv;if(!v||!this.wood)return;this.fx.step(dt);this.pirate?.step(dt);
+    if(!this.open)return;this.clock.step(dt);const v=this.rv;if(!v||!this.wood)return;this.fx.step(dt);if(this.pirate){const live=this.hooks.reduced()?0:1;if(!live&&this.pirate.live)this.pirate.rest();this.pirate.live=live;this.pirate.step(dt,false);}
     const {g,W,H,s}=v,x=this.cx(),y=H*.84,now=this.clock.now,size=Math.min(W*.5,H*.34);g.setTransform(v.dpr,0,0,v.dpr,0,0);g.clearRect(0,0,W,H);
     // the beach at dusk
     const k=Math.max(W/1600,H/900)*1.06,ox=(W-1600*k)/2,oy=H-900*k;g.globalAlpha=1;g.drawImage(this.wood,ox,oy,1600*k,900*k);g.fillStyle='rgba(58,20,40,.62)';g.globalCompositeOperation='multiply';g.fillRect(0,0,W,H);g.globalCompositeOperation='source-over';
