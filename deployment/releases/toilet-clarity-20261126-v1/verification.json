@@ -1,0 +1,196 @@
+{
+  "release": "toilet-clarity-20261126-v1",
+  "sourceCommit": "f0d0d8749904491fda6273a0bc0bd812b4496893",
+  "baseCommit": "a99cb80c0b08800a8e9b0e59b5c2b9df12e06da1",
+  "host": {
+    "published": true,
+    "preparedImage": "sha256:80bd5416478b6472a7ed48334920f59936345257c8a61e25fbb301992badeada",
+    "runningImage": "sha256:80bd5416478b6472a7ed48334920f59936345257c8a61e25fbb301992badeada",
+    "containerRestarted": true,
+    "sourceCommit": "f0d0d8749904491fda6273a0bc0bd812b4496893",
+    "changedSources": 6,
+    "clientDeltaFiles": 9,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 0,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 10,
+    "rollbackImage": "sha256:8b0b056d2026350a6c66bba22e6c1c1ed3123a6cd766af920380f3a0e7488a06",
+    "runtimeFiles": 8829,
+    "sourceFiles": {
+      "src/game/ClubWorld.ts": "f4b753b2de61d7d0d36a255356cdf25a50a29880fbc9b32c47d09dbbae6b6c90",
+      "src/game/RoomScene.ts": "726cbb5685b5f7e4b718258823ef7fa331c4d76160f284299de70ee367a47fb5",
+      "src/game/ToiletMerchant.ts": "38ae5544b3b85fe22b33061456511ecfc2a8533505bc59b0ebb576d0d2384d38",
+      "src/game/ToiletRenderer.ts": "b6064a8c617436073e3f2a16c16e7d89370046bee879e453df5b1a6317873624",
+      "src/game/characters.ts": "b6697afcf12a94e6d03801b22e116304994918011d7ccc01cec5434623d08c19",
+      "src/game/toiletResidentArt.ts": "1f98b41214e7de9b2cf8a63582070a2259f627d13806e5153c416df0a8eaf7ba"
+    },
+    "clientFiles": {
+      "/assets/ActivitiesUI-CCfpCyIj.js": "428d1810bae801182b208deb61604b20f013d5d38c7be852a11840cf0359897d",
+      "/assets/ClubWorld-2W268HTA.js": "faec99da6918565793b3df89589db78cbd2c1d594a9b8a403be496dec046de61",
+      "/assets/GameHostRuntime-C0wTC7xI.js": "0ea396498d4845df980c3e1e2eab85762fec47b7628c73a3e8008e9206b6ab58",
+      "/assets/index-Bdhir4E5.js": "c697fc201deaaad5d7abdb0358cb73935f1aa24390950f3ca459c3f87ae2e510",
+      "/assets/main-D9xx7k9k.js": "36589b0445287d26175170c5848e585e482976b6dae8f5f9cbc6d7f90e4a7cb5",
+      "/assets/phaser-Bz-zEHh2.js": "223a3b738066002fea2ccd1d901977aba4c2e174578344b539a0fb63bfe76d37",
+      "/assets/playerLevelStatus-Buwiz0u4.js": "6f9b8f030974e9e12907a3565c25fe1530099c90dbfd903b3d81157eb7921f10",
+      "/assets/PvpUI-CUkyXNgx.js": "fc7a2060358dfff8457863e2f1bfa73e3228b30d14083b2062a771444049f3a7",
+      "/": "36b500eb72672ce9d6175e0e93c289995ff9a081bf61c75f662a2ce0f24f82fb"
+    },
+    "sourceBackupBytes": 41754,
+    "sourceBackupSha256": "4af5ff692670b67a65956025d6abaa444d3053b3b1e9d726d2746f106a5db266",
+    "financialBackup": {
+      "bytes": 52651303,
+      "sha256": "e3ec84cc9d09fbaa5388803596af7995995f82e4ab06685e186d8b2cdb1aa854"
+    }
+  },
+  "evidence": {
+    "releaseManifestSha256": "15a6f95fef857fd066920c3d5ef7613f4799c22beaf03dafc4332243576891d5",
+    "githubReceiptSha256": "781197d2ac749384223f44d57f52e72788e469007bb877895ddc11cfe947ef35",
+    "projectedHostInputs": 322,
+    "build": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 333565
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 14048
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 195942
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 15875
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 111
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 33
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 39
+      }
+    ]
+  },
+  "catalogue": {
+    "activeGames": [
+      "panda-dragon-preview",
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-afterglow",
+      "studio-meme-overload",
+      "studio-dracona",
+      "studio-neopolis",
+      "studio-forest-heart",
+      "github-crash",
+      "royal-plinko",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "studio-caribbean-treasures",
+      "studio-flooded-temple",
+      "royal-roulette",
+      "flag-battle",
+      "studio-wild-nudge"
+    ],
+    "unchangedModulePointers": 125,
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "checks": {
+    "rtp": {
+      "profiles": 39,
+      "stakePolicies": 21
+    },
+    "walletServerTests": 19,
+    "installerTests": 20,
+    "browser": {
+      "engine": "Chrome",
+      "database": "Disposable PostgreSQL",
+      "backend": "Verified production binary",
+      "room": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "deviceScaleFactor": 2
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "deviceScaleFactor": 3
+        }
+      ],
+      "shop": true,
+      "connectedChat": true,
+      "roundRecovery": {
+        "widths": [
+          1440,
+          390
+        ],
+        "sameOperationId": true,
+        "singleDebit": true
+      },
+      "desktopRecoveryFirstAttempt": "The initial connection took longer than the 5 second assertion. The same candidate passed with the assertion budget set to 20 seconds."
+    },
+    "public": {
+      "clientFiles": 9,
+      "activePointers": 20,
+      "statuses": {
+        "/healthz": 200,
+        "/api/auth/me": 200,
+        "/api/demo-wallet": 401,
+        "/api/demo-wallet/expansion": 401,
+        "/api/caribbean-voyage": 401
+      },
+      "entry": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "entry": true,
+          "loginForm": true
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "entry": true,
+          "loginForm": true
+        }
+      ],
+      "signedInProductionAccountUsed": false
+    }
+  },
+  "maintenance": {
+    "status": "completed",
+    "release": "toilet-clarity-20261126-v1",
+    "sourceCommit": "f0d0d8749904491fda6273a0bc0bd812b4496893",
+    "currentImage": "sha256:80bd5416478b6472a7ed48334920f59936345257c8a61e25fbb301992badeada",
+    "rollbackImage": "sha256:8b0b056d2026350a6c66bba22e6c1c1ed3123a6cd766af920380f3a0e7488a06",
+    "freeBefore": 11138158592,
+    "freeAfter": 11148566528,
+    "removedEntries": 26,
+    "removedImageTags": 3,
+    "durationSeconds": 82.56,
+    "healthOk": true,
+    "timer": "enabled and active"
+  }
+}

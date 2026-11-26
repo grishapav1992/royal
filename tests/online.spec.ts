@@ -114,7 +114,7 @@ test('two guests share movement, chat, typing focus and mini-game presence', asy
   await expect(b.locator('#people-list')).toContainText(anna);
   await expect.poll(async () => (await state(a)).remotes).toBeGreaterThanOrEqual(1);
   expect((await state(a)).skin).toBe(1);
-  expect((await state(a)).texture).toBe('citizen-1');
+  expect((await state(a)).texture).toBe('avatar-player-citizen-1');
   const before = await state(a);
   await a.keyboard.down('ArrowRight'); await a.waitForTimeout(450); await a.keyboard.up('ArrowRight');
   await expect.poll(async () => (await state(a)).x).toBeGreaterThan(before.x + 30);

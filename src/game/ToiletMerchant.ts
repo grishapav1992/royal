@@ -38,8 +38,8 @@ export class ToiletMerchant{
       this.sprite=scene.add.image(p.x,p.y,TOILET_MERCHANT_TEXTURE,'0').setScale(scale).setDepth(p.y);
       this.setFrame(0);
     }
-    scene.add.text(p.x,p.y+10,lines[language].name,{fontFamily:'Arial, sans-serif',fontSize:'10px',color:'#eee4c4',backgroundColor:'#443c35',padding:{x:5,y:2}}).setOrigin(.5,0).setDepth(p.y+1);
-    this.bubble=scene.add.text(p.x+44,p.y-99,'',{fontFamily:'Arial, sans-serif',fontSize:'11px',color:'#f6edcc',backgroundColor:'#35342f',padding:{x:8,y:6},wordWrap:{width:171},align:'left'}).setOrigin(1,1).setDepth(705).setAlpha(0);
+    scene.add.text(p.x,p.y+10,lines[language].name,{fontFamily:'Arial, sans-serif',fontSize:'10px',resolution:2,color:'#eee4c4',backgroundColor:'#443c35',padding:{x:5,y:2}}).setOrigin(.5,0).setDepth(p.y+1);
+    this.bubble=scene.add.text(p.x+44,p.y-99,'',{fontFamily:'Arial, sans-serif',fontSize:'11px',resolution:2,color:'#f6edcc',backgroundColor:'#35342f',padding:{x:8,y:6},wordWrap:{width:171},align:'left'}).setOrigin(1,1).setDepth(705).setAlpha(0);
     scene.add.zone(p.x,p.y-42,54,84).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',approach);
   }
   private setFrame(index:number){

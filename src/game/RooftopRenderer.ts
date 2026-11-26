@@ -8,7 +8,7 @@ import { roofStairContains } from './roofStairInput';
 import { ROOF_TOILET } from '../shared/toilet';
 import {STAIR_WINDOW} from '../shared/stairWindow';
 import {stairWindowPlatform} from './StairWindowRenderer';
-import { paintRoofToilet,paintRoofToiletStep } from './ToiletRenderer';
+import { addServiceWindowZone,paintRoofToilet,paintRoofToiletStep } from './ToiletRenderer';
 
 type Paint = CanvasRenderingContext2D;
 const ink = '#292b36', snow = '#f4f8fc', gold = '#edc566';
@@ -234,7 +234,7 @@ export class RooftopRenderer {
     const toilet=ROOF_TOILET;
     prop('casino-roof-toilet-window-v2',toilet.body.x,toilet.body.y+toilet.body.h,180,160,paintRoofToilet);
     prop('casino-roof-toilet-step-v1',toilet.step.x,toilet.step.y+toilet.step.h,60,24,paintRoofToiletStep);
-    scene.add.zone(toilet.click.x,toilet.click.y,120,110).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',enterToilet);
+    addServiceWindowZone(scene,toilet.click,toilet.step.y+toilet.step.h,enterToilet);
     for (const v of ROOF.vents) prop('casino-roof-vent-' + v.w, v.x, v.y + v.h, v.w, v.h + 32, c => vent(c, v.w, v.h));
     for (const b of ROOF.benches) prop('casino-roof-bench', b.x, b.y + b.h, 190, 74, bench);
     prop('casino-roof-antenna', ROOF.antenna.x, ROOF.antenna.y + ROOF.antenna.h, 100, 148, antenna);

@@ -61,6 +61,16 @@ test('roof window keeps the perimeter open, has reciprocal links and safe offset
   for(let i=0;i<ROOF.loop.length;i++)assert(findPath(ROOF.loop[i],ROOF.loop[(i+1)%ROOF.loop.length],obstacles).length);
   assert.equal(hallLinkAt({hall:'roof',...ROOF_TOILET.entry})?.target,'toilet');
   assert.equal(hallLinkAt({hall:'toilet',...TOILET_WINDOW.entry})?.target,'roof');
+  for(const [hall,door,target] of [['roof',ROOF_TOILET,'toilet'],['toilet',TOILET_WINDOW,'roof']] as const){
+    for(const offset of [-44,44])for(const sprint of [false,true]){
+      const body={hall,x:door.entry.x+offset,y:door.bottom+24,facing:'up',moving:false,seat:'',action:'idle',drink:'',actionUntil:0};
+      assert(!hallLinkAt(body));
+      for(let seq=1;seq<=18&&!hallLinkAt(body);seq++){
+        applyMovementInput(body,{seq,x:0,y:-1,ms:50,sprint});
+      }
+      assert.equal(hallLinkAt(body)?.target,target,`${hall}, offset ${offset}, sprint ${sprint}`);
+    }
+  }
   assert.deepEqual(hallLinks('toilet').map(p=>p.target),['roof','github']);
   for(const hall of ['roof','toilet','github'] as const)for(const link of hallLinks(hall)){
     assert(walkable(link.arrival.arrival.x,link.arrival.arrival.y,hallObstacles(link.target),16));
@@ -107,8 +117,8 @@ test('server transfers through the window, preserves identity and rejects stale 
     }
     const before={id:client.sessionId,name:p.name,skin:p.skin,appearance:p.appearance,revision:p.hallRevision};
     assert(enter());assert.equal(p.hall,'toilet');assert.equal(p.hallRevision,before.revision+1);assert.equal(p.name,before.name);assert.equal(p.skin,before.skin);assert.equal(p.appearance,before.appearance);
-    assert.deepEqual({x:p.x,y:p.y},TOILET.spawn);assert(!enter());
-    handlers.get('inputs')!(client,{revision:before.revision,inputs:[{seq:1,x:1,y:0,ms:50}]});Reflect.get(room,'tick').call(room,.05);assert.equal(p.x,TOILET.spawn.x);
+    assert.deepEqual({x:p.x,y:p.y},TOILET_WINDOW.arrival);assert(!enter());
+    handlers.get('inputs')!(client,{revision:before.revision,inputs:[{seq:1,x:1,y:0,ms:50}]});Reflect.get(room,'tick').call(room,.05);assert.equal(p.x,TOILET_WINDOW.arrival.x);
     for(let i=0;i<12;i++){applyMovementInput(p,{seq:i+2,x:0,y:-1,ms:50,sprint:true});enter();assert.equal(p.hall,'toilet','held W cannot re-enter the window after arrival');}
     Object.assign(p,TOILET_WINDOW.entry);assert(enter());assert.equal(p.hall,'roof');assert.equal(p.hallRevision,before.revision+2);assert.equal(p.stairStep,0);
     assert.deepEqual({x:p.x,y:p.y},ROOF_TOILET.arrival);

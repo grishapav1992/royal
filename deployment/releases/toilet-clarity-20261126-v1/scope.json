@@ -1,0 +1,41 @@
+{
+  "client": [
+    "src/game/ClubWorld.ts",
+    "src/game/RoomScene.ts",
+    "src/game/ToiletMerchant.ts",
+    "src/game/ToiletRenderer.ts",
+    "src/game/characters.ts",
+    "src/game/toiletResidentArt.ts"
+  ],
+  "previews": [],
+  "sourceUpdates": {
+    "src/game/ClubWorld.ts": "f4b753b2de61d7d0d36a255356cdf25a50a29880fbc9b32c47d09dbbae6b6c90",
+    "src/game/RoomScene.ts": "726cbb5685b5f7e4b718258823ef7fa331c4d76160f284299de70ee367a47fb5",
+    "src/game/ToiletMerchant.ts": "38ae5544b3b85fe22b33061456511ecfc2a8533505bc59b0ebb576d0d2384d38",
+    "src/game/ToiletRenderer.ts": "b6064a8c617436073e3f2a16c16e7d89370046bee879e453df5b1a6317873624",
+    "src/game/characters.ts": "b6697afcf12a94e6d03801b22e116304994918011d7ccc01cec5434623d08c19",
+    "src/game/toiletResidentArt.ts": "1f98b41214e7de9b2cf8a63582070a2259f627d13806e5153c416df0a8eaf7ba"
+  },
+  "activeBefore": [
+    "panda-dragon-preview",
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge"
+  ]
+}

@@ -104,11 +104,11 @@ test('directional walking returns to idle without sliding', async ({ page }) => 
   for (const [key, facing] of [['ArrowRight', 'right'], ['ArrowLeft', 'left'], ['ArrowDown', 'down'], ['ArrowUp', 'up']]) {
     await page.keyboard.down(key!);
     await expect.poll(async () => (await state(page)).facing).toBe(facing);
-    await expect.poll(async () => (await state(page)).animation).toBe(`citizen-0-walk-${facing}`);
+    await expect.poll(async () => (await state(page)).animation).toBe(`avatar-player-citizen-0-walk-${facing}`);
     const first = (await state(page)).frame;
     await expect.poll(async () => (await state(page)).frame).not.toBe(first);
     await page.keyboard.up(key!);
-    await expect.poll(async () => (await state(page)).animation).toBe(`citizen-0-idle-${facing}`);
+    await expect.poll(async () => (await state(page)).animation).toBe(`avatar-player-citizen-0-idle-${facing}`);
     const stopped = await state(page);
     await page.waitForTimeout(180);
     expect((await state(page)).x).toBeCloseTo(stopped.x, 1);
