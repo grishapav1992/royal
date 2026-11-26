@@ -30,7 +30,7 @@
     "games/last-exit/LastExitScene.ts": {
       "commit": "7bef0ca66c06ed727223651570ba5058fe98f10a",
       "path": "games/last-exit/LastExitScene.ts",
-      "baseSha256": "f554aa181028b98657f264483091bc17c7556de2dfcdf3f414e83940bd94df35",
+      "baseSha256": "eb50099bc59257fcc4636a859c7b7cc2e44301f72ad815a4c07898fc689af416",
       "sha256": "eb50099bc59257fcc4636a859c7b7cc2e44301f72ad815a4c07898fc689af416"
     },
     "games/last-exit/LastExitUI.ts": {
@@ -78,13 +78,13 @@
     "games/last-exit/package.json": {
       "commit": "7bef0ca66c06ed727223651570ba5058fe98f10a",
       "path": "games/last-exit/package.json",
-      "baseSha256": "b0c2613e4bf8cff99db3659e2caf738d8ee3803de058ab0bdabb61ceee84d511",
+      "baseSha256": "5d61a627452607156c06f82e41aa6eed086efb4b679f01410ec9aec513cefdd5",
       "sha256": "5d61a627452607156c06f82e41aa6eed086efb4b679f01410ec9aec513cefdd5"
     },
     "games/last-exit/pursuit.ts": {
       "commit": "7bef0ca66c06ed727223651570ba5058fe98f10a",
       "path": "games/last-exit/pursuit.ts",
-      "baseSha256": "234256b1a8caadae31d465cde964e2fe33fe927c5b9695cf33e621551235e618",
+      "baseSha256": "a2b67caf61736af34e9084e1e208343412a5f9f19cb33519f4a9613c4b23b50a",
       "sha256": "a2b67caf61736af34e9084e1e208343412a5f9f19cb33519f4a9613c4b23b50a"
     },
     "games/last-exit/route.ts": {
@@ -96,13 +96,13 @@
     "games/last-exit/scene-actors.ts": {
       "commit": "7bef0ca66c06ed727223651570ba5058fe98f10a",
       "path": "games/last-exit/scene-actors.ts",
-      "baseSha256": "a3d09425b1b21f1cb4c2c247c7fc8cc4c74981461e9b4e28857fa4accbfc3e10",
+      "baseSha256": "1b70f16feec52b9ec45f634b4df378ad88c7b831e85cf0b92e972e1bfc0092e3",
       "sha256": "1b70f16feec52b9ec45f634b4df378ad88c7b831e85cf0b92e972e1bfc0092e3"
     },
     "games/last-exit/scene-base.ts": {
       "commit": "7bef0ca66c06ed727223651570ba5058fe98f10a",
       "path": "games/last-exit/scene-base.ts",
-      "baseSha256": "3916faf7485a39922cbf7c2652e228fd3b190085434c77fc4a88722285861794",
+      "baseSha256": "548e5a964b69a87b9a1e1160b00f5c75f6c9e75d666ca75517149ae6f7777d6c",
       "sha256": "548e5a964b69a87b9a1e1160b00f5c75f6c9e75d666ca75517149ae6f7777d6c"
     },
     "games/last-exit/scene-bits.ts": {
@@ -120,7 +120,7 @@
     "games/last-exit/scene-finales.ts": {
       "commit": "7bef0ca66c06ed727223651570ba5058fe98f10a",
       "path": "games/last-exit/scene-finales.ts",
-      "baseSha256": "fbfff8c19ea3bea51197594b2a6ff719426584e456d20798d80680de20c67942",
+      "baseSha256": "6d34ca1f644750cdf82fa7fd03be29596afe53eeea214cc8bb038e0cc9111718",
       "sha256": "6d34ca1f644750cdf82fa7fd03be29596afe53eeea214cc8bb038e0cc9111718"
     },
     "games/last-exit/scene-kit.ts": {
