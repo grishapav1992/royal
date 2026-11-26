@@ -352,7 +352,7 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/modules/GameModuleCatalog.ts",
       "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
-      "sha256": "d04cb71dd9ea9bd9e868c3da2b4233aa652cefdb682b6ead78c4b3ebab4dfe3b",
+      "sha256": "c30c2056c5e5f4e9de50fb6cc0a022581448512938e6d8eed6d6d1817523c835",
       "patches": [
         {
           "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
@@ -385,6 +385,10 @@
         {
           "from": "export const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES] as const;",
           "to": "export const DRAGON_PATH = { gameId: DRAGON_PATH_GAME, slug: 'panda-dragon', apiVersion: 1, rulesVersion: DRAGON_PATH_RULES_VERSION, progressVersion: 2, title: DRAGON_PATH_TITLE } as const;\nexport const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES, DRAGON_PATH] as const;"
+        },
+        {
+          "from": "import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol.ts';",
+          "to": "const DRAGON_PATH_GAME = 'panda-dragon-preview';\nconst DRAGON_PATH_RULES_VERSION = 1;\nconst DRAGON_PATH_TITLE = 'Путь дракона';"
         }
       ]
     },

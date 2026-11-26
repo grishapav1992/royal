@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {verifyRelease,assertClean} from '../../../scripts/release.mjs';
+import {moduleProjectionCatalog} from '../../../scripts/module-source-projection.mjs';
 import {readHostProjection} from '../../../scripts/build-host-projection.mjs';
 
 const folder='deployment/releases/flooded-temple-ebb-20261126-v1';
@@ -77,6 +78,10 @@ execFileSync(git,['merge-base','--is-ancestor',release.sourceCommit,'origin/main
 assert.equal(release.scope,'modules');assert.deepEqual(release.modules,['flooded-temple']);
 assert.equal(release.baseCommit,before.sourceCommit,'Release targets another production baseline');
 const reader=await readHostProjection(process.cwd(),projection,{strictOrigins:true});
+
+const catalog=await moduleProjectionCatalog(reader);
+const liveContracts=Object.fromEntries(catalog.map(({gameId,apiVersion,rulesVersion,progressVersion})=>[gameId,{apiVersion,rulesVersion,progressVersion}]));
+assert.deepEqual(liveContracts,before.moduleHost.games,'Projected contracts differ from the complete installed host registry');
 
 const pointerPath='/opt/royal-game-modules/'+game+'/active.json';
 assert.equal(hash(priorBytes),before.moduleFiles['/opt/royal-game-modules/'+game+'/versions/'+prior.version+'/manifest.json'],'Prior manifest is not the installed one');
