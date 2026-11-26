@@ -1,0 +1,107 @@
+{
+  "release": "winter-stair-20261126-v1",
+  "published": true,
+  "preparedImage": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+  "runningImage": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+  "containerRestarted": true,
+  "sourceCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "changedSources": 4,
+  "clientDeltaFiles": 9,
+  "configurationsAndMountsPreserved": true,
+  "gameDataPreserved": true,
+  "backendDeltaFiles": 0,
+  "otherBackendProgramsAndModulesPreserved": true,
+  "oldAssetsPreserved": true,
+  "otherPersistentServicesPreserved": 10,
+  "baseCommit": "5e6c1de5fae0f61962ad68ce36a0718102392778",
+  "featureCommit": "709bd999aa716698f3a7f54a51f0a3f6370960cc",
+  "rollbackImage": "sha256:138fb4ab06218c31ee91645c566980e756e45da1228291c06cbfef06b8419e52",
+  "releaseManifestSha256": "89ed367b84943731dc3743f7a659c819bcc7282b8fb4db8210624aabdeb3155e",
+  "receiptSha256": "155b1a406aaceac876bc7a241fc0c3c8ea7ac882c0e29a513522598ca83ad2d6",
+  "activeModulePointersUnchanged": 125,
+  "activeCatalogue": 20,
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "checks": {
+    "rtpProfiles": 39,
+    "stakePolicies": 21,
+    "typecheck": true,
+    "githubVerified": true,
+    "walletServerTests": 19,
+    "installerTests": 20,
+    "priorBrowser": {
+      "desktop": {
+        "wallet": {
+          "stakeUnits": "10",
+          "acceptedRoundRecoveredAfterClose": true,
+          "sameOperationId": true,
+          "oneDebit": true,
+          "activeCatalogue": 20
+        }
+      }
+    },
+    "browser": {
+      "desktop": {
+        "stairs": {
+          "stairStep": 11,
+          "rearVista": true,
+          "road": true,
+          "online": true
+        },
+        "wallet": {
+          "stakeUnits": "10",
+          "acceptedRoundRecoveredAfterClose": true,
+          "sameOperationId": true,
+          "oneDebit": true,
+          "activeCatalogue": 20
+        }
+      },
+      "mobile": {
+        "stairs": {
+          "stairStep": 11,
+          "rearVista": true,
+          "road": true,
+          "online": true
+        },
+        "wallet": {
+          "stakeUnits": "10",
+          "acceptedRoundRecoveredAfterClose": true,
+          "sameOperationId": true,
+          "oneDebit": true,
+          "activeCatalogue": 20
+        }
+      }
+    },
+    "public": {
+      "healthz": 200,
+      "guestWalletStatus": 401,
+      "sha256Matched": [
+        "/assets/ActivitiesUI-0CuepB0t.js",
+        "/assets/ClubWorld-F0lqIscb.js",
+        "/assets/GameHostRuntime-Co3MkfTN.js",
+        "/assets/index-D2I0EeRt.js",
+        "/assets/main-DAEgLmAQ.js",
+        "/assets/phaser-CDKrB-hX.js",
+        "/assets/playerLevelStatus-6MygUjvy.js",
+        "/assets/PvpUI-BqhN6it6.js",
+        "/"
+      ],
+      "activeModulePointers": 125,
+      "activeCatalogue": 20,
+      "programFiles": 8845
+    },
+    "fixture": "Verified host artifact, byte-verified production backend and roulette package, temporary PostgreSQL"
+  },
+  "maintenance": {
+    "startedAt": 1795673046.484394,
+    "status": "completed",
+    "freeBefore": 10992619520,
+    "freeAfter": 11006341120,
+    "removedEntries": 24,
+    "removedImageTags": 3,
+    "durationSeconds": 82.16,
+    "timer": "enabled and active",
+    "availableBytes": 11007606784
+  }
+}
