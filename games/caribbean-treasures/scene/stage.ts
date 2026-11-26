@@ -112,7 +112,7 @@ export class Stage{
       this.ball={x,y,s,px:this.ball?.x??x,py:this.ball?.y??y};},u=>u*u*.35+u*.65);
     this.ball=null;
     if(!this.clock.hurry){this.fx.blast(to.x,to.y,r.w*.62);}
-    this.pirate.gesture('cannon');
+    this.pirate.react('cannon');
     void this.clock.tween(.5,u=>{const k=Math.exp(-5*u);this.recoil={x:5*k*Math.sin(u*26),y:3*k*Math.sin(u*31+1)};});
     this.block={...after};this.grow={from,u:0};
     await this.clock.tween(.46,u=>{if(this.grow)this.grow.u=u;},t=>{const k=clamp(t);return 1+2.4*(k-1)**3+1.4*(k-1)**2;});
