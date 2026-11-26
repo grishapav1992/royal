@@ -33,7 +33,8 @@ body.studio{margin:0;background:#0a1019;color:var(--paper)}
 .footnote b{font-weight:550;color:#ccd8df}.footnote>span:last-child{white-space:nowrap}
 @media(max-width:899px){.desk{padding:15px 10px 20px}.desk-heading>div{display:block}.desk-heading{margin-bottom:12px}.desk-heading p{margin-top:6px;font-size:12px}.stages{grid-template-columns:1fr;gap:12px}.stages .viewport,.stages:not([data-view=compare]) .viewport{height:clamp(440px,66svh,720px);aspect-ratio:auto}.lab{padding:12px;margin-top:12px}.scenarios{grid-template-columns:1fr}.prefs{gap:3px 14px}.footnote{display:grid;gap:6px}}
 @media(max-width:640px){.desk-heading,.desk-heading>div{display:flex;align-items:center}.desk-heading{align-items:stretch;flex-direction:column}.desk-heading>div{gap:12px}.desk-heading p{margin:0}#views button{flex:1;min-height:40px;padding:5px}.panel>header,.lab-top{padding:5px 9px}.desk :is(.lab,.panel>header) button{min-height:42px}.scenarios>div{padding-bottom:5px}.panel>header h2,.lab h2{font-size:15px}.prefs label{min-height:40px}}
-@media(max-height:545px) and (orientation:landscape){.stages .viewport,.stages:not([data-view=compare]) .viewport{height:clamp(244px,80svh,414px)}.desk-heading{margin-bottom:6px}.desk{padding-top:8px}}
+@media(max-width:640px) and (orientation:portrait){.stages .viewport,.stages:not([data-view=compare]) .viewport{height:clamp(538px,66svh,700px)}}
+@media(max-height:545px) and (orientation:landscape){.stages .viewport,.stages:not([data-view=compare]) .viewport{height:clamp(280px,80svh,414px)}.desk-heading{margin-bottom:6px}.desk{padding-top:8px}}
 .nx{--glow:var(--cyan)}
 .nx .gn-world,.nx .gn-console,.nx .gn-header{position:relative;z-index:1}
 .nx-tint,.nx-sky{pointer-events:none;position:absolute;inset:0;width:100%;height:100%;z-index:0}

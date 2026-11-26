@@ -385,6 +385,7 @@ export class Scene {
       this.root.querySelectorAll(".nx-hit").forEach((c) => c.classList.remove("nx-hit"));
       board.classList.add("nx-dimmed");
       label.textContent = `Маршрут ${l[0]} · ${i + 1} из ${lines.length}`;
+      this.setStatus(`Оплаченная линия № ${l[0]}. Показ ${i + 1} из ${lines.length}.`);
       bar.style.width = ((i + 1) / lines.length) * 100 + "%";
       const pl = `<polyline class="nx-beam" points="${p.map((q) => q.join(",")).join(" ")}"/><circle class="nx-dot" r="7" cx="${p[0]![0]}" cy="${p[0]![1]}"/>`;
       svg.innerHTML = pl;
