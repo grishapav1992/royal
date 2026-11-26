@@ -111,3 +111,7 @@
 .ct-root[data-tiny] .ct-backdrop .ct-modal{padding:12px}.ct-root[data-tiny] .ct-backdrop .ct-grid.ct-five{gap:4px}.ct-root[data-tiny] .ct-backdrop .ct-grid.ct-five button{font-size:13px}
 @media (prefers-reduced-motion:reduce){.ct-card,.ct-add,.ct-plate.ct-new,.ct-crewmini.ct-new,.ct-isle.fresh .ct-m,.ct-play.ct-turn .ct-wheel{animation:none}}
 .ct-root[data-motion=reduced] :is(.ct-card,.ct-plate.ct-new,.ct-crewmini.ct-new,.ct-isle.fresh .ct-m,.ct-play.ct-turn .ct-wheel){animation:none}
+
+.ct-crewmini .ct-face{position:relative;display:block;width:28px;height:28px;border-radius:50%;overflow:hidden;background:#2a7a90}
+.ct-face.ct-live-face:has(canvas) img{visibility:hidden}
+.ct-face .ct-pirate{filter:none}
