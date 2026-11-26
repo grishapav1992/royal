@@ -68,23 +68,6 @@ export function PandaValley({ paused, reducedMotion }: PandaValleyProps) {
           <use href={`#${id}-petal`} x="1510" y="537" fill="#d97082" />
         </g>
       </svg>}
-      <PandaTemple />
-    </div>
-  );
-}
-
-/**
- * Храм-надстройка: колонны и балка обрамляют сцену окном, внизу — тренировочный дворик.
- * Крыши монастыря нет: в проёме видны игра и персонаж, стилистика повторяет закатный фон.
- */
-function PandaTemple() {
-  return (
-    <div className="panda-temple">
-      <img className="panda-temple-courtyard" src="/assets/panda-dragon/temple-courtyard.svg" alt="" draggable={false} />
-      <span className="panda-temple-glow" />
-      <img className="panda-temple-beam" src="/assets/panda-dragon/temple-beam.svg" alt="" draggable={false} />
-      <img className="panda-temple-column panda-temple-column-left" src="/assets/panda-dragon/temple-column.svg" alt="" draggable={false} />
-      <img className="panda-temple-column panda-temple-column-right" src="/assets/panda-dragon/temple-column.svg" alt="" draggable={false} />
     </div>
   );
 }

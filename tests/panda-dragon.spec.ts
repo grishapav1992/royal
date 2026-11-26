@@ -127,8 +127,6 @@ for (const width of [390, 320]) {
     await expect(plus).toBeInViewport();
     await expect(mini.getByRole('combobox', { name: 'Быстрый выбор ставки' })).toBeEnabled();
     await expect(mini.locator('.panda-valley-motion')).toHaveCount(0);
-    await expect(mini.locator('.panda-temple-courtyard')).toBeInViewport();
-    await expect(mini.locator('.panda-temple-column').first()).toBeHidden();
     await expect(mini.locator('.panda-training-monk')).toHaveCount(0);
     await expect(mini.locator('.panda-belt')).toContainText('Зелёный пояс');
     for (const control of [plus, mini.getByRole('combobox', { name: 'Быстрый выбор ставки' }), mini.getByRole('button', { name: 'Вращать' })]) {
@@ -194,32 +192,12 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 
   test(`поле и кнопки помещаются в ${viewport.width}×${viewport.height}`, async ({ page }, info) => {
     await page.setViewportSize(viewport);
     await enterRoyal(page);
-    const assetRequests = new Map<string, number>();
-    page.on('response', response => {
-      const file = new URL(response.url()).pathname.split('/').at(-1);
-      if (file?.startsWith('temple-')) assetRequests.set(file, response.status());
-    });
     const mini = await openDragonPath(page);
     await expect(mini).toHaveAttribute('data-game-viewport', 'layout');
     await expectFitted(mini);
-    await expect(mini.locator('.panda-temple-courtyard')).toBeInViewport();
-    await expect(mini.locator('.panda-temple-beam')).toBeInViewport();
-    await expect.poll(() => assetRequests.get('temple-courtyard.svg')).toBe(200);
-    await expect.poll(() => assetRequests.get('temple-column.svg')).toBe(200);
-    const columns = mini.locator('.panda-temple-column');
-    await expect(columns).toHaveCount(2);
-    if (await columns.first().isVisible()) {
-      // Колонны обрамляют сцену, но не закрывают проём: игра и персонаж видны через окно храма.
-      const field = await mini.locator('.panda-frame').boundingBox();
-      const left = await columns.first().boundingBox();
-      const right = await columns.last().boundingBox();
-      expect(left!.x + left!.width).toBeLessThanOrEqual(field!.x + 2);
-      expect(right!.x).toBeGreaterThanOrEqual(field!.x + field!.width - 2);
-      const hero = await mini.locator('.panda-hero-wrap').boundingBox();
-      if (hero) expect(left!.x + left!.width).toBeLessThanOrEqual(hero!.x + 2);
-    } else {
-      await expect(columns.first()).toBeHidden();
-    }
+    // Переднего плана нет: сцена — только закатный фон долины.
+    await expect(mini.locator('.panda-temple')).toHaveCount(0);
+    await expect(mini.locator('.panda-training')).toHaveCount(0);
     if (viewport.width > 1000) {
       await expect(mini.locator('#chat-input')).toBeVisible();
       const valley = mini.locator('.panda-valley');
