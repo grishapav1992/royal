@@ -334,3 +334,49 @@ test('sample loading can fail and retry, and late decode after close cannot rest
  expect(closed.activeSources).toBe(0);expect(closed.ownedGraphs).toBe(0);expect(closed.music).toBe(false);expect(closed.counts).toEqual({});expect(closed.loadedClips).toBe(0);
 });
 
+
+for (const mobile of [false, true]) test.describe(mobile ? 'phone crew' : 'desktop crew', () => {
+  test.use({viewport: mobile ? {width:393,height:852} : {width:1440,height:900}, isMobile:mobile, hasTouch:mobile});
+  test('every selected pirate plays her own gesture in the connected host', async ({page,roomPath,roomSession}) => {
+    test.setTimeout(240000);
+    const {CREW_STYLE} = await import('../games/caribbean-treasures/scene/crewGestures');
+    const {CARIBBEAN_CREW} = await import('../games/caribbean-treasures/CaribbeanCrew');
+    await enter(page,roomPath);
+    await topup(page);
+    const points = await page.request.post('/__test/caribbean/points',{data:{points:3250}});
+    expect(points.ok()).toBe(true);
+    const account = (await (await page.request.get('/api/auth/me')).json()).account.id;
+    for (const member of CARIBBEAN_CREW.slice(1)) {
+      const met = await page.request.post('/api/caribbean-voyage',{headers:{'X-Royal-Account-Id':account},data:{action:'meet',characterId:member.id}});
+      expect(met.ok(),await met.text()).toBe(true);
+    }
+    await open(page);
+    await page.emulateMedia({reducedMotion:'no-preference'});
+    roomSession.send('Команда на палубе');
+    await expect(page.locator('#chat-log')).toContainText('Команда на палубе');
+    for (const {id,ru} of CARIBBEAN_CREW) await test.step(ru, async () => {
+      if (id !== 'isabella') {
+        await page.locator('[data-ct-action=crew]:visible').first().click();
+        await page.locator('.ct-isle[data-id="'+id+'"]').click();
+        await page.locator('[data-pick]').click();
+        await expect.poll(async () => (await mini(page)).captain.character).toBe(id);
+        await page.locator('.ct-chart [data-close]').click();
+      }
+      const fixture = await page.request.post('/__test/caribbean/force-scenario',{data:{name:'positive'}});
+      expect(fixture.ok()).toBe(true);
+      await page.locator('[data-ct-action=play]').click();
+      await expect.poll(async () => {
+        const {captain} = await mini(page);
+        return [captain.character,captain.reaction,captain.gesture];
+      },{timeout:16000,intervals:[80,120,160]}).toEqual([id,'win',CREW_STYLE[id].signature]);
+      await quiet(page);
+    });
+    if (mobile) {
+      await page.setViewportSize({width:320,height:568});
+      await expect(page.locator('.ct-crewmini .ct-face canvas')).toBeInViewport();
+    }
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await expect.poll(async () => (await mini(page)).captain.reaction).toBeUndefined();
+    await expect.poll(async () => (await mini(page)).captain.pose).toBe('idle');
+  });
+});

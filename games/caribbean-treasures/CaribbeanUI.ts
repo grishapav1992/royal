@@ -113,7 +113,7 @@ export class CaribbeanUI {
 <canvas class="ct-pirate" aria-hidden="true"></canvas><canvas class="ct-rain" aria-hidden="true"></canvas><canvas class="ct-fx" aria-hidden="true"></canvas>
 <div class="ct-board" role="img"></div><div class="ct-load" role="status"></div>
 <header class="ct-top"><div class="ct-plaque"><h2></h2></div>
-<button type="button" class="ct-crewmini" data-ct-action="crew"><span class="ct-ring"><img alt=""></span><span class="ct-txt"><b></b><small></small></span><span class="ct-add" hidden></span></button>
+<button type="button" class="ct-crewmini" data-ct-action="crew"><span class="ct-ring"><span class="ct-face"><img alt=""></span></span><span class="ct-txt"><b></b><small></small></span><span class="ct-add" hidden></span></button>
 <div class="ct-tools"><button type="button" class="ct-tool" data-ct-action="sound">${ICONS.sound}</button><button type="button" class="ct-tool" data-ct-action="music">${ICONS.music}</button><button type="button" class="ct-tool" data-ct-action="history">${ICONS.history}</button><button type="button" class="ct-tool" data-ct-action="info">${ICONS.info}</button><button type="button" class="ct-lines" data-ct-action="lines"></button><button type="button" class="ct-menu" data-ct-action="menu">${ICONS.menu}</button></div></header>
 <div class="ct-amount" hidden><small></small><b></b><em></em></div><div class="ct-choice" hidden></div>
 <button type="button" class="ct-plate" data-ct-action="crew"><span class="ct-pl-top"><b></b><small></small></span><span class="ct-bar"><i></i></span><span class="ct-pl-next"></span><span class="ct-add" hidden></span></button>
@@ -195,9 +195,9 @@ export class CaribbeanUI {
       this.frameRequest = 0;
       if (this.disposed || this.paused || document.hidden) return;
       const dt = Math.min(.05, Math.max(0, (now - this.lastFrame) / 1000)); this.lastFrame = now;
-      this.harbor.time += dt; this.stage.step(dt); this.pirate.step(dt);
+      this.harbor.time += dt; this.stage.step(dt); this.pirate.step(dt, !this.presenting && !this.sheet && !this.voyage.open && !this.active);
       this.stage.rock = this.reduced ? 0 : this.harbor.storm * .0075 * Math.sin(this.harbor.time * 1.05);
-      const L = this.stage.L; if (L) { this.harbor.draw(L.W, L.H); this.stage.draw(); if (L.pirate.h > 60) this.pirate.draw(); }
+      const L = this.stage.L; if (L) { this.harbor.draw(L.W, L.H); this.stage.draw(); this.pirate.draw(); }
       this.voyage.step(dt);
       this.frameRequest = requestAnimationFrame(step);
     };
@@ -246,10 +246,13 @@ export class CaribbeanUI {
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     this.harbor.place = place; this.harbor.resize(W, H, Math.min(dpr, 1.5));
     this.stage.layout({W, H, mode, board: {x: bx, y: by, w: bw, h: bh}, b, pirate: P, muzzle, gun}, dpr);
-    const canvas = this.pirate.canvas; Object.assign(canvas.style, {left: P.x + 'px', top: P.y + 'px', width: P.w + 'px', height: P.h + 'px', display: P.h > 60 ? 'block' : 'none'});
-    // the lower edge dissolves into the plate, so every drawing ends softly
-    soften(canvas, mode === 'portrait' ? 'linear-gradient(transparent,#000 3%,#000 76%,transparent 86%)' : mode === 'short' ? 'linear-gradient(transparent,#000 3%)' : 'linear-gradient(transparent,#000 3%,#000 88%,transparent 99%)');
-    if (P.h > 60) this.pirate.resize(P.w, P.h, dpr);
+    const canvas = this.pirate.canvas, compactPortrait = P.h <= 60;
+    const parent = compactPortrait ? this.element('.ct-face') : this.root;
+    if (canvas.parentElement !== parent) parent.insertBefore(canvas, compactPortrait ? null : this.element('.ct-rain'));
+    const portrait = compactPortrait ? {x:-16,y:-4,w:60,h:90} : P;
+    Object.assign(canvas.style, {left:portrait.x+'px', top:portrait.y+'px', width:portrait.w+'px', height:portrait.h+'px'});
+    soften(canvas, compactPortrait ? 'linear-gradient(#000,#000)' : mode === 'portrait' ? 'linear-gradient(transparent,#000 3%,#000 76%,transparent 86%)' : mode === 'short' ? 'linear-gradient(transparent,#000 3%)' : 'linear-gradient(transparent,#000 3%,#000 88%,transparent 99%)');
+    this.pirate.resize(portrait.w, portrait.h, dpr);
     this.render(); this.voyage.resize();
   }
 
@@ -385,7 +388,7 @@ export class CaribbeanUI {
     this.motion.abort(); const motion = this.motion = new AbortController(), signal = motion.signal;
     stage.clock.hurry = false; stage.tour = null; this.element('.ct-amount').hidden = true; this.offer = price; const held = this.wallet?.balance; this.hold = held;
     this.tally = undefined; this.displayed = this.active ? previous : undefined; this.presenting = true; this.visualPhase = 'waiting';
-    if (!this.reduced) { this.pirate.show('focus'); this.pirate.gesture('nod'); }
+    if (!this.reduced) this.pirate.react('watch');
     void this.audio.enter();
     if (rolls && !this.reduced) stage.startRoll(); else stage.resetWins();
     const rolling = stage.clock.now;
@@ -421,7 +424,7 @@ export class CaribbeanUI {
   }
   private async revealSea(confirmed: CaribbeanView, signal: AbortSignal) {
     this.displayed = confirmed; this.visualPhase = 'sea'; this.render();
-    await this.accent('bonus', signal, () => { this.pirate.show('bonus', 2.2); this.pirate.gesture('win'); });
+    await this.accent('bonus', signal, () => { this.pirate.react('sail'); });
     if (signal.aborted) return;
     await this.until(signal, this.stage.enterSea(confirmed.tactic === 'raid' ? 'raid' : 'storm'));
   }
@@ -429,7 +432,7 @@ export class CaribbeanUI {
     const stage = this.stage, spin = confirmed.spins.at(-1)!, frame = spin.frame, from = BigInt(before?.totalPayoutUnits ?? '0'), total = BigInt(confirmed.totalPayoutUnits), cost = BigInt(confirmed.costUnits);
     this.displayed = {...confirmed, totalPayoutUnits: String(from)}; this.visualPhase = 'reels'; this.render();
     await this.until(signal, stage.stop(frame)); if (signal.aborted) return;
-    if (frame.blockBefore) { this.visualPhase = 'giant'; this.render(); this.pirate.show('focus'); await this.until(signal, stage.giant()); if (signal.aborted) return; }
+    if (frame.blockBefore) { this.visualPhase = 'giant'; this.render(); this.pirate.react('giant'); await this.until(signal, stage.giant()); if (signal.aborted) return; }
     if (frame.cannon && frame.block) { this.visualPhase = 'cannon'; this.render(); await this.until(signal, stage.cannon(frame.block, frame.grid)); if (signal.aborted) return; }
     else if (frame.block) { stage.block = {...frame.block}; stage.grid = [...frame.grid]; }
     // only a total above the whole accepted price is a profit
@@ -446,15 +449,15 @@ export class CaribbeanUI {
       await this.until(signal, Promise.all([stage.wins(frame, this.amounts(confirmed), quiet), count()])); if (signal.aborted) return;
     }
     this.displayed = confirmed; this.tally = undefined;
-    if (confirmed.phase === 'choice') { await this.accent('bonus', signal, () => { this.visualPhase = 'outcome'; this.render(); this.pirate.show('bonus'); }); return; }
-    if (confirmed.phase !== 'complete') { this.visualPhase = 'outcome'; this.render(); if (frame.wins.length && !quiet) this.pirate.show('win', 1); else this.pirate.show('idle'); return; }
+    if (confirmed.phase === 'choice') { await this.accent('bonus', signal, () => { this.visualPhase = 'outcome'; this.render(); this.pirate.react('choice'); }); return; }
+    if (confirmed.phase !== 'complete') { this.visualPhase = 'outcome'; this.render(); if (frame.wins.length && !quiet) this.pirate.react('win'); else this.pirate.show('idle'); return; }
     const outcome = this.outcome(confirmed);
     await this.accent(outcome, signal, () => {
       this.visualPhase = 'outcome'; this.render();
-      if (outcome === 'bigwin') { this.pirate.show('laugh', 2.8); this.pirate.gesture('big'); }
-      else if (outcome === 'win') { this.pirate.show('win', 1.8); this.pirate.gesture('win'); }
+      if (outcome === 'bigwin') { this.pirate.react('big'); }
+      else if (outcome === 'win') { this.pirate.react('win'); }
       else if (outcome === 'return') this.pirate.show('idle');
-      else { this.pirate.show('soft', 1.1); this.pirate.gesture('soft'); }
+      else { this.pirate.react('soft'); }
     });
     if (signal.aborted) return;
     if (outcome === 'bigwin') {
@@ -594,6 +597,7 @@ export class CaribbeanUI {
     plate.querySelector('b')!.textContent = name; plate.querySelector('small')!.textContent = profile ? t(`Команда ${profile.met.length} из ${CREW.length}`, `Crew ${profile.met.length} of ${CREW.length}`) : '';
     plate.querySelector<HTMLElement>('.ct-bar i')!.style.width = (fresh ? 100 : way?.fill ?? 0) + '%';
     plate.querySelector('.ct-pl-next')!.textContent = !profile ? this.voyages.failed ? t('Прогресс недоступен', 'Progress unavailable') : '' : fresh ? t('Новая пиратка ждёт', 'A new pirate is waiting') : !way!.next ? t('Вся команда в сборе', 'The whole crew is here') : this.mode === 'portrait' ? t(`Ещё ${need} ${points(need)}`, `${need} ${points(need)} to go`) : t(`До следующей ещё ${need} ${points(need)}`, `Next in ${need} ${points(need)}`);
+    this.element('.ct-face').classList.toggle('ct-live-face', this.pirate.ready);
     const thumb = crewThumbnail(shown.id), img = mini.querySelector('img')!; if (img.getAttribute('src') !== thumb) img.src = thumb;
     mini.querySelector<HTMLElement>('.ct-ring')!.style.setProperty('--p', String(fresh ? 100 : way?.fill ?? 0)); mini.querySelector('b')!.textContent = name;
     mini.querySelector('small')!.textContent = !profile ? '' : fresh ? t('новая!', 'new!') : way!.next ? t(`ещё ${need}`, `${need} to go`) : t('все', 'all');
@@ -604,7 +608,7 @@ export class CaribbeanUI {
     const wanted = this.voyages.profile?.selected;
     if (!wanted || this.presenting || this.pirate.id === wanted || this.wantedPirate === wanted) return;
     this.wantedPirate = wanted;
-    void this.pirate.select(wanted).then(done => { if (this.wantedPirate === wanted) this.wantedPirate = undefined; if (done && !this.disposed) { if (!this.reduced) this.pirate.gesture('enter'); this.renderCrew(); } });
+    void this.pirate.select(wanted).then(done => { if (this.wantedPirate === wanted) this.wantedPirate = undefined; if (done && !this.disposed) { if (!this.reduced) this.pirate.react('enter'); this.renderCrew(); } });
   }
   private wantedPirate?: CrewId;
   private openVoyage(trigger: HTMLElement) {
