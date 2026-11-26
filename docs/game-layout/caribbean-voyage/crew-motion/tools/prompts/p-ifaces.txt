@@ -1,0 +1,8 @@
+Six identical close-up crops of the same adult woman, in a grid of 3 columns and 2 rows, each cell 512x512. Keep everything in every cell pixel-aligned with the input: same head position, size, angle, red headscarf, hair, earrings, neck, lighting and painterly style. Change ONLY the facial expression (eyes, eyelids, brows, mouth, cheeks), one per cell, reading left to right, top row first:
+1 BLINK: both eyes fully closed with relaxed lids and lashes, the same gentle half-smile.
+2 WARM SMILE: pleased confident smile, cheeks lifted, eyes slightly narrowed with warmth.
+3 LAUGH: joyful open-mouth laugh showing upper teeth, eyes crinkled.
+4 SURPRISE: eyebrows raised, eyes wide, lips parted in an O.
+5 SOFT: composed sympathetic expression, closed mouth, brows slightly drawn together.
+6 FOCUS: attentive look, eyes turned towards the left side of the picture, lips relaxed.
+Same woman in all cells. Transparent background, no borders, no text.

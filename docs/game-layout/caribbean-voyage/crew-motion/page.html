@@ -1,0 +1,28 @@
+<title>Пиратки: живая анимация</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--bg:#0c1d27;--fg:#f3e6cb;--muted:#a9b9bd;--line:#2d4a57;--gold:#e6b765;--sea:#12303f;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-block:18px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{max-width:1100px;margin:0 auto 12px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end}
+h1{margin:0 auto 0 0;font:700 24px/1.15 Georgia,serif;color:var(--gold)}h1 span{display:block;font:13px system-ui,sans-serif;color:var(--muted)}
+label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+select,button{font:14px system-ui,sans-serif;color:var(--fg);background:var(--sea);border:1px solid var(--line);border-radius:6px;min-height:40px;padding:4px 12px}
+button[aria-pressed=true]{background:#7d4a22;border-color:var(--gold)}
+button:focus-visible,select:focus-visible{outline:2px solid #fff0c0;outline-offset:2px}
+.acts{max-width:1100px;margin:0 auto 14px;display:flex;flex-wrap:wrap;gap:8px}
+.stage{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+figure{margin:0;position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#2b6f8a url(assets/harbor.webp) 30% 60%/auto 135%}
+figure:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,18,30,.1),rgba(4,16,24,.55))}
+figcaption{position:absolute;left:10px;top:10px;z-index:2;padding:4px 10px;border-radius:6px;background:rgba(20,10,4,.75);font-weight:600}
+canvas{position:relative;display:block;width:100%;aspect-ratio:2/3;height:auto}
+p.note{max-width:1100px;margin:12px auto 0;color:var(--muted)}
+@media (max-width:640px){.stage{gap:8px}figcaption{font-size:12px}}
+</style>
+<header><h1>Пиратки<span>Пример живой анимации на двух героинях</span></h1>
+<label>Героиня<select id="who"><option value="isabella">Изабелла</option><option value="freya">Фрейя</option></select></label>
+<label>Ветер<select id="wind"><option value="0">Тихо</option><option value="1">Шторм</option></select></label>
+<button id="demo" aria-pressed="true">Показ по кругу</button></header>
+<div class="acts" id="acts"></div>
+<div class="stage"><figure><figcaption>Сейчас в игре</figcaption><canvas id="old"></canvas></figure><figure><figcaption>Новая анимация</figcaption><canvas id="new"></canvas></figure></div>
+<p class="note">Слева нынешняя игра: восемь рисунков сменяют друг друга. Справа те же героини, разобранные на части: дышит грудь, голова поворачивается, коса, платок и серьга качаются на пружинах, лицо меняет выражение плавно, рука делает жест.</p>
+<script src="page.js"></script>
