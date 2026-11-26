@@ -8,7 +8,7 @@ const profiles={
  'royal-roulette':{root:'.rr-root',field:'.rr-wheel',main:'[data-rr-spin]',stake:'.rr-compact-stake select',essential:['[data-rr-selection]','[data-rr-payout]','[data-rr-balance]']},
  'github-crash':{root:'.last-exit',field:'.le-stage',main:'[data-start]:not([hidden]),[data-cashout]:not([hidden])',stake:'[data-stake]',essential:['[data-balance]','[data-value]']},
  'original-cr-vs-leo':{root:'.cr-leo',field:'.cl-stage',main:'[data-shoot]',stake:'[data-stake]',essential:['[data-balance]','.cl-heroes','.cl-risks','.cl-track','[data-take]']},
- 'original-jackie-chan':{root:'.jackie',field:'.jc-stage',main:'[data-fight]',stake:'[data-stake]',essential:['[data-balance]','.jc-risk-options','[data-path]','[data-takes]','.jc-collection-line']},
+ 'original-jackie-chan':{root:'.jackie',field:'.jc-stage',main:'[data-fight]',stake:'[data-stake]',essential:['[data-balance]','.jc-risk-options','[data-path]','[data-wardrobe]','[data-place]']},
 };
 type Id=keyof typeof profiles;
 const ids=Object.keys(profiles) as Id[];
@@ -57,8 +57,7 @@ for(const id of ids)test('settings, paid round, reopen and lost response: '+id,a
  if(id==='original-cr-vs-leo')await root.locator('button[data-hero=leo]').click();
  await gear.click();await expect(panel).toBeVisible();
  if(id==='royal-roulette'){await panel.locator('[data-rr-value="17"]').click();await expect(panel.locator('[data-rr-value="17"]')).toHaveAttribute('aria-pressed','true');}
- let location='';
- if(id==='original-jackie-chan'){await panel.locator('[data-location]').selectOption({index:1});location=await panel.locator('[data-location]').inputValue();await panel.locator('[data-speed]').click();}
+ if(id==='original-jackie-chan')await panel.locator('[data-speed]').click();
  if(id==='royal-roulette'){
   for(const [width,height]of [[320,568],[568,320],[852,393],[393,852]]){
    await page.setViewportSize({width,height});
@@ -74,7 +73,7 @@ for(const id of ids)test('settings, paid round, reopen and lost response: '+id,a
  if(id!=='royal-roulette')await page.screenshot({path:out+'/'+id+'-options.png'});await page.setViewportSize({width:852,height:393});await panel.press('Escape');await expect(panel).toBeHidden();await expect(gear).toBeFocused();await fit(page,id);
  await page.setViewportSize({width:1440,height:900});await fit(page,id);await page.setViewportSize({width:393,height:852});
  if(id==='original-cr-vs-leo')await expect(root.locator('button[data-hero=leo]')).toHaveAttribute('aria-pressed','true');
- if(id==='original-jackie-chan'){await expect(root.locator('[data-location]')).toHaveValue(location);await expect(root.locator('[data-speed]')).toHaveAttribute('aria-pressed','true');}
+ if(id==='original-jackie-chan'){await expect(root.locator('[data-speed]')).toHaveAttribute('aria-pressed','true');await root.locator('[data-place]').click();await root.locator('button[data-location=harbor]').click();await expect(root).toHaveAttribute('data-location','harbor');}
  if(id==='royal-roulette'){await expect(root.locator('[data-rr-selection]')).toContainText('17');await root.locator(p.stake).selectOption('0.1');}
  else await root.locator(p.stake).selectOption('10');
  let release!:()=>void,seen=false;const gate=new Promise<void>(r=>release=r),endpoint=id==='royal-roulette'?'**/api/demo-wallet/operations':'**/api/demo-wallet/expansion';
@@ -106,7 +105,7 @@ test('free series choices, cashout and collections survive rotation',async({page
   const s=await session(page,id),shots=id==='original-cr-vs-leo'?s.view.penalty.shots:s.view.jackie.combat.shots;expect(shots).toHaveLength(2);expect(shots[1].risk).toBe('extreme');
   await page.setViewportSize({width:852,height:393});await fit(page,id,[take]);await page.screenshot({path:out+'/'+id+'-series-landscape.png'});await root.locator(take).click();await finish(page,id);
   expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(id==='original-cr-vs-leo'?1:2);
-  if(id==='original-jackie-chan'){await root.locator('[data-gallery]').click();await expect(root.locator('[data-dialog]')).toBeVisible();await page.screenshot({path:out+'/jackie-wardrobe.png'});await root.locator('[data-close]').click();}
+  if(id==='original-jackie-chan'){await root.locator('[data-wardrobe]').click();await expect(root.locator('[data-dialog]')).toBeVisible();await page.screenshot({path:out+'/jackie-wardrobe.png'});await root.locator('[data-close]').click();}
  }
 });
 

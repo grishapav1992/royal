@@ -5,6 +5,7 @@ import {createServer as netServer} from 'node:net';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {temporaryDatabase} from '../scripts/database-test';
 import {PostgresDatabase,databaseConfig} from '../server/database';
+import {selectEntryMode} from './entry-mode';
 
 let vite:ViteDevServer,backend:ChildProcess,db:Awaited<ReturnType<typeof temporaryDatabase>>,baseURL:string,logs='';
 const out='artifacts/work/jackie-chan';
@@ -23,14 +24,42 @@ async function seed(email:string){const connection=new PostgresDatabase('jackie_
 async function outcome(mode:'win'|'lose'){await new Promise<void>(resolve=>{backend.once('message',()=>resolve());backend.send?.(mode);});}
 async function enter(page:Page,lang='ru'){
   await page.route('https://luelonplay.com/**',route=>route.fulfill({json:{games:[]}}));await page.route('**/api/casinoapipro/status',route=>route.fulfill({json:{configured:false,walletConnected:false}}));await page.goto(baseURL+'/?lang='+lang);
-  const email=`jackie-${crypto.randomUUID()}@example.test`,en=lang==='en';await page.getByLabel(en?'Email':'Почта',{exact:true}).fill(email);await page.getByLabel(en?'Password':'Пароль',{exact:true}).fill('Jackie-isolated-check-123!');const auth=page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().method()==='POST');await page.getByRole('button',{name:en?'Continue':'Продолжить',exact:true}).click();expect((await auth).ok()).toBe(true);await seed(email);await page.getByRole('button',{name:en?'Enter the hall':'Войти в зал',exact:true}).click();
-  await expect(page.locator('#join-dialog')).toBeHidden();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo?.getState().online)).toBe(true);await page.evaluate(async()=>{const p='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */p)).demoWallet.refresh();});
-  await page.locator('#game').focus();await page.keyboard.down('ArrowRight');try{await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().x),{timeout:15000,intervals:[50]}).toBeGreaterThan(1100);}finally{await page.keyboard.up('ArrowRight');}
-  await page.locator('#game').focus();await page.keyboard.down('ArrowDown');try{await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().y),{timeout:15000,intervals:[50]}).toBeGreaterThan(760);}finally{await page.keyboard.up('ArrowDown');}
+  const email=`jackie-${crypto.randomUUID()}@example.test`,club=page.locator('[data-entry-mode="club"]'),mail=page.getByLabel(lang==='en'?'Email':'Почта',{exact:true});
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await expect(club.or(mail)).toBeVisible({timeout:30000});if(await club.isVisible())await selectEntryMode(page);
+  await mail.fill(email);await page.getByLabel(lang==='en'?'Password':'Пароль',{exact:true}).fill('Jackie-isolated-check-123!');await page.getByRole('button',{name:lang==='en'?'Continue':'Продолжить',exact:true}).click();
+  await expect(club.or(page.locator('#character-step'))).toBeVisible();await seed(email);if(await club.isVisible())await club.click();
+  await expect(page.locator('#character-step')).toBeVisible();await page.getByRole('button',{name:lang==='en'?'Enter the hall':'Войти в зал',exact:true}).click();
+  await expect(page.locator('#join-dialog')).toBeHidden();await expect.poll(()=>page.evaluate(()=>{try{return(window as any).royalDemo?.getState()?.online;}catch{return false;}}),{timeout:30000}).toBe(true);
+  await page.evaluate(async()=>{const p='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */p)).demoWallet.refresh();});
+  if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
+  await expect.poll(()=>page.evaluate(()=>Math.abs((window as any).royalDemo.getState().view.width-document.getElementById('game')!.clientWidth))).toBeLessThanOrEqual(1);
   await page.locator('#games-tab').click();
-  let cabinet='studio-afterglow';
-  await expect.poll(async()=>{if(await page.locator('#mini-dialog').isVisible())return true;cabinet=await page.evaluate(preferred=>{const occupied=new Set((window as any).royalDemo.getState().remotePositions.map((player:any)=>player.cabinet));return [preferred,'studio-nitro-run','studio-last-convoy','studio-meme-overload','studio-velvet-reign','studio-caramel-carnival','studio-cosmic-escape'].find(id=>!occupied.has(id))??preferred;},cabinet);try{await page.locator(`[data-cabinet="${cabinet}"]`).click({timeout:1000});}catch{}return page.locator('#mini-dialog').isVisible();},{timeout:30000,intervals:[1000,2500]}).toBe(true);
-  await page.locator('[data-platform-game="original-jackie-chan"]').click();await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false',{timeout:30000});await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
+  // Another test's player may still hold a cabinet, so every attempt walks to the next one.
+  const cabinets=['studio-cosmic-escape','studio-nitro-run','studio-last-convoy','studio-meme-overload','studio-velvet-reign'];let attempt=0;
+  await expect.poll(async()=>{
+    if(await page.locator('#mini-dialog').isVisible())return true;
+    const cabinet=page.locator(`[data-cabinet="${cabinets[Math.floor(attempt++/3)%cabinets.length]}"]`);
+    try{if(!await cabinet.isVisible())await page.locator('#games-tab').click({timeout:4000});if(!await page.locator('#mini-dialog').isVisible())await cabinet.click({timeout:4000});}catch{}
+    return page.locator('#mini-dialog').isVisible();
+  },{timeout:90000,intervals:[1000,4000]}).toBe(true);
+  await page.locator('[data-platform-game="original-jackie-chan"]').click();await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false',{timeout:30000});await page.emulateMedia({reducedMotion:'no-preference'});await expect(page.locator('#club-chat-dock #chat-input')).toBeEnabled();
+}
+/** Wide windows keep the connected chat beside the game, smaller ones open it over the game. */
+async function connectedChat(page:Page){
+  const {width,height}=page.viewportSize()!;
+  if(width>=1080&&height>=600)await expect(page.locator('#club-chat-dock #chat-input')).toBeEnabled();
+  else await expect(page.locator('#mini-dialog .game-chat-toggle')).toBeInViewport();
+}
+/** The film set is chosen in a picture dialog. */
+async function place(page:Page,id:string){
+  const game=page.locator('.jackie');await game.locator('[data-place]').click();await game.locator(`button[data-location="${id}"]`).click();await expect(game.locator('[data-dialog]')).toBeHidden();await expect(game).toHaveAttribute('data-location',id);
+}
+/** Phones keep rarely used switches in the settings panel. */
+async function inPanel(page:Page,selector:string,run:(control:ReturnType<Page['locator']>)=>Promise<void>){
+  const game=page.locator('.jackie'),gear=game.locator('[data-options]'),panel=game.locator('.game-options-panel');
+  if(!await gear.isVisible())return run(game.locator(selector));
+  await gear.click();await expect(panel).toBeVisible();await run(panel.locator(selector));await page.keyboard.press('Escape');await expect(panel).toBeHidden();
 }
 async function act(page:Page,selector='[data-fight]'){
   const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('.jackie '+selector).click();const r=await reply;expect(r.ok()).toBe(true);const body=await r.json();await expect(page.locator('.jackie [data-fight]')).toBeEnabled({timeout:15000});return body.session;
@@ -54,7 +83,7 @@ test('fight requests and results keep the canvas fixed in the host with chat',as
     const samples=await page.evaluate(()=>{cancelAnimationFrame((window as any).jackieGeometryFrame);return(window as any).jackieGeometry as Array<Record<string,number>>;});
     await writeFile(out+`/geometry-${width}.json`,JSON.stringify(samples));
     for(const field of ['x','y','width','height','scrollY'])expect(Math.max(...samples.map(row=>row[field]))-Math.min(...samples.map(row=>row[field])),`${width}px ${field}`).toBeLessThanOrEqual(1);
-    await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
+    await connectedChat(page);
     await page.screenshot({path:out+`/stable-scene-${width}.png`});
   }
 });
@@ -66,16 +95,16 @@ test('location themes, independent switches and shared audio lifecycle work in t
   await expect.poll(async()=>(await state()).playing,{timeout:15000}).toBe(true);
   const themes=[];
   for(const [location,title]of [['restaurant','Shenyang'],['harbor','Hot Pursuit'],['market','Eighties Action']]){
-    await game.locator('[data-location]').selectOption(location);await expect.poll(async()=>(await state()).title).toBe(title);
+    await place(page,location);await expect.poll(async()=>(await state()).title).toBe(title);
     await expect.poll(async()=>(await state()).playing,{timeout:10000}).toBe(true);await expect.poll(async()=>(await state()).active).toBe(1);themes.push(await state());
   }
-  for(const location of ['restaurant','market','harbor','market','restaurant'])await game.locator('[data-location]').selectOption(location);
+  for(const location of ['restaurant','market','harbor','market','restaurant'])await place(page,location);
   await expect.poll(async()=>(await state()).playing).toBe(true);await expect.poll(async()=>(await state()).active).toBe(1);expect((await state()).title).toBe('Shenyang');
-  await page.route('**/jackie-chan/audio/harbor.mp3',route=>route.abort('failed'));await game.locator('[data-location]').selectOption('harbor');await expect.poll(async()=>(await state()).error).not.toBe('');
+  await page.route('**/jackie-chan/audio/harbor.mp3',route=>route.abort('failed'));await place(page,'harbor');await expect.poll(async()=>(await state()).error).not.toBe('');
   await page.unroute('**/jackie-chan/audio/harbor.mp3');await game.locator('[data-speed]').click();await expect.poll(async()=>(await state()).playing).toBe(true);await game.locator('[data-speed]').click();
   await game.locator('[data-sound]').click();await expect(game.locator('[data-sound]')).toHaveAttribute('aria-pressed','false');expect((await state()).playing).toBe(true);
   await game.locator('[data-music]').click();await expect(game.locator('[data-music]')).toHaveAttribute('aria-pressed','false');await expect.poll(async()=>(await state()).active).toBe(0);
-  await game.locator('[data-location]').selectOption('harbor');expect((await state()).enabled).toBe(false);expect((await state()).active).toBe(0);
+  await place(page,'harbor');expect((await state()).enabled).toBe(false);expect((await state()).active).toBe(0);
   await game.locator('[data-music]').click();await expect.poll(async()=>(await state()).playing).toBe(true);expect((await state()).title).toBe('Hot Pursuit');
   await game.locator('[data-sound]').click();await expect(game.locator('[data-sound]')).toHaveAttribute('aria-pressed','true');
   const master=async(command:'mute'|'unmute'|'zero'|'volume'|'suspend'|'resume')=>page.evaluate(async command=>{const path='/src/game/GameAudio.ts',audio=(await import(/* @vite-ignore */path)).gameAudio;if(command==='mute'||command==='unmute')audio.setMuted(command==='mute');else if(command==='zero'||command==='volume')audio.setVolume(command==='zero'?0:.35);else await audio.context[command]();},command);
@@ -87,15 +116,15 @@ test('location themes, independent switches and shared audio lifecycle work in t
   await page.evaluate(()=>{Object.defineProperty(document,'hidden',{value:false,configurable:true});document.dispatchEvent(new Event('visibilitychange'));});
   await expect.poll(async()=>(await state()).playing).toBe(true);
   await game.locator('[data-rules]').click();await expect(game.locator('.jc-music-credits a')).toHaveCount(3);await expect(game.locator('[data-dialog]')).toContainText('Kevin MacLeod');await expect(game.locator('[data-dialog] a[href="https://creativecommons.org/licenses/by/4.0/"]')).toBeVisible();await game.locator('[data-close]').click();
-  await page.setViewportSize({width:390,height:844});for(const selector of ['[data-music]','[data-sound]']){await game.locator(selector).scrollIntoViewIfNeeded();await expect(game.locator(selector)).toBeInViewport();expect((await game.locator(selector).boundingBox())!.height).toBeGreaterThanOrEqual(44);}
-  await expect(page.locator('#mini-dialog #chat-input')).toBeInViewport();await page.screenshot({path:out+'/music-mobile.png'});expect(posts).toBe(0);
+  await page.setViewportSize({width:390,height:844});for(const selector of ['[data-music]','[data-sound]'])await inPanel(page,selector,async control=>{await expect(control).toBeInViewport();expect((await control.boundingBox())!.height).toBeGreaterThanOrEqual(44);});
+  await connectedChat(page);await page.screenshot({path:out+'/music-mobile.png'});expect(posts).toBe(0);
   await outcome('win');const operation=act(page);await expect.poll(async()=>(await state()).ducked).toBe(true);await expect.poll(async()=>(await state()).playing).toBe(true);await operation;await expect.poll(async()=>(await state()).ducked).toBe(false);expect(posts).toBe(1);
   await page.emulateMedia({reducedMotion:'reduce'});await act(page,'[data-cashout]');
-  await game.locator('[data-music]').click();await game.locator('[data-sound]').click();await page.locator('#studio-game-list').click();await expect(game).toHaveCount(0);
+  await inPanel(page,'[data-music]',control=>control.click());await inPanel(page,'[data-sound]',control=>control.click());await page.locator('#studio-game-list').click();await expect(game).toHaveCount(0);
   expect(await page.evaluate(()=>(window as any).musicElements.every((audio:HTMLAudioElement)=>audio.paused&&!audio.getAttribute('src')))).toBe(true);
   await page.locator('[data-platform-game="original-jackie-chan"]').click();await expect(game).toHaveAttribute('data-loading','false');
   await expect(game.locator('[data-music]')).toHaveAttribute('aria-pressed','false');await expect(game.locator('[data-sound]')).toHaveAttribute('aria-pressed','false');expect((await state()).active).toBe(0);expect(posts).toBe(2);
-  await game.locator('[data-music]').click();await expect.poll(async()=>(await state()).playing).toBe(true);await expect.poll(async()=>(await state()).active).toBe(1);
+  await inPanel(page,'[data-music]',control=>control.click());await expect.poll(async()=>(await state()).playing).toBe(true);await expect.poll(async()=>(await state()).active).toBe(1);
   expect(errors).toEqual([]);await writeFile(out+'/music-acceptance.json',JSON.stringify({themes,independentSwitches:true,preferencesSurviveReopen:true,sharedMuteAndVolume:true,contextAndVisibilityRecovery:true,closeDisposesAllMedia:true,duckingDuringFight:true,settingsPosts:0,realTemporaryPostgres:true,connectedChat:true,errors},null,2));
   await page.locator('#mini-dialog .mini-top [data-close]').click({timeout:5000});await expect(page.locator('#mini-dialog')).toBeHidden();
 });
@@ -104,16 +133,25 @@ test('game follows the real available stage, keeps actions visible and uses read
   test.setTimeout(180000);await enter(page);const game=page.locator('.jackie'),rows=[];let paidPosts=0;
   page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))paidPosts++;});
   for(const [width,height]of [[1920,1080],[1440,900],[1366,768],[1280,600],[1024,768],[820,1180],[768,1024],[640,900],[390,844],[360,640],[320,568],[844,390],[667,375]]){
-    await page.setViewportSize({width,height});
+    await page.setViewportSize({width,height});await page.waitForTimeout(250);
     await expect.poll(()=>game.evaluate(el=>Math.abs(el.getBoundingClientRect().height-el.closest('.mini-stage')!.clientHeight))).toBeLessThanOrEqual(1);
-    const geometry=await game.evaluate(el=>{const root=el.getBoundingClientRect(),stage=el.closest('.mini-stage')!,arena=el.querySelector('canvas')!.getBoundingClientRect(),button=el.querySelector('[data-fight]')!.getBoundingClientRect();return{width:innerWidth,height:innerHeight,layout:(el as HTMLElement).dataset.layout,root:root.toJSON(),arena:arena.toJSON(),button:button.toJSON(),stageOverflow:stage.scrollHeight-stage.clientHeight,overflow:el.scrollWidth-el.clientWidth};});
+    const geometry=await game.evaluate(el=>{const root=el.getBoundingClientRect(),stage=el.closest('.mini-stage')!,arena=el.querySelector('canvas')!.getBoundingClientRect(),button=el.querySelector('[data-fight]')!.getBoundingClientRect();return{width:innerWidth,height:innerHeight,layout:(el as HTMLElement).dataset.priorityLayout,root:root.toJSON(),arena:arena.toJSON(),button:button.toJSON(),stageOverflow:stage.scrollHeight-stage.clientHeight,overflow:el.scrollWidth-el.clientWidth};});
     expect(geometry.overflow).toBeLessThanOrEqual(1);expect(geometry.stageOverflow).toBeLessThanOrEqual(1);
     expect(geometry.button.top).toBeGreaterThanOrEqual(geometry.root.top);expect(geometry.button.bottom).toBeLessThanOrEqual(geometry.root.bottom+1);expect(geometry.button.height).toBeGreaterThanOrEqual(44);
-    expect(geometry.arena.height).toBeGreaterThan(60);await expect(game.locator('[data-fight]')).toBeInViewport();await expect(page.locator('#mini-dialog #chat-input')).toBeInViewport();
-    await game.locator('[data-location]').scrollIntoViewIfNeeded();await expect(game.locator('[data-location]')).toBeInViewport();await game.locator('[data-location]').selectOption('harbor');await expect(game.locator('[data-scene-name]')).toHaveText('Старый порт');
-    const colors=await game.locator('[data-location]').evaluate(el=>{const s=getComputedStyle(el),o=getComputedStyle(el.querySelector('option')!);return{color:s.color,background:s.backgroundColor,scheme:s.colorScheme,font:parseFloat(s.fontSize),optionColor:o.color,optionBackground:o.backgroundColor};});
-    expect(colors.background).toBe('rgb(55, 41, 30)');expect(colors.color).toBe('rgb(255, 231, 187)');expect(colors.scheme).toBe('dark');expect(colors.font).toBeGreaterThanOrEqual(14);expect(colors.optionColor).toBe(colors.color);expect(colors.optionBackground).toBe(colors.background);
-    await expect(game.locator('[data-fight]')).toBeInViewport();rows.push({...geometry,colors});
+    expect(geometry.arena.height).toBeGreaterThan(60);await expect(game.locator('[data-fight]')).toBeInViewport();await connectedChat(page);
+    // Everything the player needs sits inside the window and stays below the set.
+    const place_=game.locator('[data-place]'),stage=(await game.locator('.jc-stage').boundingBox())!;
+    for(const selector of ['[data-place]','[data-wardrobe]','[data-speed]','.jc-risk-options','[data-stake-field]','[data-balance]','[data-path]']){const box=(await game.locator(selector).first().boundingBox())!;expect(box.x,selector).toBeGreaterThanOrEqual(geometry.root.left-1);expect(box.x+box.width,selector).toBeLessThanOrEqual(geometry.root.right+1);expect(box.y+box.height,selector).toBeLessThanOrEqual(geometry.root.bottom+1);}
+    expect(geometry.button.top).toBeGreaterThanOrEqual(stage.y+stage.height-1);
+    await place_.click();await expect(game.locator('button[data-location]')).toHaveCount(3);await game.locator('button[data-location="harbor"]').click();await expect(game.locator('[data-scene-name]')).toHaveText('Старый порт');
+    // The hero stands clear of the place reserved for the result card.
+    await expect.poll(()=>game.evaluate(el=>{const canvas=el.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!);return canvas.getBoundingClientRect().top+hero.top-el.querySelector('[data-result]')!.getBoundingClientRect().bottom;})).toBeGreaterThanOrEqual(3);
+    // The result card never covers the location, the wardrobe or the speed control.
+    const covered=await game.evaluate(el=>{const r=el.querySelector('[data-result]')!.getBoundingClientRect();return['[data-place]','[data-wardrobe]','[data-speed]','.jc-brand>strong'].filter(s=>{const n=el.querySelector(s)!;if(!n.getClientRects().length)return false;const b=n.getBoundingClientRect();return b.left<r.right&&b.right>r.left&&b.top<r.bottom&&b.bottom>r.top;});});
+    expect(covered,`${width}x${height}`).toEqual([]);
+    const small=await game.evaluate(el=>[...el.querySelectorAll('*')].filter(n=>n.getClientRects().length&&!n.closest('dialog,.jc-spoken,.jc-people,.jc-loader')&&[...n.childNodes].some(c=>c.nodeType===3&&c.textContent!.trim())&&getComputedStyle(n).visibility==='visible').map(n=>({text:n.textContent!.trim().slice(0,24),size:parseFloat(getComputedStyle(n).fontSize)})).filter(n=>n.size<10));
+    expect(small).toEqual([]);
+    await expect(game.locator('[data-fight]')).toBeInViewport();rows.push(geometry);
     if([1920,1366,390,844].includes(width))await page.screenshot({path:out+'/responsive-'+width+'x'+height+'.png'});
   }
   expect(paidPosts).toBe(0);await writeFile(out+'/responsive-layout.json',JSON.stringify(rows,null,2));
@@ -127,11 +165,11 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   expect(new Set(cards.map(c=>c.background)).size).toBe(1);for(const card of cards){expect(card.background).toContain('/master.webp');expect(card.filter).toContain('brightness(0)');expect(card.text).toContain('Скрытый костюм');expect(card.text).not.toMatch(/USDT|1983|1985|1986|1998|2002|2010|Проект|Полицейская|Доспехи|Час пик|Кто я|Смокинг|Карате|\d+\s*\/\s*\d+/);expect(card.max).toBe(1);expect(card.value).toBe(0);}
   await page.screenshot({path:out+'/wardrobe-concealed-desktop.png'});
   await page.setViewportSize({width:320,height:740});await expect.poll(()=>game.locator('[data-dialog]').evaluate(el=>el.scrollWidth-el.clientWidth)).toBeLessThanOrEqual(1);await page.screenshot({path:out+'/wardrobe-concealed-mobile.png'});
-  await page.setViewportSize({width:1440,height:1000});await game.locator('[data-close]').click();await expect(game.locator('[data-collection-label]')).toHaveText('Прогресс коллекции костюмов');
+  await page.setViewportSize({width:1440,height:1000});await expect(game.locator('.jc-collected')).toContainText('Прогресс коллекции костюмов');await game.locator('[data-close]').click();
   await game.locator('[data-risk="extreme"]').click();await expect(game.locator('canvas')).toHaveAttribute('data-opponents','3');
   const initialFoes=(await game.locator('canvas').getAttribute('data-foes'))!.split(',');expect(initialFoes).toHaveLength(3);expect(new Set(initialFoes).size).toBe(3);await page.screenshot({path:out+'/desktop.png'});
   expect(initialFoes).toContain('master');await expect(game.locator('[data-risk="extreme"] b')).toHaveText('Сложный');
-  const first=await act(page);expect(first.view.jackie.combat.shots).toHaveLength(1);const firstRoutine=await game.locator('canvas').getAttribute('data-sequence');await expect(game.locator('[data-cashout]')).toContainText('22,00');await expect(game.locator('[data-location]')).toBeDisabled();
+  const first=await act(page);expect(first.view.jackie.combat.shots).toHaveLength(1);const firstRoutine=await game.locator('canvas').getAttribute('data-sequence');await expect(game.locator('[data-cashout]')).toContainText('0,22');await expect(game.locator('[data-place]')).toBeDisabled();
   await game.locator('[data-risk="sharp"]').click();await expect(game.locator('[data-lineup]')).toBeVisible();
   const plannedFoes=(await game.getAttribute('data-next-foes'))!.split(',');expect(plannedFoes).toHaveLength(2);expect(plannedFoes).not.toContain('master');
   await expect(game.locator('canvas')).toHaveAttribute('data-foes',initialFoes.join(','));
@@ -143,25 +181,25 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   const finalOperation=act(page);
   await page.waitForFunction(()=>(window as any).royalDemo.getMiniState()?.phase==='victory-fist',undefined,{polling:'raf',timeout:15000});
   await page.screenshot({path:out+'/victory-desktop.png'});
-  await expect(game).toHaveAttribute('data-result-kind','complete',{timeout:15000});await expect(game.locator('[data-result-title]')).toHaveText('ПОБЕДА!');await expect(game.locator('[data-result-caption]')).toContainText('5 БОЁВ');await expect(game.locator('.jc-takes .won')).toHaveCount(5);
+  await expect(game).toHaveAttribute('data-result-kind','complete',{timeout:15000});await expect(game.locator('[data-result-title]')).toHaveText('ПОБЕДА!');await expect(game.locator('[data-result-caption]')).toContainText('5 БОЁВ');await expect(game.locator('[data-path] .won')).toHaveCount(5);
   await game.locator('[data-skip-victory]').click();const completed=await finalOperation;expect(completed.view.jackie.combat.status).toBe('complete');expect(posts).toBe(1);await expect(game.locator('[data-skip-victory]')).toBeHidden();
   expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState()?.audio.active)).toBe(0);
-  for(const [width,height]of [[390,844],[320,740]]){await page.setViewportSize({width,height});await page.locator('.jc-stage').scrollIntoViewIfNeeded();await expect(game.locator('[data-result-title]')).toBeInViewport();await expect(game.locator('canvas')).toHaveAttribute('data-celebrating','false');await page.screenshot({path:out+'/victory-'+width+'.png'});}
+  for(const [width,height]of [[390,844],[320,740]]){await page.setViewportSize({width,height});await expect(game.locator('[data-result-title]')).toBeInViewport();await expect(game.locator('canvas')).toHaveAttribute('data-celebrating','false');await page.screenshot({path:out+'/victory-'+width+'.png'});}
   await page.setViewportSize({width:1440,height:1000});
   await act(page);await act(page,'[data-cashout]');await expect(game).toHaveAttribute('data-result-kind','cashout');
   for(const [width,height]of [[1440,1000],[390,844],[320,740]]){
-    await page.setViewportSize({width,height});await game.locator('.jc-stage').scrollIntoViewIfNeeded();await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
+    await page.setViewportSize({width,height});await game.locator('.jc-stage').scrollIntoViewIfNeeded();await connectedChat(page);
     await expect.poll(async()=>game.locator('.jc-stage').evaluate(stage=>{const canvas=stage.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!),result=stage.closest('.jackie')!.querySelector('[data-result]')!.getBoundingClientRect();return canvas.getBoundingClientRect().top+hero.top-result.bottom;})).toBeGreaterThanOrEqual(6);
   }
   await page.setViewportSize({width:1440,height:1000});
-  await page.emulateMedia({reducedMotion:'reduce'});await game.locator('[data-stake]').selectOption('50000');await outcome('lose');for(let i=0;i<9;i++)await act(page);await expect(game.locator('[data-count]')).toHaveText('8/8');
+  await page.emulateMedia({reducedMotion:'reduce'});await game.locator('[data-stake]').selectOption('10000');await outcome('lose');for(let i=0;i<42;i++)await act(page);await expect(game.locator('[data-count]')).toHaveText('8/8');
   await game.locator('[data-wardrobe]').click();await expect(game.locator('.jc-costume[data-open="true"]')).toHaveCount(8);
   for(const [id,film]of [['rush','Час пик'],['whoami','Кто я?'],['tuxedo','Смокинг'],['mentor','Карате-пацан']])await expect(game.locator(`[data-costume="${id}"] strong`)).toHaveText(film);
   await game.locator('[data-costume="mentor"]').scrollIntoViewIfNeeded();await page.screenshot({path:out+'/wardrobe-eight-desktop.png'});
   await game.locator('[data-costume="mentor"]').click();const mentor=await act(page);expect(mentor.view.jackie.costume).toBe('mentor');expect(mentor.view.jackie.version).toBe(2);
-  await game.locator('[data-wardrobe]').click();await game.locator('[data-costume="sailor"]').click();await game.locator('[data-location]').selectOption('harbor');await page.screenshot({path:out+'/sailor-harbor.png'});
+  await game.locator('[data-wardrobe]').click();await game.locator('[data-costume="sailor"]').click();await place(page,'harbor');await page.screenshot({path:out+'/sailor-harbor.png'});
   for(const [width,height] of [[1440,1000],[390,844],[320,740]]){
-    await page.setViewportSize({width,height});await expect(page.locator('#mini-dialog #chat-input')).toBeVisible();await writeFile(out+'/layout-'+width+'.json',JSON.stringify(await game.evaluate(e=>{const root=e.getBoundingClientRect();return{width:e.clientWidth,scroll:e.scrollWidth,overflow:[...e.querySelectorAll('*')].map(n=>({class:n.className,tag:n.tagName,rect:n.getBoundingClientRect().toJSON()})).filter(n=>n.rect.width>0&&(n.rect.right>root.right+1||n.rect.left<root.left-1))};}),null,2));await expect.poll(()=>game.evaluate(e=>e.scrollWidth-e.clientWidth),{timeout:3000}).toBeLessThanOrEqual(1);await game.locator('[data-fight]').scrollIntoViewIfNeeded();await expect(game.locator('[data-fight]')).toBeInViewport();await page.screenshot({path:out+'/host-'+width+'.png'});
+    await page.setViewportSize({width,height});await connectedChat(page);await writeFile(out+'/layout-'+width+'.json',JSON.stringify(await game.evaluate(e=>{const root=e.getBoundingClientRect();return{width:e.clientWidth,scroll:e.scrollWidth,overflow:[...e.querySelectorAll('*')].map(n=>({class:n.className,tag:n.tagName,rect:n.getBoundingClientRect().toJSON()})).filter(n=>n.rect.width>0&&(n.rect.right>root.right+1||n.rect.left<root.left-1))};}),null,2));await expect.poll(()=>game.evaluate(e=>e.scrollWidth-e.clientWidth),{timeout:3000}).toBeLessThanOrEqual(1);await game.locator('[data-fight]').scrollIntoViewIfNeeded();await expect(game.locator('[data-fight]')).toBeInViewport();await page.screenshot({path:out+'/host-'+width+'.png'});
   }
   await game.locator('[data-wardrobe]').click();await expect(game.locator('[data-dialog]')).toBeVisible();await page.screenshot({path:out+'/wardrobe-mobile.png'});await game.locator('[data-close]').click();expect(errors).toEqual([]);
   await writeFile(out+'/browser-summary.json',JSON.stringify({errors,viewports:[1440,390,320],realHost:true,connectedGuestChat:false,connectedAuthenticatedChat:true,realTemporaryPostgres:true,actualWalletRequests:true,realWagers:false},null,2));
@@ -177,9 +215,9 @@ test('preview brings a varied fight contact into a laptop viewport and reopens w
   const version=await page.locator('#preview').getAttribute('data-game-module-version');
   let posts=0;page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))posts++;});
   const operation=act(page);
-  await page.waitForFunction(()=>!!document.querySelector('canvas')?.dataset.phase?.match(/^(cross-punch|straight-punch|counter-punch|side-kick|table-vault|stool-kick|backfist-strike|palm-strike|sweep-strike|knee-strike|elbow-strike|spin-kick-strike)$/),undefined,{polling:'raf',timeout:15000});
-  const scene=await game.locator('canvas').evaluate(el=>{const r=el.getBoundingClientRect();return{top:r.top,bottom:r.bottom,height:innerHeight,held:(el as HTMLElement).dataset.heldFurniture,phase:(el as HTMLElement).dataset.phase,sequence:(el as HTMLElement).dataset.sequence};});
-  expect(scene.top).toBeGreaterThanOrEqual(0);expect(scene.bottom).toBeLessThanOrEqual(scene.height);expect(scene.held).not.toBe('chair');
+  await page.waitForFunction(()=>{const d=document.querySelector('canvas')?.dataset;return !!d&&d.reveal==='false'&&!['ready','guard'].includes(d.phase??'');},undefined,{polling:'raf',timeout:15000});
+  const scene=await game.locator('canvas').evaluate(el=>{const r=el.getBoundingClientRect();return{top:r.top,bottom:r.bottom,height:innerHeight,phase:(el as HTMLElement).dataset.phase,sequence:(el as HTMLElement).dataset.sequence};});
+  expect(scene.top).toBeGreaterThanOrEqual(0);expect(scene.bottom).toBeLessThanOrEqual(scene.height);
   await page.screenshot({path:out+'/furniture-live-preview.png'});const accepted=await operation;expect(accepted.view.jackie.combat.shots).toHaveLength(1);
   await page.locator('#reopen').click();await expect(game).toHaveAttribute('data-loading','false',{timeout:30000});await expect(game.locator('[data-cashout]')).toBeVisible();await expect(game.locator('canvas')).toHaveAttribute('data-sequence',scene.sequence!);expect(posts).toBe(1);
   await expect(page.locator('#preview')).toHaveAttribute('data-game-module-version',version!);await expect(page.locator('#preview-version')).toContainText('Актуальная сборка');

@@ -18,8 +18,6 @@ export class JackieLayout {
     if(width<1||height<1)return;
     const value=Math.floor(height)+'px';
     if(this.host.style.getPropertyValue('--jc-viewport-height')!==value)this.host.style.setProperty('--jc-viewport-height',value);
-    this.root.dataset.layout=width>=740||width>=500&&width/height>=1.35?'side':'stack';
-    this.root.dataset.compact=String(height<560);
   }
   destroy(){this.dead=true;cancelAnimationFrame(this.frame);this.sizes.disconnect();window.removeEventListener('resize',this.schedule);window.visualViewport?.removeEventListener('resize',this.schedule);this.host.classList.remove('jc-host');this.host.style.removeProperty('--jc-viewport-height');}
 }

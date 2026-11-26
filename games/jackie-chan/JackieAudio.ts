@@ -1,10 +1,10 @@
 import { gameAudio } from '../../src/game/GameAudio';
 import {fightSound,type FightSound} from './JackieFightSounds';
 
-import { contactAt, chairReleaseAt, resultAt, impacts } from './JackieChoreography';
-import {FIGHT_PLANS,type FightPlan} from './JackieFightPlans';
+import {RATE,type Cue} from './JackieFight';
 import {JackieMusic} from './JackieMusic';
-export { contactAt, resultAt } from './JackieChoreography';
+/** Dense exchanges overlap, so single sounds keep headroom for each other. */
+const MIX=.62;
 export class JackieAudio {
   enabled = true;
   private sources = new Set<AudioScheduledSourceNode>();
@@ -57,28 +57,22 @@ export class JackieAudio {
     const now=performance.now(),estimated=stamp?.performanceTime&&stamp.contextTime?stamp.performanceTime+(at-stamp.contextTime)*1000:0;
     return estimated>=now?estimated:now+(at-c.currentTime+(c.outputLatency||c.baseLatency||0))*1000;
   }
-  begin(count: number, success: boolean, paid: boolean,plan:FightPlan=FIGHT_PLANS[0],speed:1|2=1,from=0) {
+  /** Times are display seconds. Cues come from the same script as the drawing. */
+  begin(fight:{cues:readonly Cue[];reveal:number},success:boolean,paid:boolean,speed:1|2=1,from=0) {
     this.cancel();this.watchContext();
     if (!this.allowed()){this.needsResume=true;return performance.now();}
     this.needsResume=false;
     const at = gameAudio.context!.currentTime + .06;
     this.variation=(this.variation+1)%4;
     const when=(time:number)=>at+(time-from)/speed;
-    const cue=(time:number,kind:FightSound,variant=this.variation,level=1)=>{if(time>=from+.001)this.sound(when(time),kind,variant,level*.9*(speed===2?.84:1));};
+    const cue=(time:number,kind:FightSound,variant:number,level:number)=>{if(time>=from+.001)this.sound(when(time),kind,variant,level*MIX*(speed===2?.84:1));};
     const note=(time:number,frequency:number,duration:number,level:number,type:OscillatorType='sine')=>{if(time>=from+.001)this.tone(when(time),frequency,duration/speed,level,type);};
-    if(plan.moves[0]==='chair'){cue(.5,'wood');cue(.84,'wood');cue(chairReleaseAt(),'wood');}
-    plan.moves.slice(0,count).forEach((move,i)=>{if(move==='table'||move==='stool')cue(contactAt(i)-.24,'wood');if(move==='evade')cue(contactAt(i)-.52,'whoosh',(this.variation+i)%4);});
-    for (const impact of impacts(plan,count)) {
-      const contact=impact.at,variant=(this.variation+impact.fighter)%4,hit=success||impact.fighter<count-1;
-      cue(contact-.16,'whoosh',variant,.65);
-      cue(contact,impact.primary&&!hit?'punch':impact.kind,variant,impact.primary?1:.55);
-      if(impact.primary&&!hit){cue(contact+.045,'block',variant);cue(contact+.24,'landing',variant);}
-    }
-    const end = resultAt(count);
+    fight.cues.forEach((q,i)=>cue(q.t/RATE,q.kind,(this.variation+i)%4,Math.min(1,q.level)));
+    const end = fight.reveal/RATE;
     if (paid) {
       [196,392,588.7].forEach((f,i)=>note(end+.12,f,.85,.025/(i+1)));
       [392,494,587,784,880,784].forEach((f,i)=>note(end+.32+i*.14,f,.26,.035,'triangle'));
-      cue(end+1.32,'wood');cue(end+1.46,'wood');
+      cue(end+1.32,'wood',this.variation,1);cue(end+1.46,'wood',this.variation,1);
     } else note(end,success?330:100,success?.10:.18,.028,'triangle');
     return this.audible(at);
   }

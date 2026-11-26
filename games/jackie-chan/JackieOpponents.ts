@@ -1,11 +1,11 @@
 import type { JackieLocation } from '../../src/shared/jackieChan';
 
 export const OPPONENTS = {
-  street: { asset:'/assets/jackie-chan/foes.webp', rank:1, scale:1, attack:1, guard:7, ru:'Уличный боец', en:'Street fighter' },
-  agile: { asset:'/assets/jackie-chan/foe-agile.webp', rank:2, scale:.92, attack:5, guard:4, ru:'Ловкий боец', en:'Agile fighter' },
-  bruiser: { asset:'/assets/jackie-chan/foe-bruiser.webp', rank:3, scale:1.08, attack:1, guard:7, ru:'Портовый громила', en:'Dockside bruiser' },
-  enforcer: { asset:'/assets/jackie-chan/foe-enforcer.webp', rank:4, scale:1.02, attack:1, guard:7, ru:'Телохранитель', en:'Bodyguard' },
-  master: { asset:'/assets/jackie-chan/foe-master.webp', rank:5, scale:.91, attack:5, guard:7, ru:'Мастер кунг-фу', en:'Kung fu master' },
+  street: { asset:'/assets/jackie-chan/foes.webp', rank:1, scale:1, weight:1, ru:'Уличный боец', en:'Street fighter' },
+  agile: { asset:'/assets/jackie-chan/foe-agile.webp', rank:2, scale:.92, weight:0.85, ru:'Ловкий боец', en:'Agile fighter' },
+  bruiser: { asset:'/assets/jackie-chan/foe-bruiser.webp', rank:3, scale:1.08, weight:1.6, ru:'Портовый громила', en:'Dockside bruiser' },
+  enforcer: { asset:'/assets/jackie-chan/foe-enforcer.webp', rank:4, scale:1.02, weight:1.1, ru:'Телохранитель', en:'Bodyguard' },
+  master: { asset:'/assets/jackie-chan/foe-master.webp', rank:5, scale:.91, weight:0.9, ru:'Мастер кунг-фу', en:'Kung fu master' },
 } as const;
 export type OpponentId = keyof typeof OPPONENTS;
 export const OPPONENT_DIFFICULTIES = {
