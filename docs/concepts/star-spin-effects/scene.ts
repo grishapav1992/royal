@@ -76,7 +76,8 @@ export class Scene {
     this.root.append(console);
     this.root.querySelector(".gn-machine-label")!.prepend(this.root.querySelector(".gn-bonus-meter")!);
     host.append(this.root);
-    this.comp = new Companion(this.root.querySelector(".ss-companion") as HTMLElement);
+    const portrait = this.root.querySelector<HTMLElement>("[data-ss-portrait]")!;
+    this.comp = new Companion(portrait.parentElement!);
     this.ro = new ResizeObserver(() => this.fit());
     this.ro.observe(this.root); this.ro.observe(this.el("stage"));
     this.root.addEventListener("click", this.onClick);
@@ -112,7 +113,15 @@ export class Scene {
       host.prepend(node);
     };
     makeDecoration(cradle, "nx-rails", "<i></i><i></i><i></i><i></i>");
-    makeDecoration(this.root.querySelector(".ss-companion")!, "nx-armillary", "<i></i><b></b>");
+    const portrait = this.root.querySelector<HTMLImageElement>("[data-ss-portrait]")!;
+    const pose = document.createElement("div");
+    pose.className = "nx-pose";
+    portrait.replaceWith(pose);
+    pose.append(portrait);
+    makeDecoration(pose, "nx-contact-shadows", "<i></i><i></i>");
+    makeDecoration(pose, "nx-deck-support", "<i></i><b></b>");
+    makeDecoration(pose, "nx-cast-shadow", "");
+    makeDecoration(pose, "nx-armillary", "<i></i><b></b>");
     makeDecoration(this.root.querySelector(".gn-title")!, "nx-heading-star", "");
     this.root.querySelector(".gn-title h2")!.innerHTML = "Star <em>Spin</em>";
     const dial = this.el("spin").querySelector("span")!;
@@ -120,6 +129,7 @@ export class Scene {
     dial.replaceChildren();
     makeDecoration(dial, "nx-iris", "");
     makeDecoration(this.root, "nx-atmosphere", "<i></i><b></b>");
+    makeDecoration(this.root, "nx-hangar", "");
   }
   private reel(z: number) { return this.root.querySelector(`[data-reel="${z}"]`) as HTMLElement; }
   private get nx() { return this.variant === "new"; }
@@ -145,7 +155,23 @@ export class Scene {
     const margin = this.nx ? 24 : 16;
     const w = Math.max(1, Math.floor(Math.min(st.clientWidth - margin, ((st.clientHeight - margin) * 5) / 3, 1000)));
     b.style.width = w + "px"; b.style.height = (w * 3) / 5 + "px"; b.style.setProperty("--cell", w / 5 + "px");
-    if (this.nx) this.sizeSky();
+    if (this.nx) {
+      this.alignDeck(width);
+      this.sizeSky();
+    }
+  }
+
+  private alignDeck(width: number) {
+    const pose = this.root.querySelector<HTMLElement>(".nx-pose")!;
+    if (!pose.offsetHeight) return;
+    const game = this.root.getBoundingClientRect();
+    const art = pose.getBoundingClientRect();
+    const horizon = (art.top - game.top + art.height * .72) * width / game.width;
+    // Keep the sky in its source proportions. Both slices meet on row 588 of the hangar.
+    const panorama = Math.max(width, horizon * 1672 / 588);
+    this.root.style.setProperty("--deck-horizon", horizon + "px");
+    this.root.style.setProperty("--panorama-width", panorama + "px");
+    this.root.style.setProperty("--sky-offset", (horizon - panorama * 588 / 1672) + "px");
   }
 
   // ---------- героиня и сторона ----------
@@ -155,6 +181,7 @@ export class Scene {
     this.root.dataset["side"] = h.side; this.root.dataset["character"] = id;
     const img = this.root.querySelector("[data-ss-portrait]") as HTMLImageElement;
     img.src = assetUrl(`characters/${id}.webp`); img.alt = h.name;
+    if (this.nx) img.parentElement!.style.setProperty("--figure-image", `url("${img.src}")`);
     (this.root.querySelector("[data-ss-name]") as HTMLElement).textContent = h.name;
     (this.root.querySelector("[data-ss-label]") as HTMLElement).textContent = h.side === "light" ? "Светлая сторона · Джедаи" : "Тёмная сторона · Ситхи";
     this.root.querySelectorAll<HTMLElement>('[data-ss^="side:"]').forEach((b) => b.setAttribute("aria-pressed", String(b.dataset["ss"] === "side:" + h.side)));

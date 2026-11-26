@@ -51,8 +51,144 @@
 .nx-rails i:nth-child(even)::before{animation-delay:-2.7s}.nx-rails i:nth-child(n+3)::before{animation-direction:reverse}
 @keyframes nx-conduit {0%{transform:translateX(-100%)}70%,100%{transform:translateX(100%)}}
 @keyframes nx-turn {to{transform:rotate(360deg)}}
-.nx .ss-companion {isolation:isolate;background:radial-gradient(ellipse at 50% 62%,color-mix(in srgb,var(--glass) 53%,transparent),transparent 74%)}
-.nx-armillary {pointer-events:none;position:absolute;width:92%;aspect-ratio:1;max-height:92%;top:50%;left:50%;translate:-50% -50%;opacity:.87}
+.nx .ss-companion {
+  container-type: size;
+  isolation: isolate;
+  background: radial-gradient(ellipse at 50% 55%,color-mix(in srgb,var(--glass) 53%,transparent),transparent 74%);
+}
+.nx-hangar,.nx-hangar::before,.nx-hangar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.nx-hangar { background: #111b25; }
+.nx-hangar::before,.nx-hangar::after {
+  background-image: var(--hangar);
+  background-repeat: no-repeat;
+  background-position-x: center;
+}
+.nx-hangar::before {
+  height: calc(var(--deck-horizon) + 1px);
+  background-size: var(--panorama-width) auto;
+  background-position-y: var(--sky-offset);
+}
+.nx-hangar::after {
+  top: var(--deck-horizon);
+  background-size: var(--panorama-width) 266.572%;
+  background-position-y: bottom;
+}
+.nx .nx-hangar { filter: brightness(.81); }
+.nx[data-layout=landscape] .nx-hangar { display: none; }
+.nx:not([data-layout=landscape]) .nx-sky {
+  mask-image: linear-gradient(to bottom,#000 calc(var(--deck-horizon) - 5%),transparent var(--deck-horizon));
+}
+/* Artwork, contact shadows and supports share the original 640 x 960 artboard. */
+.nx-pose {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: 2%;
+  translate: -50% 0;
+  width: min(98cqw,62.67cqh);
+  aspect-ratio: 2 / 3;
+  pointer-events: none;
+}
+.nx-pose > img,.nx-pose > canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.nx-armillary {pointer-events:none;position:absolute;width:95%;aspect-ratio:1;top:39%;left:50%;translate:-50% -50%;opacity:.68}
+.nx-cast-shadow {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 96%;
+  transform: matrix(1,0,.29,.14,0,0);
+  filter: blur(.7cqw);
+  opacity: .55;
+}
+.nx-cast-shadow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #030a10;
+  mask: var(--figure-image) center / contain no-repeat;
+}
+.nx-contact-shadows {
+  position: absolute;
+  inset: 0;
+  --left-x: 14%;
+  --left-y: 94.2%;
+  --right-x: 89.3%;
+  --right-y: 95.1%;
+}
+.nx[data-character=vespera] .nx-contact-shadows {
+  --left-x: 16%; --left-y: 97.9%; --right-x: 68.2%; --right-y: 98%;
+}
+.nx[data-character=nyxara] .nx-contact-shadows {
+  --left-x: 26.5%; --left-y: 96.6%; --right-x: 93%; --right-y: 80.4%;
+}
+.nx[data-character=aeliri] .nx-contact-shadows {
+  --left-x: 30%; --left-y: 79.8%; --right-x: 72%; --right-y: 80.7%;
+}
+.nx-contact-shadows i {
+  position: absolute;
+  left: var(--left-x);
+  top: var(--left-y);
+  width: 20%;
+  height: 2.4%;
+  translate: -50% -38%;
+  background: radial-gradient(ellipse at center,#080a0bf2 0 21%,#060a0fb5 45%,transparent 74%);
+}
+.nx-contact-shadows i + i { left: var(--right-x); top: var(--right-y); }
+.nx[data-character=nyxara] .nx-contact-shadows i:first-child { rotate: 9deg; }
+.nx[data-character=nyxara] .nx-contact-shadows i + i { width: 14%; rotate: 10deg; }
+.nx[data-character=aeliri] .nx-contact-shadows i { width: 38%; }
+/* A grounded transverse bench for the seated pose and a low step for the rear boot. */
+.nx-deck-support {
+  display: none;
+  position: absolute;
+  left: 3%;
+  right: 1%;
+  top: 76%;
+  bottom: 4%;
+}
+.nx[data-character=aeliri] .nx-deck-support,.nx[data-character=nyxara] .nx-deck-support { display: block; }
+.nx[data-character=nyxara] .nx-deck-support { left: 80%; right: 0; top: 76.8%; bottom: 7%; }
+.nx-deck-support::before {
+  content: "";
+  position: absolute;
+  inset: 2% -4% -6%;
+  background: radial-gradient(ellipse 51% 14% at 48% 86%,#03080dc9 33%,transparent 100%);
+}
+.nx-deck-support > i {
+  position: absolute;
+  inset: 17% 4% 4%;
+  clip-path: polygon(0 0,100% 0,100% 100%,88% 100%,81% 29%,20% 29%,13% 100%,0 100%);
+  background: linear-gradient(90deg,#434b50 0 4%,#23303a 5% 14%,#131d23 17% 82%,#43505b 84% 92%,#27323a 93%);
+  border-bottom: 2px solid #111922;
+}
+.nx-deck-support > b {
+  position: absolute;
+  inset: 0 0 63%;
+  clip-path: polygon(6% 0,95% 0,100% 62%,100% 94%,0 100%,0 63%);
+  background: linear-gradient(178deg,#7a8589 0%,#505e67 27%,#6e7b80 48%,#aeb9b9 52%,#35424b 56%,#25313c 85%,#596066 88%,#19242a 98%);
+}
+.nx-deck-support > b::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 44%;
+  background: linear-gradient(#97a8ad63,#4c59603b),var(--hangar) 62% 98% / 175% 2400%;
+}
+.nx[data-character=nyxara] .nx-deck-support > i {
+  clip-path: polygon(0 0,100% 0,100% 100%,6% 100%);
+  background: linear-gradient(105deg,#6a7070 0 4%,#3c4950 6% 12%,transparent 13% 83%,#242e34 84%),
+    repeating-linear-gradient(0deg,#344149 0 12%,#202a31 13% 16%,#414d53 17% 19%);
+}
 .nx-armillary i,.nx-armillary b {position:absolute;border-radius:50%;aspect-ratio:1;top:50%;left:50%;translate:-50% -50%}
 .nx-armillary i {width:97%;background:repeating-conic-gradient(from 5deg,var(--pale-alloy) 0deg 1deg,transparent 1.4deg 11.25deg);mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));animation:nx-turn 57s linear infinite}
 .nx-armillary b {width:84%;border:1px solid color-mix(in srgb,var(--luminous) 38%,transparent);background:conic-gradient(from 17deg,transparent 0 16deg,var(--luminous) 16deg 53deg,transparent 53deg 97deg,var(--alloy) 97deg 117deg,transparent 117deg 207deg,var(--luminous) 207deg 225deg,transparent 225deg);mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));animation:nx-turn 24s linear infinite reverse}
@@ -110,7 +246,6 @@
 .nx:is([data-layout=portrait],[data-layout=landscape]) .gn-spin>.nx-ignition{width:28px;height:28px}
 .nx:is([data-layout=portrait],[data-layout=landscape]) .nx-ignition::after{inset:4px}
 .nx:is([data-layout=portrait],[data-layout=landscape]) .nx-iris{inset:5px}
-.nx[data-layout=portrait] .nx-armillary{width:auto;height:94%;aspect-ratio:1}
 @container star-spin (max-width:370px) {.nx .gn-title{padding-left:0}.nx-heading-star{display:none}.nx .gn-tools{gap:3px}}
 .nx .nx-relic {display:block;width:100%;height:100%;position:relative;transition:scale .18s,opacity .18s,filter .18s;filter:drop-shadow(0 3px 2px #0008)}
 .nx .nx-relic img,.nx .nx-relic i{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}

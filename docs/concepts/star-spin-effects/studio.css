@@ -42,7 +42,6 @@ body.studio{margin:0;background:#0a1019;color:var(--paper)}
 .gn.nx[data-side=dark]{background-image:linear-gradient(0deg,#020811f5,#030a1266 65%,#02060cb8),var(--hangar)}
 .nx[data-side=dark] .nx-tint{opacity:1}
 .nx .ss-companion::before{content:"";position:absolute;inset:8%;pointer-events:none;background:radial-gradient(ellipse at 50% 57%,color-mix(in srgb,var(--cyan) 29%,transparent),transparent 68%);opacity:.6;transition:opacity .65s;z-index:0}
-.nx .ss-companion>img{position:relative;z-index:1}.nx .ss-companion>canvas{position:absolute;inset:0;z-index:2}
 .nx .ss-companion.nx-glow::before,.nx-static-glow .ss-companion::before{opacity:1;background:radial-gradient(ellipse at 50% 57%,color-mix(in srgb,var(--cyan) 56%,transparent),transparent 70%)}
 .nx :is(.ss-identity small,.gn-title small,.gn-brand,.ss-side-picker button,.gn-spin>span,.gn-machine-label b){transition:color .65s,background-color .65s,border-color .65s}
 .nx .gn-spinning::after{content:"";position:absolute;inset:0 1px;pointer-events:none;border-inline:1px solid #91e7ff66;background:linear-gradient(180deg,transparent,#9aeaff68,transparent) right/2px 42% no-repeat;animation:edge .55s linear infinite}
