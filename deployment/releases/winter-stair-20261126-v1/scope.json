@@ -1,0 +1,30 @@
+{
+  "activeBefore": [
+    "panda-dragon-preview",
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge"
+  ],
+  "sourceUpdates": {
+    "src/game/StreetAmbience.ts": "76c05f0c38ccb97293e539f1e939a77c2239caa469096fab2278b99dcced0e2f",
+    "src/game/StreetRenderer.ts": "6f4a9658f8963a24eafb06c9585b0cd5a922303e5058c8002c616e48dd8cb69a",
+    "src/game/streetArt.ts": "9c42b3afa46bfaddd837a7992bf989d7dcdf6996ddcc920d3636b306758969ff",
+    "src/game/streetCityArt.ts": "a9ff64d20c4264a1839ed439e32baefdcdf5954de04a0266a39d23a5c86b40fe"
+  }
+}
