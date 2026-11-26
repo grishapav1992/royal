@@ -1,6 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {CrashStuntSequence,cargo,cinematicLabel,explosionAt,heli,impactAt,pickStunt,rollAt,rollPath,titleAt,tunnel,type StuntVariant} from '../games/last-exit/stunts';
 import {Pursuit,WALL,type Car,type Fx,type Hero} from '../games/last-exit/pursuit';
+import {MIX,MODELS,TrafficDeck,WHEEL_CAP,wheelBlur,wheelTurn,type Model} from '../games/last-exit/traffic';
+import {rng} from '../games/last-exit/scene-kit';
 
 test('unconfirmed running and countdown never select or label a result stunt',()=>{
  for(const phase of ['idle','waiting','racing'] as const)for(const value of [1,2,2.01,8,100]){assert.equal(pickStunt('a',phase,value),'drive');for(const age of [0,.5,4,1000])assert.equal(cinematicLabel(phase,'drive',age),phase);}
@@ -40,10 +42,36 @@ test('the chase is reproducible from its public seed and differs between runs',(
  const a=chase(7,20,1/120),b=chase(7,20,1/120),c=chase(8,20,1/120);assert.deepEqual(a.log,b.log);assert.notDeepEqual(a.log,c.log);
 });
 test('long chases stay finite and bounded while patrols keep being replaced',()=>{
- for(let seed=1;seed<=8;seed++){const r=chase(seed*37,90,1/120,t=>Math.min(100,Math.exp(.06*t)));assert(r.most<=9);assert(r.trips>3);assert(r.log.some(x=>x.startsWith('hit')));}
+ for(let seed=1;seed<=8;seed++){const r=chase(seed*37,90,1/120,t=>Math.min(100,Math.exp(.06*t)));assert(r.most<=12);assert(r.trips>3);assert(r.log.some(x=>x.startsWith('hit')));}
 });
 test('physics receives no session, deadline, outcome or wallet input',async()=>{
- const {readFile}=await import('node:fs/promises');for(const file of ['pursuit.ts','scene-base.ts','scene-road.ts','scene-actors.ts','scene-effects.ts','scene-finales.ts','LastExitScene.ts']){const source=await readFile(new URL('../games/last-exit/'+file,import.meta.url),'utf8');
+ const {readFile}=await import('node:fs/promises');for(const file of ['pursuit.ts','traffic.ts','scene-wheels.ts','scene-traffic.ts','scene-base.ts','scene-road.ts','scene-actors.ts','scene-effects.ts','scene-finales.ts','LastExitScene.ts']){const source=await readFile(new URL('../games/last-exit/'+file,import.meta.url),'utf8');
   assert.doesNotMatch(source,/crashAt|crashPoint|serverNow|startedAt|returnedUnits|stakeUnits|ExpansionClient|WalletClient|fetch\(/,file);}
- for(const file of ['pursuit.ts','stunts.ts'])assert.doesNotMatch(await readFile(new URL('../games/last-exit/'+file,import.meta.url),'utf8'),/Math\.random/);
+ for(const file of ['pursuit.ts','stunts.ts','traffic.ts','scene-wheels.ts','scene-traffic.ts'])assert.doesNotMatch(await readFile(new URL('../games/last-exit/'+file,import.meta.url),'utf8'),/Math\.random/);
+});
+
+function drive(seed:number,seconds:number,zone:number,each?:(sim:Pursuit,t:number)=>void){
+ const none=()=>{},sim=new Pursuit({hit:none,scrape:none,contact:none,wreck:none,boom:none,smash:none,hero:none});sim.reset(seed);sim.zone=zone;const hero:Hero={x:0,vx:0,hw:.15,z:1.055,bias:0},step=1/120;
+ for(let t=0;t<seconds;t+=step){const ax=(sim.wish(hero,0)-hero.x)*22-hero.vx*6;hero.vx+=ax*step;hero.x+=hero.vx*step;sim.ensure(26,.12,step);sim.step(step,26,hero,1.4,'race');each?.(sim,t);}
+ return sim;
+}
+test('every location shows its whole mix and never sends two equal vehicles in a row',()=>{
+ for(let zone=0;zone<4;zone++){const deck=new TrafficDeck(),r=rng(zone+5),seen=new Set<Model>();let last:Model|undefined;for(let i=0;i<80;i++){const m=deck.draw(zone,r);assert.notEqual(m,last);last=m;seen.add(m);}assert.deepEqual([...seen].sort(),[...new Set(MIX[zone])].sort());
+  for(let i=0;i<40;i++)assert(!MODELS[deck.draw(zone,r,true)].rigid,'the centre lane stays open for the coupe');}
+ assert.deepEqual(new Set(MIX.flat()).size,Object.keys(MODELS).length-1);
+});
+test('ordinary traffic is steady, keeps its lane width and reaches the coupe between the stunts',()=>{
+ let met=0;const minutes=4;for(let seed=1;seed<=4;seed++){const ids=new Set<number>();drive(seed,60,seed-1,sim=>{for(const c of sim.cars)if(c.kind==='civ'){if(c.z<12)ids.add(c.id);assert(Math.abs(c.x)<=WALL+.2);}});met+=ids.size;}
+ assert(met/minutes>18&&met/minutes<55,String(met/minutes));
+});
+test('trucks and buses never spin, roll or leave the ground',()=>{
+ let heavy=0;for(let seed=1;seed<=6;seed++)drive(seed*13,45,seed%4,sim=>{for(const c of sim.cars)if(MODELS[c.model].rigid){heavy++;assert.equal(c.state,'drive');assert.equal(c.y,0);assert.equal(c.yaw,0);}});assert(heavy>0);
+});
+test('unpainted vehicles are replaced by a saloon of its own size',()=>{
+ drive(3,30,0,sim=>{sim.painted=m=>m==='sedan';for(const c of sim.cars)if(c.kind==='civ'){assert.equal(c.model,'sedan');assert.equal(c.len,MODELS.sedan.len);assert(Math.abs(c.hw-.15*.86)<1e-9);}});
+});
+test('wheels follow the road speed, stop with a sliding car and stay readable at full speed',()=>{
+ assert.equal(wheelTurn(0),0);assert.equal(wheelBlur(0),0);let before=0;for(const v of [.2,1,3,8,20,30]){const w=wheelTurn(v);assert(w>before&&w<=WHEEL_CAP);before=w;}assert(Math.abs(wheelTurn(.2)-.2/.3)<.05);assert.equal(wheelTurn(-3),-wheelTurn(3));assert.equal(wheelBlur(40),1);
+ drive(2,10,0,(sim,t)=>{if(t>3)for(const c of sim.cars)if(c.state==='drive'&&c.age>1)assert(c.rev>4,c.model+c.rev);});
+ const none=()=>{},sim=new Pursuit({hit:none,scrape:none,contact:none,wreck:none,boom:none,smash:none,hero:none}),car=sim.make('civ',{x:.6,z:3,v:20,state:'slide',yaw:1.5});for(let i=0;i<120;i++)sim.step(1/120,0,{x:0,vx:0,hw:.15,z:1.055,bias:0},1,'off');assert(car.rev<.1);
 });

@@ -1,9 +1,11 @@
 import { clamp, mix, rng } from './scene-kit';
+import { GAP, MODELS, TrafficDeck, wheelTurn, type Model } from './traffic';
 /** Cosmetic rigid bodies on the road plane. Nothing here reads a deadline, a seed or an outcome. */
 export type State = 'drive' | 'spin' | 'air' | 'slide';
 export type Car = {
  id: number;
  kind: 'cop' | 'civ';
+ model: Model;
  side: number;
  tint: number;
  x: number;
@@ -30,6 +32,14 @@ export type Car = {
  nose: number;
  hop: boolean;
  free: boolean;
+ len: number;
+ mass: number;
+ /** Visible wheel angle and the road speed under it. */
+ turn: number;
+ rev: number;
+ /** Distance at which a calm driver pulls over for the sirens, and the indicator time left. */
+ pull: number;
+ blink: number;
 };
 export type Prop = {
  kind: 'board' | 'cone';
@@ -73,6 +83,12 @@ export class Pursuit {
  private r = rng(1);
  private respawn = [0, 0];
  private bag: string[] = [];
+ private deck = new TrafficDeck();
+ private road = 0;
+ /** Location of the chase: it only selects the mix of vehicles. */
+ zone = 0;
+ /** Vehicles whose pictures are painted; a saloon stands in for the rest. */
+ painted: (model: Model) => boolean = () => true;
  slow = 0; /** Endings stage their own flips. */
  calm = false;
  private flow = 0;
@@ -80,9 +96,13 @@ export class Pursuit {
  private time = 0;
  count = 0;
  constructor(private fx: Fx) { }
- reset(seed: number) { this.cars = []; this.props = []; this.next = .5; this.ev = undefined; this.r = rng(seed * 7919 + 13); this.respawn = [0, 0]; this.bag = []; this.slow = 0; this.lastSlow = -9; this.time = 0; this.count = 0; this.calm = false; }
+ reset(seed: number) { this.cars = []; this.props = []; this.next = .5; this.ev = undefined; this.r = rng(seed * 7919 + 13); this.respawn = [0, 0]; this.bag = []; this.deck.reset(); this.road = .2; this.slow = 0; this.lastSlow = -9; this.time = 0; this.count = 0; this.calm = false; }
  rand(a = 0, b = 1) { return a + this.r() * (b - a); }
- make(kind: 'cop' | 'civ', o: Partial<Car>): Car { const c: Car = { id: ++this.id, kind, side: 0, tint: 0, x: 0, z: 1, y: 0, vx: 0, v: 0, vy: 0, yaw: 0, w: 0, roll: 0, wr: 0, state: 'drive', tx: 0, tz: 1.06, hold: 0, hw: .13, brake: 0, lights: 1, burn: 0, damage: 0, cool: 0, age: 0, nose: 0, hop: false, free: false, ...o }; this.cars.push(c); return c; }
+ make(kind: 'cop' | 'civ', o: Partial<Car>): Car { const c: Car = { id: ++this.id, kind, side: 0, tint: 0, x: 0, z: 1, y: 0, vx: 0, v: 0, vy: 0, yaw: 0, w: 0, roll: 0, wr: 0, state: 'drive', tx: 0, tz: 1.06, hold: 0, hw: .13, brake: 0, lights: 1, burn: 0, damage: 0, cool: 0, age: 0, nose: 0, hop: false, free: false, model: kind === 'cop' ? 'patrol' : 'coupe', len: LEN, mass: 1, turn: 0, rev: o.v ?? 0, pull: 0, blink: 0, ...o }; this.cars.push(c); return c; }
+ /** Any road user; a heavy one keeps to the outer lanes. */
+ private civ(model: Model, hw: number, o: Partial<Car>) { if (!this.painted(model))
+  model = 'sedan'; const m = MODELS[model]; return this.make('civ', { model, hw: hw * m.wide, len: m.len, mass: m.mass, tint: Math.floor(this.r() * m.tints), ...o }); }
+ private outer(hw: number) { return Math.min(.84, WALL - hw - .03); }
  cop(side: number) { return this.cars.find(c => c.kind === 'cop' && c.side === side && c.state === 'drive'); }
  /** Lost patrols are replaced from behind the camera. */
  ensure(flow: number, hw: number, dt: number, at = 1.06) { for (const i of [0, 1]) {
@@ -99,9 +119,9 @@ export class Pursuit {
   this.lastSlow = this.time;
   this.slow = .6;
  } }
- trip(c: Car, dir: number, power = 1) { if (c.state === 'air')
+ trip(c: Car, dir: number, power = 1) { if (c.state === 'air' || MODELS[c.model].rigid)
   return; c.state = 'air'; c.vy = this.rand(.75, 1.05) * power; c.wr = (dir || 1) * this.rand(7, 10) * power; c.lights = 0; c.yaw = (Math.sign(c.yaw) || dir || 1) * 1.55; c.w = 0; c.hop = true; c.v = Math.max(c.v, this.flow - 2.4); this.count++; this.fx.wreck(c); }
- spin(c: Car, w: number) { if (c.state !== 'drive')
+ spin(c: Car, w: number) { if (c.state !== 'drive' || MODELS[c.model].rigid)
   return; c.state = 'spin'; c.w = w; c.brake = 1; }
  private damage(c: Car, s: number, dir: number) { if (this.calm && c.free)
   return; c.damage += s; if (c.state === 'drive' && (s > .85 || c.damage > 2.4))
@@ -110,19 +130,19 @@ export class Pursuit {
   if (Math.abs(a.y - b.y) > .3 || this.calm && (a.kind === 'civ' || b.kind === 'civ' || a.free || b.free))
    return;
   const ha = a.hw * (1 + .9 * Math.abs(Math.sin(a.yaw))), hb = b.hw * (1 + .9 * Math.abs(Math.sin(b.yaw)));
-  const dx = b.x - a.x, dz = b.z - a.z, W = ha + hb, L = LEN * (1 - .25 * Math.abs(Math.sin(a.yaw))), px = W - Math.abs(dx), pz = L - Math.abs(dz);
+  const dx = b.x - a.x, dz = b.z - a.z, W = ha + hb, L = (dz > 0 ? a.len : b.len) * (1 - .25 * Math.abs(Math.sin(a.yaw))), px = W - Math.abs(dx), pz = L - Math.abs(dz);
   if (px <= 0 || pz <= 0)
    return;
-  const sx = Math.sign(dx) || 1, sz = Math.sign(dz) || 1;
+  const sx = Math.sign(dx) || 1, sz = Math.sign(dz) || 1, M = a.mass + b.mass, ka = b.mass / M, kb = a.mass / M;
   if (px / W < pz / L) {
-   a.x -= sx * px / 2;
-   b.x += sx * px / 2;
+   a.x -= sx * px * ka;
+   b.x += sx * px * kb;
    const vr = (a.vx - b.vx) * sx;
    if (vr <= 0)
     return;
-   const j = vr * .5 * 1.45;
-   a.vx -= sx * j;
-   b.vx += sx * j;
+   const j = vr * 1.45;
+   a.vx -= sx * j * ka;
+   b.vx += sx * j * kb;
    const s = vr / 1.1;
    if (a.cool <= 0 || b.cool <= 0) {
     this.fx.hit((a.x + b.x) / 2, .15, (a.z + b.z) / 2, s, sx);
@@ -134,14 +154,14 @@ export class Pursuit {
    this.damage(b, s, sx);
   }
   else {
-   a.z -= sz * pz / 2;
-   b.z += sz * pz / 2;
+   a.z -= sz * pz * ka;
+   b.z += sz * pz * kb;
    const vr = (a.v - b.v) * sz;
    if (vr <= 0)
     return;
-   const j = vr * .5 * 1.3;
-   a.v -= sz * j;
-   b.v += sz * j;
+   const j = vr * 1.3;
+   a.v -= sz * j * ka;
+   b.v += sz * j * kb;
    const s = vr / 6.5;
    if (a.cool <= 0 || b.cool <= 0) {
     this.fx.hit((a.x + b.x) / 2, .17, (a.z + b.z) / 2, s * 1.2, sx);
@@ -150,15 +170,17 @@ export class Pursuit {
    const off = dx / W;
    a.w -= off * s * 4;
    b.w += off * s * 4 + this.rand(-1, 1) * s;
-   a.vx -= off * s * .8 + (a.kind === 'cop' ? this.rand(-.2, .2) * s : 0);
-   b.vx += off * s * .8;
+   a.brake = Math.max(a.brake, a.kind === 'civ' ? 1 : 0);
+   b.brake = Math.max(b.brake, b.kind === 'civ' ? 1 : 0);
+   a.vx -= off * s * .8 / a.mass + (a.kind === 'cop' ? this.rand(-.2, .2) * s : 0);
+   b.vx += off * s * .8 / b.mass;
    this.damage(a, s, -sx);
    this.damage(b, s, sx);
    if (s > 1.15 && !this.calm) {
     for (const c of [a, b])
      if (c.state !== 'air' && this.rand() < .85)
       this.trip(c, c === a ? -sx : sx, clamp(s, .8, 1.35));
-    if (s > 1.4)
+    if (s > (a.mass + b.mass > 3 ? 1.75 : 1.4))
      this.fx.boom((a.x + b.x) / 2, Math.max(a.z, b.z), .8, Math.max(a.v, b.v));
     this.big();
    }
@@ -167,19 +189,20 @@ export class Pursuit {
  private heroCollide(h: Hero, c: Car, flow: number) {
   if (c.y > .3)
    return;
-  const hc = c.hw * (1 + .9 * Math.abs(Math.sin(c.yaw))), dx = c.x - h.x, dz = c.z - h.z, W = h.hw + hc, px = W - Math.abs(dx), pz = LEN - Math.abs(dz);
+  const hc = c.hw * (1 + .9 * Math.abs(Math.sin(c.yaw))), dx = c.x - h.x, dz = c.z - h.z, W = h.hw + hc, px = W - Math.abs(dx), L = dz > 0 ? LEN : c.len, pz = L - Math.abs(dz);
   if (px <= 0 || pz <= 0)
    return;
   const sx = Math.sign(dx) || 1;
-  if (px / W < pz / LEN || dz < -.1) {
+  const heavy = MODELS[c.model].rigid;
+  if (px / W < pz / L || dz < -.1) {
    const vr = (h.vx - c.vx) * sx;
-   c.x += sx * px * .8;
-   h.x -= sx * px * .2;
+   c.x += sx * px * (heavy ? .15 : .8);
+   h.x -= sx * px * (heavy ? .85 : .2);
    if (vr <= 0)
     return;
    const s = vr / 1;
-   c.vx += sx * vr * 1.15;
-   h.vx -= sx * vr * .42;
+   c.vx += sx * vr * 1.15 / c.mass;
+   h.vx -= sx * vr * (heavy ? 1.3 : .42);
    if (c.cool <= 0) {
     this.fx.hit(h.x + sx * h.hw, .14, h.z - .02, s, sx);
     this.fx.hero(s);
@@ -189,6 +212,18 @@ export class Pursuit {
    c.damage += s * .5;
    if (c.state === 'drive' && s > 1.5)
     this.spin(c, sx * 3);
+  }
+  else if (heavy) { // the coupe glances off a truck and slides past its corner
+   c.z = h.z + LEN;
+   c.v = Math.max(c.v, flow - 1.5);
+   c.brake = 1;
+   h.vx -= sx * 1.9;
+   h.x -= sx * px * .25;
+   if (c.cool <= 0) {
+    this.fx.hit((h.x + c.x) / 2, .18, h.z + .2, 1, sx);
+    this.fx.hero(1.2);
+    c.cool = .3;
+   }
   }
   else { // the coupe rams a patrol from behind
    c.z = h.z + LEN;
@@ -349,13 +384,13 @@ export class Pursuit {
  private start(e: Ev, flow: number, h: Hero) {
   const s = e.side, lane = this.laneX;
   if (e.type === 'traffic') {
-   this.make('civ', { x: s * lane * .92, z: 26, v: flow * .52, tx: s * lane * .92, hw: h.hw * .86, tint: 1 + Math.floor(this.r() * 3) });
+   this.civ(this.deck.draw(this.zone, this.r), h.hw * .86, { x: s * lane * .92, z: 26, v: flow * .52, tx: s * lane * .92 });
    if (this.r() < .6)
-    this.make('civ', { x: -s * .18, z: 34, v: flow * .56, tx: -s * .18, hw: h.hw * .86, tint: 1 + Math.floor(this.r() * 3) });
+    this.civ(this.deck.draw(this.zone, this.r, true), h.hw * .86, { x: -s * .18, z: 34, v: flow * .56, tx: -s * .18 });
   }
   if (e.type === 'pileup') {
    for (const [x, z] of [[s * lane * .92, 24], [s * .1, 31], [-s * lane * .9, 38]])
-    this.make('civ', { x, z, v: flow * .5, tx: x, hw: h.hw * .86, tint: 1 + Math.floor(this.r() * 3) });
+    this.civ(this.deck.draw(this.zone, this.r, Math.abs(x) < .3), h.hw * .86, { x, z, v: flow * .52, tx: x });
   }
   if (e.type === 'board') {
    const x = h.x * .4;
@@ -364,13 +399,54 @@ export class Pursuit {
     this.props.push({ kind: 'cone', x: x + (i - 2.5) * .15, z: 29 + (i % 2) * 1.4, w: .05, broken: false });
   }
  }
+ /** Ordinary traffic between the stunts. Most drivers pull over for the sirens, some keep their lane. */
+ private ambient(dt: number, flow: number, h: Hero, value: number) {
+  if ((this.road -= dt) > 0)
+   return;
+  if (this.cars.length >= 9) {
+   this.road = .5;
+   return;
+  }
+  const centre = this.r() < .2, drawn = this.deck.draw(this.zone, this.r, centre), model = this.painted(drawn) ? drawn : 'sedan', m = MODELS[model], hw = h.hw * .86 * m.wide, side = this.r() < .5 ? -1 : 1, x = centre ? this.rand(-.1, .1) : side * Math.min(this.laneX + .12, this.outer(hw)), z = this.rand(36, 42);
+  if (this.cars.some(c => c.kind === 'civ' && c.z > 28 && Math.abs(c.x - x) < c.hw + hw)) {
+   this.road = .6;
+   return;
+  }
+  this.civ(model, h.hw * .86, { x, z, tx: x, v: Math.max(flow, 22) * this.rand(...m.pace), pull: centre || this.r() < .2 && !m.rigid ? 0 : this.rand(11, 20) });
+  this.road = GAP[value >= 4 ? 2 : value >= 2 ? 1 : 0] * this.rand(.65, 1.4);
+ }
+ /** A driver reads only the road ahead: keeps a gap, and gives way once. */
+ private drive(c: Car, dt: number) {
+  for (const o of this.cars)
+   if (o !== c && o.kind === 'civ' && o.state === 'drive' && o.z > c.z && o.z - c.z < c.len + 1.8 && Math.abs(o.x - c.x) < o.hw + c.hw && c.v > o.v)
+    c.v = mix(c.v, o.v, Math.min(1, dt * 5));
+  c.blink = Math.max(0, c.blink - dt);
+  c.brake = Math.max(0, c.brake - dt * .8);
+  if (c.pull && c.z < c.pull) {
+   c.pull = 0;
+   c.blink = 1.6;
+   c.brake = .7;
+   c.tx = (Math.sign(c.x) || 1) * this.outer(c.hw);
+  }
+ }
+ /** A patrol without orders steers around slower traffic. */
+ private around(c: Car) {
+  let x = c.tx;
+  for (const o of this.cars)
+   if (o.kind === 'civ' && o.z + o.len > c.z && o.z - c.z < 5 && o.state === 'drive') {
+    const need = c.hw + o.hw + .035;
+    if (Math.abs(x - o.x) < need && Math.abs(o.x) > .25)
+     x = o.x - Math.sign(o.x) * need;
+   }
+  return x;
+ }
  /** Lateral space the coupe would like. Obstacles repel it long before contact. */
  wish(h: Hero, base: number) { let best = base, bc = 9e9; for (let x = -.6; x <= .601; x += .1) {
   let cost = Math.abs(x - base) * .55 + Math.abs(x - h.x) * .22;
   for (const c of this.cars) {
    if (c.kind === 'cop' && c.state === 'drive')
     continue;
-   if (c.z < h.z + .1 || c.z > 13)
+   if (c.z + c.len - LEN < h.z + .1 || c.z > 13)
     continue;
    const o = h.hw + c.hw * 1.3 + .06 - Math.abs(x - c.x - c.vx * .25);
    if (o > 0)
@@ -386,6 +462,7 @@ export class Pursuit {
   this.flow = flow;
   if (mode === 'race') {
    this.event(dt, h, flow, value);
+   this.ambient(dt, flow, h, value);
   }
   else
    h.bias = 0;
@@ -394,7 +471,7 @@ export class Pursuit {
    c.cool -= dt;
    if (c.state === 'drive') {
     if (c.kind === 'cop') {
-     const ax = (c.tx - c.x) * (c.hold ? 34 : 15) - c.vx * (c.hold ? 8 : 6.2);
+     const ax = ((c.hold || mode !== 'race' ? c.tx : this.around(c)) - c.x) * (c.hold ? 34 : 15) - c.vx * (c.hold ? 8 : 6.2);
      c.vx += ax * dt;
      const tv = flow + clamp((c.tz - c.z) * 3.4, -11, 9);
      c.v += (tv - c.v) * Math.min(1, dt * (this.calm ? 15 : 5));
@@ -402,6 +479,8 @@ export class Pursuit {
      c.w = 0;
     }
     else {
+     if (mode === 'race')
+      this.drive(c, dt);
      const ax = (c.tx - c.x) * 6 - c.vx * 4;
      c.vx += ax * dt;
      c.yaw = 0;
@@ -449,6 +528,9 @@ export class Pursuit {
     c.v = Math.max(0, c.v - 8 * dt);
     c.vx *= Math.exp(-dt * 3);
    }
+   // Wheels follow the road; a car thrown sideways drags them, a flying one lets them run down.
+   c.rev = c.state === 'air' ? c.rev * Math.exp(-dt * .5) : mix(c.rev, c.v * Math.abs(Math.cos(c.yaw)) * (c.state === 'slide' ? 0 : 1), Math.min(1, dt * 12));
+   c.turn += wheelTurn(c.rev) * dt;
    c.x += c.vx * dt;
    c.z += (c.v - flow) * dt;
    const lim = WALL - c.hw;

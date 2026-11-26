@@ -81,7 +81,6 @@ export abstract class SceneBase {
  protected drift = 0;
  protected pose = 0;
  protected path?: ReturnType<typeof rollPath>;
- protected tints: Record<string, HTMLCanvasElement>[] = [];
  protected fired = new Set<string>();
  protected skid: {
   x: number;
@@ -125,7 +124,7 @@ export abstract class SceneBase {
   this.observer.observe(canvas);
   this.resize();
  }
- protected release() { this.observer.disconnect(); this.bits.clear(); this.sim.cars = []; this.tints = []; this.dark = {}; this.cliff = undefined; this.road = []; this.gravel = []; }
+ protected release() { this.observer.disconnect(); this.bits.clear(); this.sim.cars = []; this.dark = {}; this.cliff = undefined; this.road = []; this.gravel = []; }
  protected resize() {
   const w = this.canvas.clientWidth || 1, h = this.canvas.clientHeight || 1, d = Math.min([1.5, 1.2, 1][this.quality] ?? 1.5, devicePixelRatio || 1);
   this.w = w;

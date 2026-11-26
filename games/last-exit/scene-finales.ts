@@ -15,7 +15,7 @@ export abstract class SceneFinales extends SceneEffects {
   this.sim.calm = true;
   for (const c of this.sim.cars)
    if (c.kind === 'civ' && c.state === 'drive')
-    c.tx = (Math.sign(c.x) || 1) * .86;
+    c.tx = (Math.sign(c.x) || 1) * Math.min(.86, WALL - c.hw - .02);
   for (const side of [-1, 1]) {
    let c = this.sim.cop(side);
    if (!c)
@@ -102,7 +102,8 @@ export abstract class SceneFinales extends SceneEffects {
   const nose = mix(from + dir * rw * .5, panel + dir * W * .06 * push, arrive);
   const rx = nose - dir * rw * .5;
   this.attX = this.camX + (rx - this.vpx) * this.carZ / this.R;
-  const copA = () => { this.shadow(rx, foot - 4, rw, .5); c.save(); c.translate(rx, foot); c.scale(dir, 1); c.drawImage(this.img['patrol-ram'], sx, sy, sw, sh, -rw / 2, -rh, rw, rh); c.restore(); const p = Math.sin(this.clock * 9); this.add(p > 0 ? this.red : this.blue, rx - dir * rw * .12, foot - rh * .93, copW * .2, .7); };
+  const copA = () => { this.shadow(rx, foot - 4, rw, .5); c.save(); c.translate(rx, foot); c.scale(dir, 1); c.drawImage(this.img['patrol-ram'], sx, sy, sw, sh, -rw / 2, -rh, rw, rh); if (A && !quiet)
+   this.wheels('patrol-ram/' + pose, RAM[pose], -rw / 2, -rh, rw, rh, A.turn, A.rev); c.restore(); const p = Math.sin(this.clock * 9); this.add(p > 0 ? this.red : this.blue, rx - dir * rw * .12, foot - rh * .93, copW * .2, .7); };
   if (quiet) {
    if (!this.path)
     this.path = rollPath(dir, .16 * dir, rollAt, explosionAt, this.portrait ? .8 : WALL - .2);
@@ -124,6 +125,8 @@ export abstract class SceneFinales extends SceneEffects {
     this.body('coupe', 0, 0, W, 0);
    else
     c.drawImage(this.img['coupe-yaw'], a, b, d, e, -cw / 2, -ch, cw, ch);
+   if (side >= .17 && !quiet)
+    this.wheels('coupe-yaw/' + Math.min(3, Math.round(side * 3)), [a, b, d, e], -cw / 2, -ch, cw, ch, this.heroTurn, this.heroRev);
    c.restore();
    return;
   }
@@ -137,6 +140,8 @@ export abstract class SceneFinales extends SceneEffects {
   if (dir < 0)
    c.scale(-1, 1);
   c.drawImage(this.img['coupe-depth-roll'], a, b, d, e, -cw / 2, -ch, cw, ch);
+  if (!quiet)
+   this.wheels('coupe-depth-roll/' + fr, ROLL[fr], -cw / 2, -ch, cw, ch, this.heroTurn, this.heroRev);
   if (t >= explosionAt) {
    c.globalAlpha = ease((t - explosionAt) / .4);
    c.drawImage(this.shadeOf('coupe-depth-roll'), a / 2, b / 2, d / 2, e / 2, -cw / 2, -ch, cw, ch);
@@ -533,6 +538,8 @@ export abstract class SceneFinales extends SceneEffects {
     c.translate(inside > 0 ? mix(p.x, pm.x, clamp(inside * 1.5)) : p.x, foot);
     c.scale(-1, 1);
     c.drawImage(this.img['coupe-yaw'], a, b, d, e, -yw / 2, -yh, yw, yh);
+    if (!quiet)
+     this.wheels('coupe-yaw/' + pose, YAW[pose], -yw / 2, -yh, yw, yh, this.heroTurn, this.heroRev);
     if (inside > 0) {
      c.globalAlpha = mix(.35, 1, clamp(inside / 1.2));
      c.drawImage(this.shadeOf('coupe-yaw'), a / 2, b / 2, d / 2, e / 2, -yw / 2, -yh, yw, yh);
@@ -568,7 +575,7 @@ export abstract class SceneFinales extends SceneEffects {
   const park = this.portrait ? .36 : .52;
   for (const c of this.sim.cars)
    if (c.kind === 'civ' && c.state === 'drive')
-    c.v = mix(c.v, flow + 11, Math.min(1, dt * 4));
+    c.v = mix(c.v, c.z < 1.7 ? Math.max(0, flow - 9) : flow + 11, Math.min(1, dt * 4));
    else if (c.kind === 'civ' && t > 2)
     c.v = Math.max(c.v, flow);
   if (this.phase === 'crashed') {

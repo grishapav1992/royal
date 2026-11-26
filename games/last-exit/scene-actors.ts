@@ -1,54 +1,26 @@
 import { clamp, mix, rng, round } from './scene-kit';
 import { PROPS, YAW, RAM, ROLL, BOX } from './scene-sprites';
 import { type Car, type Prop } from './pursuit';
-import { SceneRoad } from './scene-road';
-export abstract class SceneActors extends SceneRoad {
- /** Traffic reuses the coupe with repainted bodywork. Glass, rubber, lamps and chrome keep their own colour. */
- protected paintTraffic() {
-  const colors = [[0, 0, 0], [150, 38, 32], [44, 84, 132], [158, 152, 138]];
-  this.tints = colors.map((rgb, k) => {
-   const out: Record<string, HTMLCanvasElement> = {};
-   if (!k)
-    return out;
-   for (const name of ['coupe', 'coupe-depth-roll', 'coupe-yaw']) {
-    const im = this.img[name];
-    if (!im)
-     continue;
-    const cv = document.createElement('canvas');
-    cv.width = im.naturalWidth >> 1;
-    cv.height = im.naturalHeight >> 1;
-    const g = cv.getContext('2d')!;
-    g.drawImage(im, 0, 0, cv.width, cv.height);
-    const d = g.getImageData(0, 0, cv.width, cv.height), a = d.data;
-    for (let i = 0; i < a.length; i += 4) {
-     if (a[i + 3] < 8)
-      continue;
-     const r = a[i], gg = a[i + 1], b = a[i + 2], lum = .3 * r + .6 * gg + .1 * b, sat = Math.max(r, gg, b) - Math.min(r, gg, b), m = clamp((lum - 30) / 26) * clamp((150 - lum) / 40) * clamp((46 - sat) / 18);
-     if (m <= 0)
-      continue;
-     const q = Math.pow(lum / 74, .85);
-     a[i] = mix(r, rgb[0] * q, m);
-     a[i + 1] = mix(gg, rgb[1] * q, m);
-     a[i + 2] = mix(b, rgb[2] * q, m);
-    }
-    g.putImageData(d, 0, 0);
-    out[name] = cv;
-   }
-   return out;
-  });
- }
- protected shadow(x: number, y: number, w: number, a: number) { if (a <= 0)
-  return; const c = this.c, g = c.createRadialGradient(0, 0, 0, 0, 0, w * .56); c.save(); c.translate(x, y); c.scale(1, .16); g.addColorStop(0, `rgba(16,14,10,${a})`); g.addColorStop(.6, `rgba(16,14,10,${a * .7})`); g.addColorStop(1, 'rgba(16,14,10,0)'); c.fillStyle = g; c.fillRect(-w * .6, -w * .6, w * 1.2, w * 1.2); c.restore(); }
+import { MODELS } from './traffic';
+import { SceneTraffic } from './scene-traffic';
+export abstract class SceneActors extends SceneTraffic {
  protected body(name: string, x: number, foot: number, w: number, angle = 0, bright = 1) { const i = this.img[name]; if (!i)
-  return; const [sx, sy, sw, sh] = BOX[name], h = w * sh / sw, c = this.c; c.save(); c.translate(x, foot); c.rotate(angle); c.drawImage(i, sx, sy, sw, sh, -w / 2, -h, w, h); if (bright < 1) {
+  return; const [sx, sy, sw, sh] = BOX[name], h = w * sh / sw, c = this.c; c.save(); c.translate(x, foot); c.rotate(angle); c.drawImage(i, sx, sy, sw, sh, -w / 2, -h, w, h); if (name === 'coupe')
+  this.wheels(name, BOX[name], -w / 2, -h, w, h, this.heroTurn, this.heroRev); if (bright < 1) {
   c.globalAlpha = clamp((1 - bright) * 1.2);
   c.drawImage(this.shadeOf(name), sx / 2, sy / 2, sw / 2, sh / 2, -w / 2, -h, w, h);
  } c.restore(); }
- protected add(g: HTMLCanvasElement, x: number, y: number, r: number, a: number) { if (a <= .01)
-  return; const c = this.c; c.save(); c.globalCompositeOperation = 'screen'; c.globalAlpha = Math.min(1, a); c.drawImage(g, x - r, y - r, r * 2, r * 2); c.restore(); }
- protected police(x: number, foot: number, w: number, angle: number, brake: number, quiet: boolean, lights = 1) {
+ protected police(x: number, foot: number, w: number, angle: number, brake: number, quiet: boolean, lights = 1, turn = 0, rev = 0) {
   this.shadow(x, foot - w * .02, w * 1.05, .5);
   this.body('patrol', x, foot, w, angle);
+  if (rev) {
+   const [, , sw, sh] = BOX.patrol, c = this.c, hh = w * sh / sw;
+   c.save();
+   c.translate(x, foot);
+   c.rotate(angle);
+   this.wheels('patrol', BOX.patrol, -w / 2, -hh, w, hh, turn, rev);
+   c.restore();
+  }
   if (!lights)
    return;
   const h = w * .774, t = quiet ? 0 : this.clock, p = Math.sin(t * 9);
@@ -93,9 +65,14 @@ export abstract class SceneActors extends SceneRoad {
  } c.globalAlpha = 1; }
  /** Pose comes from the body state: rear, two quarter views, side, or a roll about the long axis. */
  protected drawCar(k: Car, quiet: boolean) {
-  const c = this.c, p = this.at(k.x, k.z), cop = k.kind === 'cop', base = (cop ? this.copW : this.carW * .9) * this.carZ * p.s, fade = clamp((46 - k.z) / 10);
+  const c = this.c, p = this.at(k.x, k.z), cop = k.kind === 'cop', spec = MODELS[k.model], base = (cop ? this.copW : this.carW * .9 * spec.wide) * this.carZ * p.s, fade = clamp((46 - k.z) / 10);
   if (fade <= 0 || p.x < -base * 2 || p.x > this.w + base * 2)
    return;
+  if (spec.rigid) {
+   this.drawRigid(k, fade, base);
+   return;
+  }
+  const shape = this.shapeOf(k), saloon = !cop && k.model !== 'coupe', tall = k.model === 'suv' ? 1.17 : 1, rev = quiet ? 0 : k.rev;
   const lift = k.y * this.U * p.s, foot = p.y - lift, ay = Math.abs(k.yaw), dir = Math.sign(k.yaw) || 1, tumbling = k.state === 'air' && k.hop || k.state === 'slide' && Math.abs(k.roll) > .2;
   this.shadow(p.x, p.y, base * (1 + .5 * Math.sin(Math.min(1.5, ay))) * (1 - clamp(k.y) * .4), .5 * (1 - clamp(k.y * .9)));
   c.save();
@@ -106,9 +83,9 @@ export abstract class SceneActors extends SceneRoad {
     c.save();
     c.globalAlpha = fade * alpha;
     c.translate(p.x, foot);
-    c.scale(cop ? dir : -dir, 1);
-    if (cop) {
-     const co = Math.cos(roll), [sx, sy, sw, sh] = RAM[3], bh = sideW * sh / sw;
+    c.scale(cop || saloon ? dir : -dir, 1);
+    if (cop || saloon) {
+     const co = Math.cos(roll), [sx, sy, sw, sh] = RAM[3], bh = sideW * sh / sw, paint = saloon ? shape?.['patrol-ram'] : this.img['patrol-ram'], n = saloon ? 2 : 1;
      if (co < -.0 && Math.abs(co) < .55 || co >= 0 && co < .3 && Math.sin(roll) > 0) {
       const [a, b, d, e] = ROLL[6], uw = sideW * .98, uh = uw * e / d * .86;
       c.drawImage(this.img['coupe-depth-roll'], a, b, d, e, -uw / 2, -uh, uw, uh);
@@ -118,17 +95,19 @@ export abstract class SceneActors extends SceneRoad {
       if (co < 0) {
        c.translate(0, -hh);
        c.scale(1, -1);
-       c.drawImage(this.img['patrol-ram'], sx, sy, sw, sh, -sideW / 2, -hh, sideW, hh);
       }
-      else
-       c.drawImage(this.img['patrol-ram'], sx, sy, sw, sh, -sideW / 2, -hh, sideW, hh);
+      if (paint)
+       c.drawImage(paint, sx / n, sy / n, sw / n, sh / n, -sideW / 2, -hh, sideW, hh);
+      this.wheels('patrol-ram/3', RAM[3], -sideW / 2, -hh, sideW, hh, k.turn, rev);
      }
     }
     else {
-     const [a, b, d, e] = ROLL[Math.round(turn * 8) % 8], cv = this.tints[k.tint]?.['coupe-depth-roll'];
+     const pose = Math.round(turn * 8) % 8, [a, b, d, e] = ROLL[pose], cv = shape?.['coupe-depth-roll'];
      const dh = sideW * e / d;
-     if (cv)
+     if (cv) {
       c.drawImage(cv, a / 2, b / 2, d / 2, e / 2, -sideW / 2, -dh, sideW, dh);
+      this.wheels('coupe-depth-roll/' + pose, ROLL[pose], -sideW / 2, -dh, sideW, dh, k.turn, rev);
+     }
     }
     c.restore();
    };
@@ -138,7 +117,7 @@ export abstract class SceneActors extends SceneRoad {
   }
   else if (cop && ay < .2) {
    c.restore();
-   this.police(p.x, foot, base, clamp(-k.vx * .05, -.045, .045) + (k.state === 'air' ? clamp(-k.vy * .05, -.06, .06) : 0), k.brake, quiet || k.lights === 0 && true, k.lights);
+   this.police(p.x, foot, base, clamp(-k.vx * .05, -.045, .045) + (k.state === 'air' ? clamp(-k.vy * .05, -.06, .06) : 0), k.brake, quiet || k.lights === 0 && true, k.lights, k.turn, quiet ? 0 : k.rev);
    return;
   }
   else if (cop) {
@@ -146,6 +125,7 @@ export abstract class SceneActors extends SceneRoad {
    c.translate(p.x, foot);
    c.scale(dir, 1);
    c.drawImage(this.img['patrol-ram'], sx, sy, sw, sh, -ww / 2, -hh, ww, hh);
+   this.wheels('patrol-ram/' + i, RAM[i], -ww / 2, -hh, ww, hh, k.turn, rev);
    c.restore();
    if (k.lights) {
     const q = Math.sin((quiet ? 0 : this.clock) * 9);
@@ -154,24 +134,43 @@ export abstract class SceneActors extends SceneRoad {
    return;
   }
   else {
-   const cv = this.tints[k.tint];
    if (ay < .2) {
-    const i = cv?.coupe;
+    const name = saloon ? k.model === 'suv' ? 'suv' : 'patrol' : 'coupe', i = shape?.[name];
     if (i) {
-     const [sx, sy, sw, sh] = BOX.coupe, hh = base * sh / sw;
+     const whole = name === 'suv', [sx, sy, sw, sh] = whole ? [152, 0, 1193, 1240] : BOX[name], hh = base * (whole ? .88 : sh / sw);
      c.drawImage(i, sx / 2, sy / 2, sw / 2, sh / 2, p.x - base / 2, foot - hh, base, hh);
+     if (name === 'coupe')
+      this.wheels(name, BOX[name], p.x - base / 2, foot - hh, base, hh, k.turn, rev);
+     else { // the lower body of the taller car is the same photograph, stretched
+      const low = base * BOX.patrol[3] / BOX.patrol[2] * (whole ? .992 : 1);
+      this.wheels('patrol', BOX.patrol, p.x - base / 2, foot - low, base, low, k.turn, rev);
+     }
     }
    }
-   else {
-    const n = ay < .5 ? 1 : ay < 1.15 ? 2 : 3, [sx, sy, sw, sh] = YAW[n], i = cv?.['coupe-yaw'], ww = base * 1.25, hh = ww * sh / sw;
-    if (i) {
-     c.translate(p.x, foot);
-     c.scale(-dir, 1);
+   else if (saloon) {
+    const n = ay < .5 ? 1 : ay < 1.15 ? 2 : 3, [sx, sy, sw, sh] = RAM[n], i = shape?.['patrol-ram'], hh = base * .799 * (sh / 338) * tall, ww = hh / tall * sw / sh;
+    c.translate(p.x, foot);
+    c.scale(dir, 1);
+    if (i)
      c.drawImage(i, sx / 2, sy / 2, sw / 2, sh / 2, -ww / 2, -hh, ww, hh);
-    }
+    this.wheels('patrol-ram/' + n, RAM[n], -ww / 2, -hh, ww, hh, k.turn, rev);
+   }
+   else {
+    const n = ay < .5 ? 1 : ay < 1.15 ? 2 : 3, [sx, sy, sw, sh] = YAW[n], i = shape?.['coupe-yaw'], ww = base * 1.25, hh = ww * sh / sw;
+    c.translate(p.x, foot);
+    c.scale(-dir, 1);
+    if (i)
+     c.drawImage(i, sx / 2, sy / 2, sw / 2, sh / 2, -ww / 2, -hh, ww, hh);
+    this.wheels('coupe-yaw/' + n, YAW[n], -ww / 2, -hh, ww, hh, k.turn, rev);
    }
   }
   c.restore();
+  if (!cop && k.state === 'drive') {
+   if (k.brake > .05)
+    for (const s of [-1, 1])
+     this.add(this.red, p.x + s * base * .3, foot - base * .3, base * .16, k.brake * fade * .7);
+   this.blinker(k, p.x, foot - base * .3, base, fade);
+  }
  }
  /** Bodywork scuffs accumulate with contacts and clear on a new run. */
  protected scratches(x: number, foot: number, w: number) { const n = Math.floor(this.scuff * 2.2); if (n < 1)

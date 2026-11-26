@@ -1,7 +1,8 @@
 import { clamp, ease, mix, quad, line, asphaltTile, gravelTile, puffs, glow } from './scene-kit';
 import { YAW } from './scene-sprites';
-import { heli, cargo, tunnel, nextStunt, runHash, cinematicLabel } from './stunts';
+import { impactAt, rollAt, explosionAt, heli, cargo, tunnel, nextStunt, runHash, cinematicLabel } from './stunts';
 import { zones, zoneOf } from './route';
+import { MODELS, wheelTurn } from './traffic';
 import type { RacePhase } from './model';
 import { LastExitAssets, type LastExitAssetState } from './assets';
 import { SceneFinales } from './scene-finales';
@@ -29,15 +30,25 @@ export class LastExitScene extends SceneFinales {
   for (const name of this.assets.names)
    this.img[name] = this.assets.get(name)!;
   // Textures are built between frames so a phone stays responsive.
-  for (const step of [() => { this.road = asphaltTile(); }, () => { this.gravel = gravelTile(); this.red = glow('#ff4a2e'); this.blue = glow('#4f9bff'); this.flame = glow('#ffa640'); this.white = glow('#fff1cf'); }, () => { this.smoke = puffs('#d9d2c4'); this.dust = puffs('#cdb48a'); this.black = puffs('#2c2722'); this.hot = puffs('#ffc24a'); this.ember = puffs('#f06a1a'); }, () => this.paintTraffic(), () => this.buildCliff(), () => { for (const name of ['coupe', 'coupe-yaw', 'coupe-depth-roll'])
+  for (const step of [() => { this.road = asphaltTile(); }, () => { this.gravel = gravelTile(); this.red = glow('#ff4a2e'); this.blue = glow('#4f9bff'); this.flame = glow('#ffa640'); this.white = glow('#fff1cf'); }, () => { this.smoke = puffs('#d9d2c4'); this.dust = puffs('#cdb48a'); this.black = puffs('#2c2722'); this.hot = puffs('#ffc24a'); this.ember = puffs('#f06a1a'); }, ...this.trafficFirst, ...this.wheelJobs, () => this.buildCliff(), () => { for (const name of ['coupe', 'coupe-yaw', 'coupe-depth-roll'])
     this.shadeOf(name); }]) {
    await new Promise(resolve => setTimeout(resolve));
    if (!this.alive)
     return;
    step();
   }
+  this.sim.painted = model => this.painted(model);
   this.prepared = true;
   changed(this.assets.state);
+  // The remaining colours are painted only while the start screen is calm: a run never waits for them.
+  for (const job of this.trafficRest()) {
+   do {
+    await new Promise(resolve => setTimeout(resolve, 40));
+    if (!this.alive)
+     return;
+   } while (this.phase !== 'idle' || this.revving);
+   job();
+  }
  }
  /** A reopened run continues at speed: no burnout, no bridge and no launch sound. */
  private resume(value: number) { const hw = this.copW / this.R / 2; this.reset(); this.hero.x = 0; this.hero.vx = 0; this.booms = []; this.sim.reset(runHash(this.run) % 100000); this.jumpZone(value); this.vel = 24; this.since = 8; this.gear = 99; this.fired.add('launch'); for (const side of [-1, 1])
@@ -200,6 +211,8 @@ export class LastExitScene extends SceneFinales {
    this.bridgeHeard = true;
    this.sound?.('bridge', 1, 0);
   }
+  this.sim.zone = this.zone;
+  this.spinWheels(still ? 0 : sdt, t, race);
   const flow = this.vel;
   this.speed = Math.max(0, flow * 8.6);
   const sp = 1 - Math.exp(-dt * 9);
@@ -242,7 +255,34 @@ export class LastExitScene extends SceneFinales {
   this.render(t, value, flow, still, slow);
   this.cost = mix(this.cost, performance.now() - began, .06);
   this.frames++;
-  Object.assign(this.canvas.dataset, { renderer: 'canvas2d', phase, variant: v, cinematic: still && restored ? (crash ? 'explosion' : 'extracted') : cinematicLabel(phase, v, still && crash ? 9 : still && esc ? 99 : this.age, this.holding), restored: String(restored), frames: String(this.frames), location: zones[this.zone].key, locationIndex: String(this.zone), quality: String(this.quality), cars: String(this.sim.cars.length) });
+  Object.assign(this.canvas.dataset, { renderer: 'canvas2d', phase, variant: v, cinematic: still && restored ? (crash ? 'explosion' : 'extracted') : cinematicLabel(phase, v, still && crash ? 9 : still && esc ? 99 : this.age, this.holding), restored: String(restored), frames: String(this.frames), location: zones[this.zone].key, locationIndex: String(this.zone), quality: String(this.quality), cars: String(this.sim.cars.length), traffic: String(this.sim.cars.filter(k => k.kind === 'civ').length) });
+ }
+ /** The coupe's wheels follow the road, spin up on the line and run down in the air. */
+ private spinWheels(dt: number, t: number, race: boolean) {
+  const ph = this.phase, v = this.variant, burn = ph === 'waiting' && this.since > .35 && this.since < 1.95 || ph === 'idle' && this.revving;
+  let target = this.vel, rate = 12;
+  if (burn)
+   target = 16;
+  else if (race && this.since < 1.1)
+   target = Math.max(this.vel, 20);
+  else if (ph === 'crashed' && t > impactAt) {
+   target = t > explosionAt ? 0 : 6;
+   rate = t > rollAt ? .8 : 5;
+  }
+  else if (ph === 'escaped' && !this.holding) {
+   if (v === 'helicopter' && t > heli.lift) {
+    target = 0;
+    rate = .7;
+   }
+   else if (v === 'cargo-plane')
+    target = t < cargo.landing ? 25 : 0;
+   else if (v === 'tunnel')
+    target = Math.max(this.vel, t > tunnel.turn && t < tunnel.slide + 1 ? 14 : 0);
+  }
+  this.heroRev = mix(this.heroRev, target, 1 - Math.exp(-dt * rate));
+  if (Math.abs(this.heroRev) < .02)
+   this.heroRev = 0;
+  this.heroTurn += wheelTurn(this.heroRev) * dt;
  }
  protected render(t: number, value: number, flow: number, quiet: boolean, slow: number) {
   const { c, w, h } = this, ph = this.phase, v = this.variant, crash = ph === 'crashed', esc = ph === 'escaped' && !this.holding, race = ph === 'racing' || this.holding, W = this.carW;
@@ -304,7 +344,7 @@ export class LastExitScene extends SceneFinales {
   }
   const foot = this.at(0, this.carZ).y, cx = this.at(this.carX, this.carZ).x;
   const copW = this.copW;
-  const all = [...this.sim.cars].sort((a, b) => b.z - a.z);
+  const order = (k: typeof this.sim.cars[number]) => k.z + (MODELS[k.model].rigid ? k.len / 2 : 0), all = [...this.sim.cars].sort((a, b) => order(b) - order(a));
   for (const p of [...this.sim.props].sort((a, b) => b.z - a.z))
    this.drawProp(p);
   const far = (z = this.carZ) => { for (const k of all)
@@ -337,6 +377,7 @@ export class LastExitScene extends SceneFinales {
     c.scale(this.pose > 0 ? -1 : 1, 1);
     c.rotate(-.02);
     c.drawImage(this.img['coupe-yaw'], a, b, d, e, -yw / 2, -yh, yw, yh);
+    this.wheels('coupe-yaw/1', YAW[1], -yw / 2, -yh, yw, yh, this.heroTurn, this.heroRev);
     c.restore();
    }
    else
@@ -460,6 +501,6 @@ export class LastExitScene extends SceneFinales {
  locationIndex() { return this.zone; }
  ending() { return this.variant; }
  presentationSeconds() { return this.age; }
- inspect() { return { renderer: 'canvas2d', phase: this.phase, age: this.age, frames: this.frames, variant: this.variant, zone: this.zone, weights: [...this.weights], holding: this.holding, quality: this.quality, dist: this.dist, vel: this.vel, carX: this.carX, cars: this.sim.cars.map(c => ({ kind: c.kind, state: c.state, x: c.x, z: c.z, y: c.y })), fired: [...this.fired], rocks: this.rocks.length }; }
+ inspect() { return { renderer: 'canvas2d', phase: this.phase, age: this.age, frames: this.frames, variant: this.variant, zone: this.zone, weights: [...this.weights], holding: this.holding, quality: this.quality, dist: this.dist, vel: this.vel, carX: this.carX, wheels: { turn: this.heroTurn, rev: this.heroRev }, cars: this.sim.cars.map(c => ({ kind: c.kind, model: c.model, turn: c.turn, state: c.state, x: c.x, z: c.z, y: c.y })), fired: [...this.fired], rocks: this.rocks.length }; }
  destroy() { this.alive = false; this.release(); this.assets.destroy(); }
 }
