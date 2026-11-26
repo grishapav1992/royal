@@ -171,6 +171,12 @@
       "baseSha256": "7b796ebef2182e8cb28e5d422daac206868068e19fc64090e8906c5725d70252",
       "sha256": "7b796ebef2182e8cb28e5d422daac206868068e19fc64090e8906c5725d70252"
     },
+    "games/last-exit/tsconfig.json": {
+      "commit": "7bef0ca66c06ed727223651570ba5058fe98f10a",
+      "path": "games/last-exit/tsconfig.json",
+      "baseSha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de",
+      "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
+    },
     "src/modules/GameHostContract.ts": {
       "commit": "c18bfd02da0e64f3df9a57883b995462348b9ddb",
       "path": "src/modules/GameHostContract.ts",
