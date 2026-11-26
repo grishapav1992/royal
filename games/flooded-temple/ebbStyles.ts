@@ -1,6 +1,6 @@
 /** «Ebb» layout: the scene fills the iframe the host gives the game beside its chat. */
 export const ebbStyles=String.raw`
-.ebb{--gold:#efc47b;--pale:#fbe7bd;--serif:Georgia,'Times New Roman',serif;position:relative;height:100svh;min-height:300px;overflow:hidden;background:#06161c;color:var(--pale);font-family:Arial,Helvetica,sans-serif;isolation:isolate;user-select:none;-webkit-user-select:none}
+.ebb{--gold:#efc47b;--pale:#fbe7bd;--serif:Georgia,'Times New Roman',serif;position:relative;height:100svh;min-height:0;overflow:hidden;background:#06161c;color:var(--pale);font-family:Arial,Helvetica,sans-serif;isolation:isolate;user-select:none;-webkit-user-select:none}
 .ebb *{box-sizing:border-box}.ebb button,.ebb input,.ebb select{font:inherit;color:inherit}.ebb button{cursor:pointer;touch-action:manipulation}.ebb button:disabled{cursor:default;opacity:.45}
 .ebb :focus-visible{outline:2px solid #fff1c4;outline-offset:2px}
 .ebb>canvas{position:absolute;pointer-events:none}.ebb-bg,.ebb-back,.ebb-hero,.ebb-fx{inset:0;width:100%;height:100%}
@@ -20,6 +20,23 @@ export const ebbStyles=String.raw`
 @media(max-width:1100px){.ebb-console{grid-template-columns:104px minmax(140px,1fr) 104px auto minmax(150px,220px);gap:8px 12px;padding:8px 12px}.ebb-console .money strong{font-size:18px}.ebb-console .pay strong{font-size:22px}.ebb-console .modes button{min-width:58px;padding:6px 8px}.ebb .ebb-spin{font-size:18px}.ebb-spin svg{width:26px}}
 .ebb.portrait .ebb-console{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;grid-template-areas:'money pay spin' 'stake stake spin' 'modes modes spin';padding:8px 12px calc(8px + env(safe-area-inset-bottom));gap:7px 12px}.ebb.portrait .money{grid-area:money;align-self:start}.ebb.portrait .pay{grid-area:pay;align-self:start;text-align:left}.ebb.portrait .stake{grid-area:stake}.ebb.portrait .stake>span{display:none}.ebb.portrait .modes{grid-area:modes}.ebb.portrait .ebb .ebb-spin,.ebb.portrait .ebb-spin{grid-area:spin;width:108px;height:100%;min-height:120px;flex-direction:column;font-size:17px;padding:4px}.ebb.portrait .ebb-spin svg{width:42px}.ebb.portrait .modes button,.ebb.portrait .modes select{flex:1}.ebb.portrait .pay strong{font-size:22px}.ebb.portrait .money strong{font-size:20px}.ebb.portrait .ebb-top{padding:0 10px;gap:8px}.ebb.portrait .ebb-top h1{font-size:17px}.ebb.portrait.free .ebb-top h1{display:none}.ebb.portrait .ebb-free{font-size:13px;padding:7px 10px}
 .ebb.short .ebb-console{padding:4px 12px;grid-template-columns:96px minmax(130px,1fr) 96px auto minmax(140px,200px)}.ebb.short .ebb-spin{height:50px}.ebb.short .stake>span,.ebb.short .pay em{display:none}.ebb.short .ebb-top h1{font-size:16px}.ebb.short .ebb-top nav button{width:40px;height:40px}
+.ebb.compact-console .ebb-console{
+  grid-template-columns:minmax(76px,1fr) minmax(134px,1.5fr) minmax(68px,.9fr);
+  grid-template-rows:minmax(18px,1fr) 44px;
+  grid-template-areas:'money pay spin' 'stake modes spin';
+  gap:3px 5px;padding:3px 5px 5px;
+}
+.ebb.compact-console .money,.ebb.compact-console .pay{display:flex;align-items:baseline;justify-content:center;gap:4px;min-width:0;flex-wrap:wrap;line-height:1}
+.ebb.compact-console .money{grid-area:money}.ebb.compact-console .pay{grid-area:pay}
+.ebb.compact-console .money span,.ebb.compact-console .pay span{font-size:10px}
+.ebb.compact-console .money strong,.ebb.compact-console .pay strong{font-size:15px}
+.ebb.compact-console .pay em,.ebb.compact-console .stake>span:first-child{display:none}
+.ebb.compact-console .stake{grid-area:stake}
+.ebb.compact-console .stake [data-stake-field]{min-height:40px;margin-top:0}
+.ebb.compact-console .modes{grid-area:modes;display:grid;grid-template-columns:minmax(0,1fr) minmax(36px,.8fr) minmax(0,1fr);gap:2px}
+.ebb.compact-console .modes button,.ebb.compact-console .modes select{min-width:0;width:100%;padding:2px;font-size:11px}
+.ebb.compact-console .ebb-spin{grid-area:spin;min-width:0;width:100%;height:100%;flex-direction:column;gap:2px;padding:2px;font-size:15px}
+.ebb.compact-console .ebb-spin svg{width:22px}
 @media(max-width:350px){.ebb.portrait .ebb-spin{width:88px;font-size:15px}.ebb.portrait .money strong,.ebb.portrait .pay strong{font-size:17px}.ebb.portrait .ebb-console span{font-size:10px}.ebb.portrait .ebb-console .ebb-spin span{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.ebb.shake .ebb-bg,.ebb-spin.run svg{animation:none}}
 .ebb-dialog{max-width:min(680px,92vw)}

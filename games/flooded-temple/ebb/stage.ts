@@ -22,7 +22,9 @@ export class Stage{
   layout(W:number,H:number){
     this.W=W;this.H=H;this.dpr=Math.min(2,devicePixelRatio||1);const game=this.root;
     this.mode=H<500&&W>H?'short':W<640||H>W*1.05?'portrait':'wide';game.classList.toggle('portrait',this.mode==='portrait');game.classList.toggle('short',this.mode==='short');
-    const top=this.mode==='short'?44:this.mode==='portrait'?50:54,con=this.mode==='short'?62:this.mode==='portrait'?188:98;game.style.setProperty('--top',top+'px');game.style.setProperty('--con',con+'px');
+    const compactConsole = this.mode !== 'portrait' && W < 760;
+    game.classList.toggle('compact-console', compactConsole);
+    const top=this.mode==='short'?44:this.mode==='portrait'?50:54,con=compactConsole?88:this.mode==='short'?62:this.mode==='portrait'?188:98;game.style.setProperty('--top',top+'px');game.style.setProperty('--con',con+'px');
     this.y0=top;this.y1=H-con;const ah=this.y1-top;let c:number,f:number,bx:number,by:number,g:number;
     if(this.mode==='portrait'){
       c=Math.min((W-14)/5.26,ah*.58/3.26);f=c*.13;g=Math.max(52,c*.6);bx=(W-5*c)/2;by=this.y1-30-f-3*c;
