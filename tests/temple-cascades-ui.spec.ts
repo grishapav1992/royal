@@ -93,7 +93,15 @@ test('real Royal host keeps connected chat, heroine lane, controls and close/reo
   const auth=await api.post('/api/auth/login',{data:{email:'temple-cascade-peer-'+crypto.randomUUID()+'@example.test',password:'Temple-room-review-42!'}});expect(auth.ok()).toBe(true);await api.post('/api/auth/character',{data:{skin:0}});
   const peer=await new Client('http://127.0.0.1:2627',{headers:{Cookie:auth.headers()['set-cookie'].split(';')[0]},fetchFn:async(url,options)=>{const r=await api.fetch(String(url),{method:options?.method,headers:Object.fromEntries(new Headers(options?.headers)),data:options?.body as string});return new globalThis.Response(await r.body(),{status:r.status(),headers:r.headers()});}}).create('lobby');for(const type of['chat','activities','piano-note','notice','pvp'])peer.onMessage(type,()=>{});
   try{
-    await ready(page);expect((await page.request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);await page.goto('/?lang=en&room='+peer.roomId);await page.locator('.entry-options [data-entry-mode="club"]').click({timeout:30000});await page.waitForTimeout(1000);if(await page.locator('#character-step').isVisible())await page.getByRole('button',{name:'Enter the hall',exact:true}).click();await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await page.waitForFunction(()=>{try{return(window as any).royalDemo?.getState().online===true;}catch{return false;}});
+    await ready(page);expect((await page.request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);await page.goto('/?lang=en&room='+peer.roomId);
+    await expect.poll(async()=>{
+      const online=await page.evaluate(()=>{try{return (window as any).royalDemo?.getState().online===true;}catch{return false;}});
+      if(online)return true;
+      const mode=page.locator('.entry-options [data-entry-mode="club"]'),enter=page.getByRole('button',{name:'Enter the hall',exact:true});
+      if(await mode.isVisible())await mode.click({timeout:2000});
+      else if(await enter.isVisible())await enter.click({timeout:2000});
+      return false;
+    },{timeout:60000}).toBe(true);
     await page.locator('#games-tab').click();await page.locator('[data-cabinet=studio-dracona]').click();await page.locator('[data-platform-game=studio-flooded-temple]').click();await expect(game(page).locator('.ebb')).toBeVisible({timeout:45000});await expect(game(page).locator('[data-ft=primary]')).toBeEnabled();
     const paid:string[]=[];page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/expansion')&&r.postDataJSON().action==='start')paid.push(r.postDataJSON().id);});await game(page).locator('[data-ft=primary]').click();await expect(game(page).locator('.ebb-console em')).toHaveText('Net −0.10');expect(paid.length).toBe(1);
     for(const [width,height]of[[1440,1000],[1000,1100],[768,1024],[390,844]]){
