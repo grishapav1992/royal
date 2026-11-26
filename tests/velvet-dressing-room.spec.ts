@@ -217,3 +217,81 @@ test('reel frame keeps its place for wins, notices and the bonus',async({page,ro
  await page.emulateMedia({reducedMotion:'reduce'});await finish(page);
  expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);expect(errors).toEqual([]);
 });
+
+test('the cabaret recording follows the cabinet music controls', async ({page, roomPath}) => {
+  await page.addInitScript(() => {
+    const connect = AudioContext.prototype.createMediaElementSource;
+    AudioContext.prototype.createMediaElementSource = function (audio) {
+      const source = connect.call(this, audio);
+      if (audio.src.endsWith('/backbay-lounge.mp3')) {
+        const meter = this.createAnalyser();
+        source.connect(meter);
+        Object.assign(window, {velvetTrack: audio, velvetMeter: meter});
+      }
+      return source;
+    };
+  });
+  await enter(page, roomPath);
+  const track = await page.waitForFunction(() => (window as Window & {velvetTrack?: HTMLAudioElement}).velvetTrack);
+  const playing = () => track.evaluate(audio => !audio.paused && audio.currentTime > 0);
+  await expect.poll(playing).toBe(true);
+  expect(await track.evaluate(audio => new URL(audio.currentSrc).pathname)).toMatch(/\/game-modules\/studio-velvet-reign\/.+\/backbay-lounge\.mp3$/);
+  await expect.poll(() => page.evaluate(() => {
+    const meter = (window as Window & {velvetMeter: AnalyserNode}).velvetMeter;
+    const data = new Float32Array(meter.fftSize);
+    meter.getFloatTimeDomainData(data);
+    return data.some(sample => Math.abs(sample) > 0.001);
+  })).toBe(true);
+  expect(await track.evaluate(audio => audio.loop)).toBe(true);
+  await track.evaluate(audio => { audio.currentTime = audio.duration - 0.4; });
+  await expect.poll(() => track.evaluate(audio => audio.currentTime)).toBeLessThan(3);
+
+  await page.locator('.slot-settings-button').click();
+  const music = page.locator('[data-lg-music]');
+  await music.click();
+  await expect(music).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => track.evaluate(audio => audio.paused)).toBe(true);
+  const position = await track.evaluate(audio => audio.currentTime);
+  await music.click();
+  await expect.poll(playing).toBe(true);
+  expect(await track.evaluate(audio => audio.currentTime)).toBeGreaterThanOrEqual(position);
+  const volume = page.locator('[data-lg-volume]');
+  await volume.press('Home');
+  await expect.poll(() => track.evaluate(audio => audio.paused)).toBe(true);
+  await volume.press('End');
+  await expect.poll(playing).toBe(true);
+  await page.keyboard.press('Escape');
+  await page.locator('[data-lg-sound]').click();
+  await expect.poll(() => track.evaluate(audio => audio.paused)).toBe(true);
+  await page.locator('[data-lg-sound]').click();
+  await expect.poll(playing).toBe(true);
+
+  // Simulate the browser visibility event even on headless devices with one active page.
+  const visibility = (hidden: boolean) => page.evaluate(hidden => {
+    Object.defineProperty(document, 'hidden', {configurable: true, value: hidden});
+    document.dispatchEvent(new Event('visibilitychange'));
+  }, hidden);
+  await visibility(true);
+  await expect.poll(() => track.evaluate(audio => audio.paused)).toBe(true);
+  await visibility(false);
+  await expect.poll(playing).toBe(true);
+
+  await page.locator('[data-lg-spin]').click();
+  await expect.poll(async () => (await walletSnapshot(page)).entries.filter((e: {kind: string}) => e.kind === 'bet').length).toBe(1);
+  await expect.poll(playing).toBe(true);
+  await finish(page);
+  await page.locator('.slot-settings-button').click();
+  await music.click();
+  await page.keyboard.press('Escape');
+  await page.locator('#studio-game-list').click();
+  await expect.poll(() => track.evaluate(audio => audio.paused && !audio.hasAttribute('src'))).toBe(true);
+  await open(page);
+  await page.locator('.slot-settings-button').click();
+  await expect(music).toHaveAttribute('aria-pressed', 'false');
+  expect(await track.evaluate(old => (window as Window & {velvetTrack?: HTMLAudioElement}).velvetTrack === old)).toBe(true);
+  await music.click();
+  await expect.poll(() => track.evaluate(old => {
+    const current = (window as Window & {velvetTrack?: HTMLAudioElement}).velvetTrack;
+    return current !== old && !!current && !current.paused && current.currentTime > 0;
+  })).toBe(true);
+});

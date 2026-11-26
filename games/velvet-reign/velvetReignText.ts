@@ -2,6 +2,7 @@ import {language, t, tr as hostTr} from '../../src/i18n/index';
 
 // Premiere labels travel with the package. The installed host dictionary can predate them.
 const english: Record<string, string> = {
+  'Собственная версия Royal: новые изображения и звуковые эффекты, собственные вероятности событий. Частоты исходного демо не опубликованы. Оценка возврата на длинной дистанции: около 96% во всех пяти режимах. Отдельная серия может закончиться без выплаты.': 'Royal created the artwork, sound effects and event probabilities. The original demo does not publish its frequencies. Estimated long-term return is around 96% in all five modes. An individual series may end without a payout.',
   'ПРЕМЬЕРА · 14 ЛИНИЙ · ДО 10 000×': 'PREMIERE · 14 LINES · UP TO 10,000×',
   'ПОКУПКА БОНУСА': 'BONUS BUY',
   'Покупка бонуса и труппа': 'Bonus buy and cast',

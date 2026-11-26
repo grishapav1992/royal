@@ -3,7 +3,14 @@ import {gameAudio} from '../../game/GameAudio';
 import type {SlotAudioProfile} from './SlotDefinition';
 
 type Voice={oscillator:OscillatorNode;gain:GainNode};
-/** Shared synth transport; each game supplies its own musical profile. */
+export interface SlotSoundtrack {
+  play(context: AudioContext, output: GainNode, onPlaying: () => void): void;
+  pause(): void;
+  destroy(): void;
+  readonly playing: boolean;
+}
+
+/** Common controls and effects for slots with a synthesized or recorded score. */
 export class SlotAudio {
   private voices=new Set<Voice>();
   private spinTimer?:ReturnType<typeof setInterval>;
@@ -17,14 +24,14 @@ export class SlotAudio {
   private music=true;
   private counts:Record<string,number>={};
   private unsubscribe:()=>void;
-  constructor(private profile: SlotAudioProfile){
+  constructor(private profile: SlotAudioProfile, private readonly soundtrack?: SlotSoundtrack){
     try{this.music=localStorage.getItem(this.profile.musicStorageKey)!=='0';}catch{}
     this.unsubscribe=gameAudio.onPreferences(()=>{if(!this.enabled())this.silence();else this.startMusic();});
   }
   private enabled(){const prefs=gameAudio.getPreferences();return !this.destroyed&&!document.hidden&&!prefs.muted&&prefs.volume>0&&gameAudio.context?.state==='running';}
   async enter(){const generation=++this.generation;this.entered=true;await gameAudio.unlock();if(generation===this.generation&&this.entered)this.startMusic();}
   musicEnabled(){return this.music;}
-  setMusic(value:boolean){this.music=value;try{localStorage.setItem(this.profile.musicStorageKey,value?'1':'0');}catch{}if(value)this.startMusic();else{clearInterval(this.musicTimer);this.musicTimer=undefined;}}
+  setMusic(value:boolean){this.music=value;try{localStorage.setItem(this.profile.musicStorageKey,value?'1':'0');}catch{}if(value)this.startMusic();else this.stopMusic();}
   protected audioOutput():GainNode|undefined{return gameAudio.output;}
   protected note(frequency:number,duration:number,level:number,offset=0,type:OscillatorType='sine',slide=0){
     const context=gameAudio.context,output=this.audioOutput();
@@ -39,6 +46,11 @@ export class SlotAudio {
   protected cue(name:string){if(this.enabled())this.counts[name]=(this.counts[name]??0)+1;}
   private startMusic(){
     if(!this.entered||!this.music||!this.enabled()||this.musicTimer)return;
+    if(this.soundtrack){
+      const output=this.audioOutput(),context=gameAudio.context;
+      if(context&&output)this.soundtrack.play(context,output,()=>this.cue('music'));
+      return;
+    }
     const chords=this.profile.musicChords;
     const melody=this.profile.melody;
     const play=()=>{if(!this.enabled()||!this.entered||!this.music){clearInterval(this.musicTimer);this.musicTimer=undefined;return;}const chord=chords[Math.floor(this.beat/8)%chords.length];this.note(chord[melody[this.beat%8]]*2,.9,.006,0,'triangle');if(this.beat%4===0){this.note(chord[0]/2,1.7,.012);this.note(chord[1],1.5,.004);this.note(chord[2],1.5,.004);}this.beat++;this.cue('music');};
@@ -67,7 +79,8 @@ export class SlotAudio {
   }
   outcome(won:boolean){this.cue(won?'win':'settle');if(won)[440,554.37,659.26,880].forEach((frequency,i)=>this.note(frequency,.62,.023,i*.075,'triangle'));else this.note(329.63,.23,.008);}
   pause(){this.generation++;this.entered=false;this.silence();}
-  private silence(){this.stopSpin();clearInterval(this.musicTimer);this.musicTimer=undefined;for(const voice of this.voices){try{voice.oscillator.stop();}catch{}voice.oscillator.disconnect();voice.gain.disconnect();}this.voices.clear();}
-  state(){return{activeSources:this.voices.size,spinning:!!this.spinTimer,music:!!this.musicTimer,counts:{...this.counts}};}
-  destroy(){this.destroyed=true;this.pause();this.unsubscribe();}
+  private stopMusic(){this.soundtrack?.pause();clearInterval(this.musicTimer);this.musicTimer=undefined;}
+  private silence(){this.stopSpin();this.stopMusic();for(const voice of this.voices){try{voice.oscillator.stop();}catch{}voice.oscillator.disconnect();voice.gain.disconnect();}this.voices.clear();}
+  state(){return{activeSources:this.voices.size+Number(this.soundtrack?.playing??false),spinning:!!this.spinTimer,music:this.soundtrack?.playing??!!this.musicTimer,counts:{...this.counts}};}
+  destroy(){this.destroyed=true;this.pause();this.soundtrack?.destroy();this.unsubscribe();}
 }
