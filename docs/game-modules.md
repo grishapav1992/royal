@@ -43,7 +43,7 @@ The seven native Studio games use server rules 2; generic Studio games, LAST EXI
 
 ## Game interface design
 
-Apply these rules to new games and visual redesigns. Adapt the field, primary action and round states to the genre. In a slot these are the reels, Spin and the relevant spin and bonus states.
+Apply these rules to new games and visual redesigns. Use the [genre guide](game-design-by-genre.md) to choose a reference and a playable review scenario for the player's main decision. For a hybrid game, choose a reference for each distinct mechanic.
 
 ### Visual direction and information hierarchy
 
@@ -54,9 +54,9 @@ Apply these rules to new games and visual redesigns. Adapt the field, primary ac
 
 ### Layout and round states
 
-- Size to the area the host actually gives the game after arranging chat. On wide screens place mechanics and character art alongside the field where they fit. In portrait use a compact strip for mechanics and put the primary controls within reach below the field. In a short landscape window give the controls a dedicated side column. Keep the primary action, field and applicable price, progress and result visible without scrolling the game. Long rules and history may scroll within their dialogs.
+- Size to the area the host actually gives the game after arranging chat. On wide screens place mechanics and character art alongside the field where they fit. In portrait use a compact strip for mechanics and put the primary controls within reach below the field. In short landscape, a slot can put controls beside the reels. A sports or fight scene can keep them below the action to preserve the full width of play. Keep the primary action, field and applicable price, progress and result visible without scrolling the game. Long rules and history may scroll within their dialogs.
 - Reserve space for results, errors and recovery prompts. At a fixed game-window size, keep field geometry stable through loading, play, cascade or win, bonus and recovery. Fit large desktop windows without stretching the field or leaving the main controls far from it.
-- Make each result legible on the field. Highlight confirmed winning symbols, lines or groups, keep them unobscured, and place the amount and breakdown beside or below them. Give bonus play a distinct treatment with a clear mode label, remaining continuations and applicable progress or multiplier. Keep a free continuation distinguishable from a paid start. Follow the [animation and sound rules](game-feedback.md) for confirmation and recovery.
+- Make each result legible on the field. In a slot, highlight confirmed winning symbols, lines or groups, keep them unobscured, and place the amount and breakdown beside or below them. Where the game offers bonus play, give it a distinct treatment with a clear mode label, remaining continuations and applicable progress or multiplier. Keep a free continuation distinguishable from a paid start. Follow the [animation and sound rules](game-feedback.md) for confirmation and recovery.
 - Keep controls and dialogs readable in Russian and English. Give icon buttons accessible names, keep keyboard focus visible, and return focus when closing a dialog. Use touch targets of at least 44×44 CSS pixels for primary actions. Keep the result and underlying state clear with reduced motion and muted sound.
 - Keep game-specific components, CSS and assets within the module, with selectors scoped to its root. Use the existing host controls and services where they fit. Open the game after another themed module to check for style leaks. For a visual-only redesign, preserve the rules, payouts, wallet flow and accepted-round behavior.
 

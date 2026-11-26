@@ -72,6 +72,7 @@
 ## Game interface design
 
 - For every new game and visual redesign, follow the [game interface design rules](docs/game-modules.md#game-interface-design). Keep the playing field, primary action and round status prominent. Give each game its own visual theme and use it to explain the mechanics.
+- Select [design references by gameplay genre](docs/game-design-by-genre.md) from the decision the player actually makes. Apply each example to its matching mechanic or mode. Record new visual preferences with the game, genre, moment and reason in the design brief.
 - Plan desktop, portrait and landscape layouts for the actual host window with connected chat. Scope theme styles to the game module and verify active play, results, bonuses and recovery in the host.
 - After verifying a design change in production for one of the [six reference games](docs/game-modules.md#reference-redesigns), update that game's reference and any affected design rules with the verified release record.
 
