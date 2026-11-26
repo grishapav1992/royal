@@ -1,0 +1,117 @@
+{
+  "published": true,
+  "release": "forest-wide-20261126-v1",
+  "sourceCommit": "7e7392add91fb7d16baaea1e76e57d5fce7a23c3",
+  "baseCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/forest-wide-20261126-v1/source.tgz",
+    "sha256": "7ff26bdab52598b0583dd4a7340fb1620d19ed42358cd87cb960bce3deebdd01",
+    "bytes": 61089,
+    "oldVersion": "1.18.1-d4bfa183ddfc",
+    "imageTag": "royal-game:before-forest-wide-20261126-v1",
+    "image": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+    "oldPackageHardlinked": true,
+    "createdSources": []
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-forest-heart",
+    "version": "1.18.2-770b60ae8d6c",
+    "bytes": 3262290,
+    "files": 22,
+    "beforeSha256": "0e7690938badb041fc8a0fd3c77130992d7c7333a8657fc0cc02da50b43aa115",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "f8277fd5fbc9a14a37b4a10c369534cc258a32da7ccb41b475278c6aa10b3080",
+    "history": "/opt/royal-game-modules-state/history/20261126T103239-260f1c171cc044e787ca6268564af27d.json"
+  },
+  "freeBefore": 11035545600,
+  "freeAfter": 11032084480,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8845,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "7e7392add91fb7d16baaea1e76e57d5fce7a23c3",
+  "previousVersion": "1.18.1-d4bfa183ddfc",
+  "manifestSha256": "80c7cff791865820444e7341ea03a2bc49be975803f37d321edc114fb15907b1",
+  "pointerSha256": "f8277fd5fbc9a14a37b4a10c369534cc258a32da7ccb41b475278c6aa10b3080",
+  "priorPointerSha256": "0e7690938badb041fc8a0fd3c77130992d7c7333a8657fc0cc02da50b43aa115",
+  "releaseManifestSha256": "2cbf69e7b843294200686d88aa935626e4ca623939159f6ac6f04fa6170696af",
+  "receiptSha256": "aae27519a5806cbb724e8b41ae416eb52ecd20e113aafb9e7be247bf26815be8",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "changedSources": [
+    "games/forest-heart/ForestLayout.ts",
+    "games/forest-heart/package.json"
+  ],
+  "projection": "the projection of forest-design-match-20261125-v1 on the live host 3b59bfdc; only ForestLayout.ts and package.json point to 7e6318dc; shared inputs equal the live host; the unused ForestVideo.ts stays on the server unchanged",
+  "verification": {
+    "rtp": "passed in release:prepare, 39 profiles and 21 stake policies",
+    "typecheck": true,
+    "githubVerified": true,
+    "githubChecks": {
+      "Release build and game RTP gate": "45799523958 cancelled by the workflow when newer commits of other chats reached main; the sources are part of every later main run"
+    },
+    "walletTests": 19,
+    "forestServerTests": 8,
+    "browserReport": {
+      "release": "forest-wide-20261126-v1",
+      "version": "1.18.2-770b60ae8d6c",
+      "sourceCommit": "7e7392add91fb7d16baaea1e76e57d5fce7a23c3",
+      "moduleManifestSha256": "80c7cff791865820444e7341ea03a2bc49be975803f37d321edc114fb15907b1",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "walletTestsPassed": 19,
+      "forestServerTestsPassed": 8,
+      "connectedBrowserTests": 28,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome",
+      "scenarios": [
+        "24 game tests: layout in fourteen window sizes including the wide host without chat, money and texts, result and celebration, loss, partial return, rune, bonus, reduced motion, pause, WebGL loss, lost response, malformed reply, reopening, autoplay debits",
+        "iframe field and essential actions on eight sizes",
+        "0.10 stake with one debit, lost response and reopening through rotation",
+        "natural rune and bonus through rotation",
+        "animations through both orientations"
+      ],
+      "timingFailures": "none",
+      "relaxedTests": [],
+      "notChecked": [
+        "physical phones",
+        "Safari",
+        "listening quality"
+      ]
+    },
+    "browserReportSha256": "9eedbda135c6f0ae2b13c9497690d73d592d3554e0aebb5841a304a5307a7274",
+    "live": {
+      "health": 200,
+      "moduleHostEntries": 125,
+      "unchangedModulePointers": 124,
+      "changedModulePointers": [
+        "studio-forest-heart"
+      ],
+      "packageFilesVerified": 22,
+      "manifestVerified": true,
+      "previousPackageFilesVerified": 22
+    },
+    "publicSignedInPlayChecked": false,
+    "productionAccountsOrRoundsCreated": false,
+    "firstAttempt": "passed",
+    "helpers": "snapshot helpers of winter-stair-20261126-v1, the earlier cosmic-crew copies were removed by retention"
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 86.03,
+    "freeBefore": 11027636224,
+    "freeAfter": 11023998976,
+    "plannedEntries": 0,
+    "removedEntries": 0,
+    "timerEnabled": true,
+    "timerActive": true,
+    "healthOk": true
+  }
+}
