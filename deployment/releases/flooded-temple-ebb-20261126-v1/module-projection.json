@@ -241,10 +241,10 @@
       "sha256": "3fb982c997c1777cc15195065bbc9ea1435f971b7831e0a606620fead7fd6672"
     },
     "games/flooded-temple/ebb/stage.ts": {
-      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "commit": "31ede55f31793b6d276d15e66e18b1831a3a2052",
       "path": "games/flooded-temple/ebb/stage.ts",
-      "baseSha256": "2897f7ee66301aa91e9c12ca12b31a52ff8bf39755c37774d89b184f3e5072e6",
-      "sha256": "2897f7ee66301aa91e9c12ca12b31a52ff8bf39755c37774d89b184f3e5072e6"
+      "baseSha256": "803f96aa1cb98244ed84e7859ed24f478704ba1e1beba03ec638efd212e69804",
+      "sha256": "803f96aa1cb98244ed84e7859ed24f478704ba1e1beba03ec638efd212e69804"
     },
     "games/flooded-temple/ebb/symbols.ts": {
       "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
@@ -259,10 +259,10 @@
       "sha256": "7b6c9d9be2d9d75698f42c1888a86f56613f3560c7ed1aa549c10506b6678389"
     },
     "games/flooded-temple/ebbStyles.ts": {
-      "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
+      "commit": "31ede55f31793b6d276d15e66e18b1831a3a2052",
       "path": "games/flooded-temple/ebbStyles.ts",
-      "baseSha256": "0af2bfe433b83f947a59f44c9a73139b1458cf1ab52ddd7e026811023eb48d2b",
-      "sha256": "0af2bfe433b83f947a59f44c9a73139b1458cf1ab52ddd7e026811023eb48d2b"
+      "baseSha256": "beebfe78e6e41daef9c8cfdac5c226521e8071e72a32611f783144766031880e",
+      "sha256": "beebfe78e6e41daef9c8cfdac5c226521e8071e72a32611f783144766031880e"
     },
     "games/flooded-temple/entry.ts": {
       "commit": "4028143bb9c3f80890f375910beb52c20fdffc4a",
