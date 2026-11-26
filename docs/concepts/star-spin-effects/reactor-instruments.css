@@ -1,0 +1,132 @@
+/* Observatory instruments use the existing hangar, character art and transparent relics. */
+.gn.nx {
+  --alloy: #cda46c;
+  --pale-alloy: #ffe3ac;
+  --glass: #0d3542;
+  --luminous: #83edff;
+  --rim: polygon(0 13px,13px 0,calc(100% - 17px) 0,100% 17px,100% calc(100% - 13px),calc(100% - 13px) 100%,17px 100%,0 calc(100% - 17px));
+  background-image: linear-gradient(0deg,#030c17be,transparent 30%,#040c1852 85%,#07121fc9),var(--hangar);
+}
+.gn.nx[data-side=dark] {
+  --alloy: #d19aaf; --pale-alloy: #ffdddf; --glass: #331c3f; --luminous: #f5a8db;
+  background-image: linear-gradient(0deg,#120a18be,transparent 30%,#100a1852 85%,#140c1ac9),var(--hangar);
+}
+.nx-atmosphere,.nx-atmosphere i,.nx-atmosphere b { position:absolute;inset:0;pointer-events:none; }
+.nx-atmosphere { overflow:hidden;z-index:0; }
+.nx-atmosphere i { inset:-12% -15%;background:radial-gradient(ellipse at 67% 23%,color-mix(in srgb,var(--luminous) 22%,transparent),transparent 25%),linear-gradient(128deg,transparent 42%,#a5dcff15 48%,transparent 54%);animation:nx-air 15s ease-in-out infinite alternate; }
+.nx-atmosphere b { inset:55% -15% -22%;background:radial-gradient(ellipse at 55% 60%,#afdbdc29,transparent 49%);animation:nx-mist 12s ease-in-out infinite alternate; }
+@keyframes nx-air {from{transform:translateX(-6%);opacity:.48}to{transform:translateX(6%);opacity:.94}}
+@keyframes nx-mist {from{transform:translateX(8%);opacity:.32}to{transform:translateX(-8%);opacity:.83}}
+
+.nx .gn-header { border-bottom:1px solid color-mix(in srgb,var(--alloy) 40%,transparent);padding-bottom:4px; }
+.nx .gn-brand {font:italic 800 25px/1 Georgia,serif;color:var(--pale-alloy);border-left:3px solid var(--alloy);padding-left:9px}
+.nx .gn-brand span {font:600 8px/1.3 system-ui;letter-spacing:.16em;color:#dacbb8}
+.nx .gn-title {position:relative;padding-left:40px}
+.nx .gn-title small {font:650 9px/1.15 system-ui;letter-spacing:.25em;color:var(--pale-alloy)}
+.nx .gn-title h2 {font:italic 760 clamp(24px,3.65cqw,47px)/.94 Georgia,serif;letter-spacing:-.055em;text-transform:uppercase;margin:2px 0 4px;color:#f5f4e9;text-shadow:0 2px 4px #08121a}
+.nx .gn-title h2 em {font-weight:500;color:var(--pale-alloy)}
+.nx-heading-star {position:absolute;width:31px;height:31px;left:1px;top:50%;translate:0 -50%;border:1px solid var(--alloy);border-radius:50%}
+.nx-heading-star::before,.nx-heading-star::after {content:"";position:absolute;inset:3px;clip-path:polygon(50% 0,57% 39%,100% 50%,59% 56%,50% 100%,42% 60%,0 50%,41% 42%);background:var(--pale-alloy);animation:nx-turn 32s linear infinite}
+.nx-heading-star::after {inset:6px;background:var(--luminous);rotate:45deg;animation-direction:reverse}
+.nx .gn-tools button,.nx .ss-side-picker button,.nx .gn-controls>[data-gn=auto] {border-radius:2px 9px 2px 9px;border-color:#75868a;background:linear-gradient(146deg,#243942b8,#101c28de);box-shadow:inset 0 1px #ffffff13}
+.nx .gn-tools .ss-open {border-color:var(--alloy);color:var(--pale-alloy)}
+.nx :is(button,select){transition:border-color .25s,filter .2s,color .3s}
+.nx .gn-machine-label,.nx .gn-field-caption {font-variant-numeric:tabular-nums;letter-spacing:.065em}
+.nx .gn-machine-label>span {color:var(--pale-alloy)}
+.nx .gn-machine-label>b {color:var(--luminous)}
+.nx .gn-field-caption>span:last-child {color:#d8c5a3}
+.nx-cradle {position:relative;flex:none;isolation:isolate}
+.nx-cradle::before,.nx-cradle::after {content:"";position:absolute;pointer-events:none;clip-path:var(--rim)}
+.nx-cradle::before {inset:-10px;z-index:-2;background:linear-gradient(152deg,#ffe4ad 0%,#a17545 9%,#293640 22%,#627179 46%,var(--alloy) 56%,#2d3741 73%,#917957 94%,#e4bc81);filter:drop-shadow(0 5px 6px #020811)}
+.nx-cradle::after {inset:-7px;z-index:-1;background:repeating-linear-gradient(128deg,#182833 0px 4px,#263742 5px 6px,#182733 7px 9px)}
+.gn.nx .gn-board {border-radius:6px;box-shadow:0 0 0 2px #020c12,0 0 0 3px color-mix(in srgb,var(--luminous) 50%,#2d3742),inset 0 0 25px #ffffff0a;background:radial-gradient(ellipse at 52% 49%,color-mix(in srgb,var(--glass) 80%,#071016),#05141ded 75%);transition:box-shadow .45s}
+.nx.gn-bonus .gn-board {box-shadow:0 0 0 2px #311e10,0 0 0 3px #ffd185,0 0 15px #ebab4d57}
+.nx .gn-reel {border-right-color:color-mix(in srgb,var(--alloy) 48%,transparent);background:linear-gradient(90deg,#030b106b,#ffffff05 14%,transparent 45%,#ffffff04 88%,#050d137a)}
+.nx .gn-track .gn-cell {border-bottom-color:#98cfd02f}
+.nx-rails {position:absolute;inset:-7px;z-index:5;pointer-events:none}
+.nx-rails i {display:block;position:absolute;background:linear-gradient(90deg,#477879,var(--luminous),#729898);height:3px;width:14%;box-shadow:0 0 5px color-mix(in srgb,var(--luminous) 60%,transparent);overflow:hidden}
+.nx-rails i::before {content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,#fff6d7,transparent);animation:nx-conduit 5.4s ease-in-out infinite}
+.nx-rails i:nth-child(1){left:4%;top:0}.nx-rails i:nth-child(2){right:4%;top:0}
+.nx-rails i:nth-child(3){left:4%;bottom:0}.nx-rails i:nth-child(4){right:4%;bottom:0}
+.nx-rails i:nth-child(even)::before{animation-delay:-2.7s}.nx-rails i:nth-child(n+3)::before{animation-direction:reverse}
+@keyframes nx-conduit {0%{transform:translateX(-100%)}70%,100%{transform:translateX(100%)}}
+@keyframes nx-turn {to{transform:rotate(360deg)}}
+.nx .ss-companion {isolation:isolate;background:radial-gradient(ellipse at 50% 62%,color-mix(in srgb,var(--glass) 53%,transparent),transparent 74%)}
+.nx-armillary {pointer-events:none;position:absolute;width:92%;aspect-ratio:1;max-height:92%;top:50%;left:50%;translate:-50% -50%;opacity:.87}
+.nx-armillary i,.nx-armillary b {position:absolute;border-radius:50%;aspect-ratio:1;top:50%;left:50%;translate:-50% -50%}
+.nx-armillary i {width:97%;background:repeating-conic-gradient(from 5deg,var(--pale-alloy) 0deg 1deg,transparent 1.4deg 11.25deg);mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));animation:nx-turn 57s linear infinite}
+.nx-armillary b {width:84%;border:1px solid color-mix(in srgb,var(--luminous) 38%,transparent);background:conic-gradient(from 17deg,transparent 0 16deg,var(--luminous) 16deg 53deg,transparent 53deg 97deg,var(--alloy) 97deg 117deg,transparent 117deg 207deg,var(--luminous) 207deg 225deg,transparent 225deg);mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));animation:nx-turn 24s linear infinite reverse}
+.nx .ss-identity {border-block:1px solid color-mix(in srgb,var(--alloy) 46%,transparent);padding:5px;gap:2px;background:linear-gradient(90deg,transparent,#10232d77 50%,transparent)}
+.nx .ss-identity strong {font:italic 600 clamp(17px,2.45cqw,31px)/1 Georgia,serif;color:#fff1d7}
+.nx .ss-side-picker [aria-pressed=true] {border-color:var(--pale-alloy);color:var(--pale-alloy);background:linear-gradient(110deg,#2a3238,var(--glass));box-shadow:inset 3px 0 var(--alloy)}
+.nx .gn-console {position:relative;border:1px solid #556269;border-top:2px solid var(--alloy);border-radius:2px 15px 2px 15px;background:linear-gradient(165deg,#23343bcf,#101e29ed 42%,#081720ed);box-shadow:inset 0 2px #e7ebd80c}
+.nx .gn-money>div:not(:first-child){border-left:1px solid #72818075;padding-left:9px}
+.nx .gn-money strong {font-family:ui-monospace,Menlo,monospace;letter-spacing:-.075em}
+.nx [data-gn=payout]{color:var(--pale-alloy)}
+.nx .gn-controls .gn-spin {grid-template-columns:42px minmax(0,1fr);column-gap:7px;position:relative;align-content:center;border-radius:3px 13px 3px 13px;border:1px solid #dac09b;border-top:2px solid #ffdfab;box-shadow:inset 0 -3px #4b453d,0 1px 9px #0008;background:linear-gradient(110deg,#394149,#253a43 43%,#23343e)}
+.nx .gn-controls .gn-spin b {color:#fff5df;font-size:clamp(13px,1.68cqw,19px)}
+.nx .gn-controls .gn-spin small {color:#dacfb9}
+.nx .gn-spin>.nx-ignition {align-self:center;justify-self:center;display:grid;place-items:center;position:relative;width:40px;height:40px;border-radius:50%;border:2px solid var(--alloy);background:radial-gradient(circle,#a0edee 0 8%,#21515e 14% 23%,#101e27 26% 100%);box-shadow:0 0 0 2px #121c22,inset 0 0 5px #87c3cd}
+.nx-ignition::before,.nx-ignition::after {content:"";position:absolute;border-radius:50%;pointer-events:none}
+.nx-ignition::before {inset:2px;background:repeating-conic-gradient(#f5d19b 0deg 20deg,transparent 20deg 60deg);mask:radial-gradient(farthest-side,transparent 70%,#000 75%);animation:nx-turn 12s linear infinite}
+.nx-ignition::after {inset:8px;border:1px solid var(--luminous);border-inline-color:transparent;animation:nx-turn 7s linear infinite reverse}
+.nx-iris {position:absolute;inset:9px;background:repeating-conic-gradient(from 10deg,var(--luminous) 0deg 25deg,#489091 25deg 53deg,#153743 53deg 60deg);border-radius:50%;mask:radial-gradient(farthest-side,transparent 28%,#000 36%);animation:nx-turn 18s linear infinite}
+.nx .nx-wait>.nx-ignition {animation:none}.nx .nx-wait .nx-iris{animation-duration:1.8s}
+.nx .nx-wait>.nx-ignition::before{animation-duration:2.7s}
+.nx .gn-spin:hover:not(:disabled) {filter:brightness(1.15)}.nx .gn-spin:active:not(:disabled) {transform:translateY(1px)}
+.nx .gn-playback [data-gn=skip]{border:1px solid var(--alloy);border-radius:3px 13px 3px 13px;background:linear-gradient(110deg,#2b383d,#12232c);color:var(--pale-alloy)}
+/* Stagger by both column and row. The entire reel retains its own stop transform. */
+.nx [data-reel]{--offset:0s}.nx [data-reel="1"]{--offset:-1.65s}.nx [data-reel="2"]{--offset:-3.1s}.nx [data-reel="3"]{--offset:-4.55s}.nx [data-reel="4"]{--offset:-2.35s}
+.nx [data-row]{--row-delay:0s}.nx [data-row="1"]{--row-delay:-2.1s}.nx [data-row="2"]{--row-delay:-3.75s}
+.nx .gn-track .gn-cell>.nx-relic{animation:nx-suspended 6.9s ease-in-out infinite;animation-delay:calc(var(--offset) + var(--row-delay))}
+.nx .gn-track [data-symbol="0"]>.nx-relic{animation-name:nx-blade;transform-origin:40% 68%}
+.nx .gn-track [data-symbol="1"]>.nx-relic{animation-name:nx-cube;animation-duration:7.9s}
+.nx .gn-track [data-symbol="2"]>.nx-relic{animation-name:nx-compass;animation-duration:11s}
+.nx .gn-track [data-symbol="3"]>.nx-relic{animation-name:nx-mask;animation-duration:8.5s}
+.nx .gn-track [data-symbol="4"]>.nx-relic{animation-name:nx-suspended;animation-duration:5.9s}
+.nx .gn-track [data-symbol="5"]>.nx-relic{animation-name:nx-medal;animation-duration:8s}
+.nx .gn-track [data-symbol="7"]>.nx-relic{animation:nx-compass 12s ease-in-out infinite;animation-delay:var(--offset)}
+.nx .gn-track [data-symbol="2"]::after,.nx .gn-track [data-symbol="7"]::after {content:"";position:absolute;inset:10%;border-radius:50%;pointer-events:none;border:1px solid transparent;border-right-color:#d7bc7e80;border-bottom-color:#8dbdc449;animation:nx-turn 13s linear infinite reverse;animation-delay:calc(var(--offset) + var(--row-delay))}
+.nx .gn-track [data-symbol="7"]::after {border-right-color:#e9b561b0;inset:8%;animation-duration:17s}
+@keyframes nx-suspended {0%,100%{translate:0 2%;rotate:-3deg}50%{translate:0 -3%;rotate:3deg}}
+@keyframes nx-blade {0%,100%{rotate:-3deg;translate:0 1%}50%{rotate:3deg;translate:0 -2%}}
+@keyframes nx-cube {0%,100%{transform:perspective(320px) rotateY(-11deg) rotateZ(-3deg);translate:0 2%}50%{transform:perspective(320px) rotateY(12deg) rotateZ(3deg);translate:0 -2.5%}}
+@keyframes nx-compass {0%,100%{rotate:-6deg}50%{rotate:7deg}}
+@keyframes nx-mask {0%,100%{scale:.98;translate:0 1%}50%{scale:1.015;translate:0 -1%}}
+@keyframes nx-medal {0%,100%{transform:perspective(300px) rotateY(-16deg) rotateZ(-3deg)}50%{transform:perspective(300px) rotateY(16deg) rotateZ(3deg)}}
+.nx .gn-board.nx-dimmed .gn-cell>.nx-relic,.nx .gn-board.nx-dimmed .gn-cell::after,.nx .gn-spinning .gn-cell>.nx-relic,.nx .gn-reel.gn-spinning .gn-cell::after {animation-play-state:paused}
+.nx .nx-dimmed .gn-cell.nx-hit>.nx-relic{scale:1.065;filter:brightness(1.17) drop-shadow(0 0 5px #e2bd7390)}
+.nx .gn-board.nx-dimmed .gn-cell:not(.nx-hit)>.nx-relic{opacity:.63}
+.nx-fast .nx-wait .nx-iris{animation-duration:1.35s}
+.nx .gn-track [data-symbol="6"] {overflow:visible}
+.nx .nx-live .gn-tower {animation:nx-core-current 3.7s ease-in-out infinite alternate}
+@keyframes nx-core-current {from{filter:brightness(.98) drop-shadow(0 0 3px #70c8ea7a)}to{filter:brightness(1.2) drop-shadow(0 0 11px #8cecffaf)}}
+.nx[data-layout=portrait] .gn-title,.nx[data-layout=landscape] .gn-title{padding-left:31px}
+.nx[data-layout=portrait] .gn-title h2,.nx[data-layout=landscape] .gn-title h2{font-size:clamp(20px,4.8cqw,30px)}
+.nx:is([data-layout=portrait],[data-layout=landscape]) .nx-heading-star{width:24px;height:24px}
+.nx:is([data-layout=portrait],[data-layout=landscape]) .ss-identity{padding:3px}
+.nx:is([data-layout=portrait],[data-layout=landscape]) .gn-money strong{font-size:clamp(16px,3cqw,22px)}
+.nx:is([data-layout=portrait],[data-layout=landscape]) .gn-controls .gn-spin{grid-template-columns:30px minmax(0,1fr);column-gap:3px;padding-inline:5px}
+.nx:is([data-layout=portrait],[data-layout=landscape]) .gn-spin>.nx-ignition{width:28px;height:28px}
+.nx:is([data-layout=portrait],[data-layout=landscape]) .nx-ignition::after{inset:4px}
+.nx:is([data-layout=portrait],[data-layout=landscape]) .nx-iris{inset:5px}
+.nx[data-layout=portrait] .nx-armillary{width:auto;height:94%;aspect-ratio:1}
+@container star-spin (max-width:370px) {.nx .gn-title{padding-left:0}.nx-heading-star{display:none}.nx .gn-tools{gap:3px}}
+.nx .nx-relic {display:block;width:100%;height:100%;position:relative;transition:scale .18s,opacity .18s,filter .18s;filter:drop-shadow(0 3px 2px #0008)}
+.nx .nx-relic img,.nx .nx-relic i{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.nx .nx-relic i{background:var(--relic) center/contain no-repeat;animation-delay:calc(var(--offset) + var(--row-delay))!important}
+/* Each moving surface is sampled from the original relic. The mechanical housings remain attached. */
+.nx [data-symbol="1"] .nx-relic img{clip-path:polygon(0 24%,100% 24%,100% 100%,0 100%)}
+.nx [data-symbol="1"] .nx-relic i{clip-path:polygon(0 0,100% 0,100% 24%,0 24%);animation:nx-lid 4.5s ease-in-out infinite}
+@keyframes nx-lid{0%,100%{translate:0 0;rotate:-1deg}55%{translate:0 -5%;rotate:2deg}}
+.nx [data-symbol="2"] .nx-relic i,.nx [data-symbol="5"] .nx-relic i,.nx [data-symbol="7"] .nx-relic i{mask:radial-gradient(circle closest-side,#000 0 89%,transparent 100%) center/43% 43% no-repeat;animation:nx-turn 10s linear infinite;filter:brightness(1.08)}
+.nx [data-symbol="5"] .nx-relic i{mask-size:22% 22%;animation-duration:6.5s}
+.nx [data-symbol="7"] .nx-relic i{mask-size:52% 52%;animation-duration:6.8s;animation-direction:reverse}
+.nx [data-symbol="0"] .nx-relic i,.nx [data-symbol="4"] .nx-relic i{background:linear-gradient(112deg,transparent 35%,#fff9 47%,#fff3 50%,transparent 61%) 125% 50%/290% 100% no-repeat;mask:var(--relic) center/contain no-repeat;mix-blend-mode:screen;animation:nx-facet 5.6s ease-in-out infinite}
+.nx [data-symbol="4"] .nx-relic i{animation-duration:4.1s}
+@keyframes nx-facet{0%,15%{background-position:125% 50%;opacity:0}34%{opacity:.78}65%,100%{background-position:-25% 50%;opacity:0}}
+.nx [data-symbol="3"] .nx-relic i{mask:radial-gradient(ellipse 15% 4.5% at 36% 47%,#000 45%,transparent),radial-gradient(ellipse 15% 4.5% at 64% 47%,#000 45%,transparent);filter:brightness(1.9);animation:nx-eyes 4.6s ease-in-out infinite alternate}
+@keyframes nx-eyes{from{opacity:.12}to{opacity:.92}}
+.nx .gn-board.nx-dimmed .nx-relic i,.nx .gn-board.nx-dimmed .gn-tower,.nx .gn-spinning .nx-relic i{animation-play-state:paused}
+.nx .gn-reel.gn-spinning{background:linear-gradient(180deg,#051018 0%,var(--glass) 23%,#16353b 51%,var(--glass) 77%,#051018)}
+.nx .gn-reel.gn-spinning{mask:linear-gradient(180deg,#000a,#000 12%,#000 88%,#000a)}

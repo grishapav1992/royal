@@ -73,6 +73,7 @@ function fitAll() {
 }
 function setView(next:string) {
  view = next; stages.dataset.view = next;
+ for (const [variant, scene] of scenes) scene.setPanelVisible(view === "compare" || variant === view);
  document.querySelectorAll<HTMLButtonElement>("[data-view]").forEach(b=>{ if(b.tagName==="BUTTON") b.setAttribute("aria-pressed",String(b.dataset.view===view)); });
  for(const b of document.querySelectorAll<HTMLButtonElement>("[data-expand]")) b.textContent = view==="compare" ? "Развернуть ↗" : "Сравнить рядом";
  fitAll();

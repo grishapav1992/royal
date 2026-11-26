@@ -59,6 +59,7 @@ export class Scene {
   private current: ScenarioId | null = null;
   private hero: HeroId = "lyra";
   private skyRaf = 0; private stars: { x: number; y: number; z: number }[] = []; private ship = -1;
+  private panelVisible = true;
   settings: Settings = { reduced: false, fast: false };
   running = false; waiting = false;
 
@@ -68,6 +69,7 @@ export class Scene {
     this.root.tabIndex = 0;
     this.root.setAttribute("aria-label", "Star Spin, " + (variant === "new" ? "новые эффекты" : "текущий экран"));
     this.root.innerHTML = this.template();
+    if (variant === "new") this.fitInstruments();
     const console = document.createElement("footer");
     console.className = "gn-console";
     console.append(this.el("money"), this.el("controls"), this.el("status"));
@@ -96,6 +98,29 @@ export class Scene {
   }
 
   private el<T extends Element = HTMLElement>(k: string) { return this.root.querySelector(`[data-gn="${k}"]`) as unknown as T; }
+  private fitInstruments() {
+    const cradle = document.createElement("div");
+    cradle.className = "nx-cradle";
+    const board = this.el("board");
+    board.replaceWith(cradle);
+    cradle.append(board);
+    const makeDecoration = (host: Element, className: string, children: string) => {
+      const node = document.createElement("span");
+      node.className = className;
+      node.setAttribute("aria-hidden", "true");
+      node.innerHTML = children;
+      host.prepend(node);
+    };
+    makeDecoration(cradle, "nx-rails", "<i></i><i></i><i></i><i></i>");
+    makeDecoration(this.root.querySelector(".ss-companion")!, "nx-armillary", "<i></i><b></b>");
+    makeDecoration(this.root.querySelector(".gn-title")!, "nx-heading-star", "");
+    this.root.querySelector(".gn-title h2")!.innerHTML = "Star <em>Spin</em>";
+    const dial = this.el("spin").querySelector("span")!;
+    dial.className = "nx-ignition";
+    dial.replaceChildren();
+    makeDecoration(dial, "nx-iris", "");
+    makeDecoration(this.root, "nx-atmosphere", "<i></i><b></b>");
+  }
   private reel(z: number) { return this.root.querySelector(`[data-reel="${z}"]`) as HTMLElement; }
   private get nx() { return this.variant === "new"; }
   private get motion() { return !this.settings.reduced; }
@@ -117,7 +142,8 @@ export class Scene {
     this.root.dataset["layout"] = layoutFor(width, height);
     this.root.dataset["portraitCompact"] = String(height < 620);
     const st = this.el("stage"), b = this.el("board");
-    const w = Math.max(1, Math.floor(Math.min(st.clientWidth - 16, ((st.clientHeight - 16) * 5) / 3, 1000)));
+    const margin = this.nx ? 24 : 16;
+    const w = Math.max(1, Math.floor(Math.min(st.clientWidth - margin, ((st.clientHeight - margin) * 5) / 3, 1000)));
     b.style.width = w + "px"; b.style.height = (w * 3) / 5 + "px"; b.style.setProperty("--cell", w / 5 + "px");
     if (this.nx) this.sizeSky();
   }
@@ -132,7 +158,14 @@ export class Scene {
     (this.root.querySelector("[data-ss-name]") as HTMLElement).textContent = h.name;
     (this.root.querySelector("[data-ss-label]") as HTMLElement).textContent = h.side === "light" ? "Светлая сторона · Джедаи" : "Тёмная сторона · Ситхи";
     this.root.querySelectorAll<HTMLElement>('[data-ss^="side:"]').forEach((b) => b.setAttribute("aria-pressed", String(b.dataset["ss"] === "side:" + h.side)));
-    void this.comp.load(id, this.motion).then(() => this.comp.react("select"));
+    void this.comp.load(id, this.motion && this.panelVisible && !document.hidden).then(() => this.comp.react("select"));
+  }
+
+  setPanelVisible(visible: boolean) {
+    if (visible === this.panelVisible) return;
+    this.panelVisible = visible;
+    void this.comp.load(this.hero, visible && this.motion && !document.hidden);
+    if (this.nx) this.startSky();
   }
 
   setSettings(s: Settings) {
@@ -140,15 +173,24 @@ export class Scene {
     if (this.running) this.finish();
     this.settings = s;
     this.root.classList.toggle("nx-reduced", s.reduced);
+    this.root.classList.toggle("nx-fast", s.fast);
     if (changedReduced) { this.setHero(this.hero); if (this.nx) this.startSky(); }
   }
   syncSound() { this.el("sound").setAttribute("aria-pressed", String(sharedAudio.enabled)); }
 
   // ---------- отрисовка ----------
+  private relic(symbol: number) {
+    if (symbol < 0 || symbol === 6) return "";
+    const url = symbolSrc(symbol);
+    const image = `<img src="${url}" alt="" draggable="false">`;
+    if (!this.nx) return image;
+    return `<span class="nx-relic" style="--relic:url('${url}')">${image}<i aria-hidden="true"></i></span>`;
+  }
+
   private renderColumn(z: number, cells: number[], mult: number) {
     const reel = this.reel(z), track = reel.querySelector(".gn-track") as HTMLElement;
     const T = towerTop(cells);
-    track.innerHTML = [-1, 0, 1, 2, 3].map((r) => { const s = r >= 0 && r < 3 ? cells[r]! : -1; return `<div class="gn-cell" data-row="${r}" data-symbol="${s}">${s >= 0 && s !== 6 ? `<img src="${symbolSrc(s)}" alt="" draggable="false">` : ""}</div>`; }).join("")
+    track.innerHTML = [-1, 0, 1, 2, 3].map((r) => { const s = r >= 0 && r < 3 ? cells[r]! : -1; return `<div class="gn-cell" data-row="${r}" data-symbol="${s}">${this.relic(s)}</div>`; }).join("")
       + (T !== null ? `<img class="gn-tower" src="${symbolSrc(6)}" alt="" draggable="false" style="top:calc(var(--cell) * ${1 + T})">` : "");
     const m = reel.querySelector(".gn-multiplier") as HTMLElement;
     m.hidden = !cells.includes(6); m.textContent = "×" + mult;
@@ -482,7 +524,7 @@ export class Scene {
       return;
     }
     const fx = this.el("fx"), cells = FIXTURES.bonus.rows;
-    for (const portal of this.root.querySelectorAll('.gn-cell[data-symbol="7"] img')) {
+    for (const portal of this.root.querySelectorAll('.gn-cell[data-symbol="7"] .nx-relic')) {
       void this.anim(portal, [{ transform: "rotate(0deg)" }, { transform: "rotate(200deg)" }], { duration: this.t(1120, 440) }, false);
     }
     const waves = cells.map((s, i) => (s === 7 ? i : -1)).filter((i) => i >= 0).map((i) => {
@@ -540,31 +582,52 @@ export class Scene {
     c.classList.remove("nx-glow");
   }
   private seedStars() { let s = 7; const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647); this.stars = Array.from({ length: 110 }, () => ({ x: rnd(), y: rnd(), z: 0.3 + rnd() * 0.7 })); }
-  private sizeSky() { const c = this.root.querySelector(".nx-sky") as HTMLCanvasElement; const r = this.root.getBoundingClientRect(); const dpr = Math.min(2, devicePixelRatio || 1); c.width = this.root.offsetWidth * dpr; c.height = this.root.offsetHeight * dpr; void r; if (!this.motion) this.drawSky(0); }
+  private sizeSky() {
+    const canvas = this.root.querySelector<HTMLCanvasElement>(".nx-sky")!;
+    const ratio = Math.min(1.5, devicePixelRatio || 1);
+    const width = Math.round(this.root.clientWidth * ratio), height = Math.round(this.root.clientHeight * ratio);
+    if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+    if (!this.motion) this.drawSky(0);
+  }
   private drawSky(t: number) {
     const c = this.root.querySelector(".nx-sky") as HTMLCanvasElement; const g = c.getContext("2d"); if (!g) return;
     const w = c.width, h = c.height; g.clearRect(0, 0, w, h);
-    const col = getComputedStyle(this.root).getPropertyValue("--cyan").trim() || "#83edff";
+    const col = this.root.dataset.side === "dark" ? "#f5a8db" : "#9ceafd";
     for (const s of this.stars) {
-      const x = ((s.x + t * 0.000004 * s.z) % 1) * w, y = ((s.y + t * 0.0000015 * s.z) % 1) * h;
-      g.globalAlpha = 0.25 + s.z * 0.45; g.fillStyle = s.z > 0.85 ? col : "#dfe9f2";
-      g.fillRect(x, y, s.z * 1.8, s.z * 1.8);
+      const depth = s.z * s.z;
+      const x = ((s.x + t * 0.000014 * depth) % 1) * w;
+      const y = ((s.y + t * 0.000002 * depth) % 1) * h;
+      g.globalAlpha = 0.24 + depth * 0.48;
+      g.fillStyle = s.z > 0.78 ? col : "#dfe9f2";
+      g.fillRect(x, y, 0.7 + depth * 2.1, 0.7 + depth);
+      if (s.z > 0.95) { g.globalAlpha *= 0.34; g.fillRect(x - 3, y, 8, 0.8); }
     }
     if (this.ship >= 0) {
       const k = (performance.now() - this.ship) / 6000;
       if (k > 1) this.ship = -1; else {
-        const x = (0.1 + k * 0.8) * w, y = (0.16 - k * 0.05) * h;
-        for (let i = 0; i < 3; i++) { g.globalAlpha = 0.7 * (0.5 + 0.5 * Math.sin(k * 30 + i)); g.fillStyle = i === 1 ? "#ffd38a" : col; g.beginPath(); g.arc(x + i * 7, y + (i % 2) * 2, 1.8, 0, 7); g.fill(); }
+        const x = (0.30 + k * 0.68) * w, y = (0.155 - 0.058 * k) * h;
+        const span = w * 0.065;
+        const exhaust = g.createLinearGradient(x - span, y, x, y);
+        exhaust.addColorStop(0, "transparent"); exhaust.addColorStop(1, col);
+        g.globalAlpha = Math.min(1, k * 6, (1-k) * 6) * 0.83;
+        g.strokeStyle = exhaust; g.lineWidth = 1.4;
+        g.beginPath(); g.moveTo(x - span, y + 0.006 * h); g.lineTo(x, y); g.stroke();
+        g.fillStyle = "#ffdfad"; g.fillRect(x, y - 1, 5, 2);
+        g.fillStyle = col; g.fillRect(x - 5, y + 2, 3, 1.5);
       }
     }
     g.globalAlpha = 1;
   }
   private startSky() {
     cancelAnimationFrame(this.skyRaf);
-    if (!this.motion) { this.drawSky(0); return; }
-    let next = performance.now() + 9000;
+    if (!this.panelVisible || document.hidden) return;
+    if (!this.motion) { this.ship = -1; this.drawSky(0); return; }
+    let next = performance.now() + 2300, lastDraw = -Infinity;
     const loop = (t: number) => {
-      if (!document.hidden) { if (t > next) { this.ship = performance.now(); next = t + 22000; } this.drawSky(t); }
+      if (t - lastDraw >= 32) {
+        if (t > next) { this.ship = t; next = t + 21000; }
+        this.drawSky(t); lastDraw = t;
+      }
       this.skyRaf = requestAnimationFrame(loop);
     };
     this.skyRaf = requestAnimationFrame(loop);

@@ -22,6 +22,7 @@ const result = await build({entryPoints:[path.join(source,"studio.ts")],bundle:t
 const originalCSS = (await readFile(path.join(royal, "games/wild-nudge/reactor.css"), "utf8")).replaceAll("url('/assets/wild-nudge/background.webp')", "var(--hangar)");
 const replacements = { GAME_CSS: originalCSS, STUDIO_CSS: await readFile(path.join(source,"studio.css"),"utf8"), MEDIA_DATA: JSON.stringify(media), APP_JS: result.outputFiles[0].text.replace(/<\/script/gi,"<\\/script") };
 let html = await readFile(path.join(source,"preview.html"),"utf8");
+replacements.STUDIO_CSS += "\n" + await readFile(path.join(source, "reactor-instruments.css"), "utf8");
 for (const [key, value] of Object.entries(replacements)) html = html.replace("/*" + key + "*/", () => value);
 await mkdir(path.dirname(output),{recursive:true});
 await writeFile(output,html);
