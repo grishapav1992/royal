@@ -4,6 +4,9 @@
   "applicationModuleGames": [
     "cosmic-escape"
   ],
+  "entries": [
+    "index.html"
+  ],
   "files": {
     "index.html": {
       "commit": "b560f5a632c15128dc56730b30e901f559b4f303",
