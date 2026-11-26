@@ -1,7 +1,8 @@
 import {test,expect,type Page} from '@playwright/test';
-import {TOILET_HALL_DOOR,CARD_TOILET_DOOR,ROOF_TOILET,TOILET_WINDOW,TOILET_MERCHANT,toiletCubicleStanding} from '../src/shared/toilet';
+import {TOILET,TOILET_HALL_DOOR,CARD_TOILET_DOOR,ROOF_TOILET,TOILET_WINDOW,TOILET_MERCHANT,toiletCubicleStanding} from '../src/shared/toilet';
 import {CASINO_EXIT} from '../src/shared/street';
 import {projectStreetPoint} from '../src/game/streetView';
+import {selectEntryMode} from './entry-mode';
 import {securityRoom} from './security-room';
 
 const state=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getState());
@@ -27,7 +28,9 @@ test('toilet door reaches floor three by walking and click, returns without boun
   try{
     expect((await page.request.post('/api/auth/login',{data:{email:'toilet-door-'+crypto.randomUUID()+'@example.test',password:'Toilet-door-local-123!'}})).ok()).toBe(true);
     expect((await page.request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);
-    await page.goto('/?room='+host.room.roomId);await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+    await page.goto('/?mode=club&lang=ru&room='+host.room.roomId);
+    await selectEntryMode(page);
+    await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
     await expect.poll(async()=>{const s=await state(page);return s.online&&!s.locked&&Number.isFinite(s.serverX);}).toBe(true);
     const settings=page.getByRole('button',{name:'Настройки игрока',exact:true});if(!await settings.isVisible())await page.getByRole('button',{name:'Профиль и настройки',exact:true}).click();
     await settings.click();await page.locator('#recover-player').scrollIntoViewIfNeeded();await page.locator('#recover-player').click();await expect(page.locator('#name-dialog')).toBeHidden();
@@ -40,10 +43,15 @@ test('toilet door reaches floor three by walking and click, returns without boun
     for(const p of [{x:480,y:1050},{x:480,y:360},{x:1660,y:360}])await walk(page,p.x,p.y);
     await overview(page,false);await page.locator('#game').focus();await page.keyboard.down('Shift');await page.keyboard.down('w');
     try{await expect.poll(async()=>(await state(page)).hall,{timeout:45000}).toBe('roof');}finally{await page.keyboard.up('w');await page.keyboard.up('Shift');}
-    await hall(page,'roof');await overview(page);await clickWorld(page,ROOF_TOILET.click.x,ROOF_TOILET.click.y);await hall(page,'toilet');await overview(page);
+    await hall(page,'roof');await overview(page);await clickWorld(page,ROOF_TOILET.click.x,ROOF_TOILET.step.y+ROOF_TOILET.step.h/2);await hall(page,'toilet');await overview(page);
     await expect(page.locator('#floor-links [data-floor-target="roof"]')).toHaveCount(1);await expect(page.locator('#floor-links [data-floor-target="github"]')).toHaveCount(1);
     expect((await state(page)).toilet.resident.artLoaded).toBe(true);expect((await state(page)).toilet.openDoors[1]).toBe(false);
     expect((await state(page)).toilet.merchant.artLoaded).toBe(true);
+    const renderDensity=await page.locator('#game canvas').evaluate((canvas:HTMLCanvasElement)=>({
+      actual:canvas.width/canvas.getBoundingClientRect().width,expected:Math.min(2,window.devicePixelRatio),
+    }));
+    expect(renderDensity.actual).toBeCloseTo(renderDensity.expected,1);
+    expect((await state(page)).toilet.resident.bounds.h).toBeLessThan((await state(page)).renderBounds.height);
     await clickWorld(page,TOILET_MERCHANT.x,TOILET_MERCHANT.y-40);
     await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-TOILET_MERCHANT.approach.x,s.serverY-TOILET_MERCHANT.approach.y);},{timeout:18000}).toBeLessThan(9);
     await expect.poll(async()=>(await state(page)).toilet.merchant.frame).toBe(15);
@@ -81,13 +89,21 @@ test('toilet door reaches floor three by walking and click, returns without boun
     await page.locator('#game').focus();await page.keyboard.down('w');try{await page.waitForTimeout(650);expect((await state(page)).hall).toBe('toilet');}finally{await page.keyboard.up('w');}
     await overview(page);await clickWorld(page,TOILET_HALL_DOOR.click.x,TOILET_HALL_DOOR.click.y);await hall(page,'github');
     await page.locator('#game').focus();await page.keyboard.down('w');try{await hall(page,'toilet');await page.waitForTimeout(650);expect((await state(page)).hall).toBe('toilet');}finally{await page.keyboard.up('w');}
-    await overview(page);await clickWorld(page,TOILET_WINDOW.click.x,TOILET_WINDOW.click.y);await hall(page,'roof');
+    await overview(page);await clickWorld(page,TOILET_WINDOW.click.x,TOILET.step.y+TOILET.step.h/2);await hall(page,'roof');
+    await page.locator('#game').focus();await page.keyboard.down('w');
+    try{
+      await expect.poll(async()=>(await state(page)).serverY).toBeLessThan(ROOF_TOILET.arrival.y-5);
+      await page.keyboard.press('e');await hall(page,'toilet');
+    }finally{await page.keyboard.up('w');}
+    await overview(page);await walk(page,TOILET_WINDOW.entry.x+44,350);
+    await page.locator('#game').focus();await page.keyboard.down('w');
+    try{await hall(page,'roof');await page.waitForTimeout(350);expect((await state(page)).hall).toBe('roof');}finally{await page.keyboard.up('w');}
     await expect(page.locator('.local-label')).toHaveAttribute('data-status', 'connected');
     await expect(page.locator('#club-chat-dock')).toBeHidden();
     await expect(page.locator('#chat-input')).toBeDisabled();
     await expect(page.locator('#wallet-balance')).toHaveText(balance!);expect(errors).toEqual([]);
   }catch(error){
-    const s=await state(page);console.log('Toilet doorway failure',JSON.stringify({hall:s.hall,x:s.x,y:s.y,serverX:s.serverX,serverY:s.serverY,locked:s.locked,switching:s.switching,nav:s.stairNavigation,errors}));
+    const s=await state(page).catch(()=>undefined);console.log('Toilet doorway failure',JSON.stringify({hall:s?.hall,x:s?.x,y:s?.y,serverX:s?.serverX,serverY:s?.serverY,locked:s?.locked,switching:s?.switching,nav:s?.stairNavigation,errors}));
     await page.screenshot({path:info.outputPath('failure.png')});throw error;
   }finally{await page.goto('about:blank').catch(()=>{});await Promise.race([host.room.leave(),new Promise(r=>setTimeout(r,1500))]);}
 });

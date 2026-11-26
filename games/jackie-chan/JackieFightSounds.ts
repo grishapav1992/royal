@@ -1,13 +1,15 @@
-export type FightSound = 'punch'|'kick'|'chair'|'block'|'whoosh'|'wood'|'landing';
+export type FightSound = 'punch'|'kick'|'chair'|'block'|'whoosh'|'wood'|'landing'|'crash'|'china';
 
 const settings:Record<FightSound,{duration:number;peak:number}>={
   punch:{duration:.19,peak:.68},kick:{duration:.26,peak:.72},chair:{duration:.23,peak:.74},
   block:{duration:.13,peak:.40},whoosh:{duration:.16,peak:.12},wood:{duration:.12,peak:.13},landing:{duration:.27,peak:.32},
+  crash:{duration:.62,peak:.5},china:{duration:.55,peak:.3},
 };
 
 /** Original arcade Foley. Cosmetic noise is independent from the paid-round RNG. */
 export function fightSound(cue:FightSound,sampleRate:number,variation=0):Float32Array {
   if(!Number.isFinite(sampleRate)||sampleRate<8000||sampleRate>192000)throw Error('Invalid sound sample rate');
+  if(cue==='crash'||cue==='china')return debris(cue,sampleRate,variation);
   const {duration,peak}=settings[cue],data=new Float32Array(Math.ceil(duration*sampleRate));
   const variant=((Math.trunc(variation)%4)+4)%4,tune=1+(variant-1.5)*.024;
   let seed=0x9e3779b9^(variant+1)*0x45d9f3b,low=0,mid=0,air=0,phase=0,prior=0,highpass=0,maximum=0;
@@ -42,5 +44,25 @@ export function fightSound(cue:FightSound,sampleRate:number,variation=0):Float32
     data[i]=value*tail;maximum=Math.max(maximum,Math.abs(data[i]));
   }
   if(maximum)for(let i=0;i<data.length;i++)data[i]*=peak/maximum;
+  return data;
+}
+
+/** Splinters and porcelain: one break followed by scattered smaller pieces. */
+function debris(cue:'crash'|'china',rate:number,variation:number):Float32Array{
+  const {duration,peak}=settings[cue],data=new Float32Array(Math.ceil(duration*rate)),wood=cue==='crash';
+  let seed=0x1234567^((Math.trunc(variation)%4+4)%4+1)*0x45d9f3b,low=0,maximum=0;
+  const random=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return(seed>>>0)/4294967296;};
+  const pieces=wood?13:15;
+  for(let piece=0;piece<pieces;piece++){
+    const start=piece?Math.pow(random(),1.6)*duration*.7:0,level=(piece?.22+.4*random():1)*(1-start/duration),pitch=wood?150+random()*620:1900+random()*4300,length=wood?.05+.07*random():.06+.12*random();
+    for(let i=0;i<length*rate;i++){
+      const at=Math.floor(start*rate)+i;if(at>=data.length)break;
+      const t=i/rate,envelope=Math.exp(-t/(length*.28))*(1-Math.exp(-t/.0007))*Math.min(1,(length-t)/.004);
+      low+=((random()*2-1)-low)*.35;
+      data[at]+=level*envelope*(Math.sin(2*Math.PI*pitch*t)*.6+Math.sin(2*Math.PI*pitch*2.76*t)*.25+low*(wood?.9:.25));
+    }
+  }
+  for(const value of data)maximum=Math.max(maximum,Math.abs(value));
+  for(let i=0;i<data.length;i++)data[i]*=peak/maximum*Math.min(1,(data.length-i)/(rate*.01));
   return data;
 }

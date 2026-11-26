@@ -1,0 +1,113 @@
+{
+  "published": true,
+  "release": "hong-kong-warrior-brawl-20261125-v1",
+  "sourceCommit": "3090caac6c30e30abc52ee30f015c9904a6bd90f",
+  "baseCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/hong-kong-warrior-brawl-20261125-v1/source.tgz",
+    "sha256": "f645eb66d0b28515720ceac57c422fab48ccbea0d6fde14e9114b034440a59c3",
+    "bytes": 29935,
+    "oldVersion": "1.2.1-dab19ae62e75",
+    "imageTag": "royal-game:before-hong-kong-warrior-brawl-20261125-v1",
+    "image": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/jackie-chan/JackieArt.ts",
+      "games/jackie-chan/JackieEffects.ts",
+      "games/jackie-chan/JackieFight.ts",
+      "games/jackie-chan/JackieTrack.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "original-jackie-chan",
+    "version": "1.3.0-88e3bb4faaee",
+    "bytes": 21626170,
+    "files": 39,
+    "beforeSha256": "45a6318b54e95aad98c2c1bafde9daf5205389b3c035d3347a9c47026b57803d",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "9b21d155449a0d8f96eb25d0dae0c93f2b0efe85a9bb53ce01a0b1c36ae4b93d",
+    "history": "/opt/royal-game-modules-state/history/20261126T061249-31fbdf3108ef4a24a84c84e8ae0f5ccf.json"
+  },
+  "freeBefore": 10966548480,
+  "freeAfter": 10944700416,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8845,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "3090caac6c30e30abc52ee30f015c9904a6bd90f",
+  "previousVersion": "1.2.1-dab19ae62e75",
+  "pointerSha256": "9b21d155449a0d8f96eb25d0dae0c93f2b0efe85a9bb53ce01a0b1c36ae4b93d",
+  "priorPointerSha256": "45a6318b54e95aad98c2c1bafde9daf5205389b3c035d3347a9c47026b57803d",
+  "releaseManifestSha256": "8d3aca9f60ffd4b0e7550cf1a4225077fbdbb23f96539930d5100f22ed6475b9",
+  "receiptSha256": "83e50b372d9fa7fa94107b17fde3de80d4ab753dbd1ab1853d0c8c5670610e0a",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "note": "Receipt lists all sixteen game sources, four of them new. JackieChoreography.ts, JackieFightPlans.ts, JackieOpenings.ts, layout.css and priorities.css stay live as sources of the installed host. The package was first prepared on a99cb80c and 5e6c1de5; two host releases were published meanwhile, so the projection was moved to 3b59bfdc without changing the package bytes.",
+  "publicChecks": {
+    "health": 200,
+    "packageFilesMatched": 40,
+    "pointersChecked": 125,
+    "pointersChanged": [
+      "original-jackie-chan"
+    ],
+    "previousPackageServed": true,
+    "productionAccountsUsed": false,
+    "realWagers": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 92.05,
+    "freeAfter": 10936635392,
+    "finishedAt": 1795673794.0752358,
+    "timerEnabled": true,
+    "timerActive": true
+  },
+  "browserReport": {
+    "release": "hong-kong-warrior-brawl-20261125-v1",
+    "version": "1.3.0-88e3bb4faaee",
+    "sourceCommit": "3090caac6c30e30abc52ee30f015c9904a6bd90f",
+    "moduleManifestSha256": "2f2563108f27e234bedfa1930debafb7669c36d5d93dfe0e44264b3c9f2518a7",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "hostScenarios": {
+      "file": "tests/jackie.spec.ts",
+      "passed": 7,
+      "failed": 0,
+      "note": "Exact package bytes in the real hall with connected chat and temporary PostgreSQL: fixed canvas through requests at 1440x1000, 390x844 and 844x390, location music and audio lifecycle, 13 window sizes, risk groups, five-fight victory, cashout, wardrobe, costume unlock, preview reopen, speed change during a fight, lost response with the same operation and reopen without a second stake."
+    },
+    "layoutScenarios": {
+      "file": "tests/game-layout-final.spec.ts",
+      "passed": 4,
+      "note": "Field and actions without scrolling in eight sizes, settings panel, minimum stake debits 0.10 once, reopen, lost response, free series through rotation, moving fight in both orientations. Two attempts of the first two scenarios failed before the game opened while the computer load average was 70-150 (hall sign-in dialog timeout); both passed on repetition."
+    },
+    "walletChecks": {
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+      "passed": 19,
+      "failed": 0
+    },
+    "motionChecks": {
+      "file": "tests/jackie-motion.spec.ts",
+      "passed": 12,
+      "note": "Run on the same game sources through Vite; the outcome is not drawn before the decisive contact."
+    },
+    "serverChecks": {
+      "files": "server-tests/jackie-*.test.ts, server-tests/finance/jackie-native.test.ts",
+      "passed": 21
+    },
+    "notVerified": [
+      "Safari",
+      "physical phones",
+      "listening to sound"
+    ],
+    "realWagers": false,
+    "productionAccountsUsed": false,
+    "productionBase": "3b59bfdcc62eeac209f608499d60f0064bc70df9"
+  }
+}

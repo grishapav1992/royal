@@ -190,9 +190,10 @@ test('Phaser replaces the fallback atlas after download and renders distinct tur
   let release!: () => void; const gate = new Promise<void>(resolve => { release = resolve; });
   await page.route('**/api/skin-studio/assets/**', async route => { await gate; await route.fulfill({ contentType: 'image/png', body: png }); });
   await page.goto('/tests/fixtures/skin-studio.html');
-  const key = await page.evaluate(id => (window as any).skinPreview.render(id), ids[0]);
-  expect(key).toBe('avatar-generated-' + ids[0]);
+  const key = await page.evaluate(id => (window as any).skinPreview.render(id, true), ids[0]);
+  expect(key).toBe('avatar-generated-player-' + ids[0]);
   const before = await page.evaluate(() => (window as any).skinPreview.pixels('down-6'));
+  expect(before).toHaveLength(160 * 240 * 4);
   release();
   await expect.poll(async () => JSON.stringify(await page.evaluate(() => (window as any).skinPreview.pixels('down-6'))) === JSON.stringify(before)).toBe(false);
   const poses = await page.evaluate(() => ['down-6', 'left-6', 'down-1', 'down-4', 'down-10', 'down-13'].map(frame => JSON.stringify((window as any).skinPreview.pixels(frame))));

@@ -11,6 +11,8 @@ export interface ForestGeometry {
   seeds: { x: number; y: number }[]; seed: number; aura: ForestBox; sum: { x: number; y: number };
 }
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+/** Share of the elf picture taken by her figure and hair. */
+const FIGURE = .92;
 
 /** One scene for every host size. The field depends on the window alone, never on texts or results. */
 export function forestGeometry(width: number, height: number): ForestGeometry {
@@ -27,8 +29,11 @@ export function forestGeometry(width: number, height: number): ForestGeometry {
     }
     frame = board * .078; crystal = board * .42; flower = board * .2; titleWidth = board * .74;
     const network = crystal * .46 + frame * 2 + board + flower * .86;
-    x = 8 + crystal * .46 + frame;
-    const elfSpace = width - network - 8;
+    const elfSpace = width - network - 8, elfHeight = Math.min(height * .93, elfSpace * 3.1), elfWidth = elfHeight * 640 / 768;
+    // A wide window without chat keeps the field and the whole elf together and shares the spare width between both edges.
+    // In narrower windows the elf steps back to the right edge, as approved for the window with chat.
+    const spare = width - network - 8 - elfWidth * FIGURE - 8, side = Math.max(0, spare) / 2;
+    x = 8 + crystal * .46 + frame + side;
     y = 8 + over + frame;
     y += Math.max(0, height - (y + board + frame * .42 + plateHeight + controlsHeight + 30)) * .4;
     const centre = x + board / 2, plateWidth = Math.min(board * 1.02, 760), half = Math.min(centre - 12, 520), top = y + board + frame * .42;
@@ -37,7 +42,8 @@ export function forestGeometry(width: number, height: number): ForestGeometry {
     tight = centre < 354;
     controls = { x: centre - half, y: top + plateHeight + 30, w: tight ? Math.min(half + 92 + 268, width - 24) : half * 2, h: 72 };
     tools = { x: width - 160, y: 10 };
-    const elfHeight = Math.min(height * .93, elfSpace * 3.1), elfWidth = elfHeight * 640 / 768, axis = width - clamp(elfHeight * .222, 120, elfSpace * .72 + 12);
+    const edge = width - clamp(elfHeight * .222, 120, elfSpace * .72 + 12), whole = width - side - elfWidth * FIGURE / 2;
+    const axis = spare >= 0 ? whole : Math.min(edge, whole - spare);
     elf = { x: axis - elfWidth / 2, y: height - elfHeight, w: elfWidth, h: elfHeight, cut: 100, visible: true };
   } else if (kind === 'portrait') {
     const controlsHeight = short ? 126 : 158, plateHeight = short ? 60 : 72, headMin = short ? 56 : 84;

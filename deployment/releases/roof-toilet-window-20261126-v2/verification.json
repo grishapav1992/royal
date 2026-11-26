@@ -1,0 +1,67 @@
+{
+  "release": "roof-toilet-window-20261126-v2",
+  "published": true,
+  "preparedImage": "sha256:138fb4ab06218c31ee91645c566980e756e45da1228291c06cbfef06b8419e52",
+  "runningImage": "sha256:138fb4ab06218c31ee91645c566980e756e45da1228291c06cbfef06b8419e52",
+  "containerRestarted": true,
+  "sourceCommit": "5e6c1de5fae0f61962ad68ce36a0718102392778",
+  "changedSources": 4,
+  "clientDeltaFiles": 9,
+  "configurationsAndMountsPreserved": true,
+  "gameDataPreserved": true,
+  "backendDeltaFiles": 1,
+  "otherBackendProgramsAndModulesPreserved": true,
+  "oldAssetsPreserved": true,
+  "otherPersistentServicesPreserved": 10,
+  "baseCommit": "f0d0d8749904491fda6273a0bc0bd812b4496893",
+  "rollbackImage": "sha256:80bd5416478b6472a7ed48334920f59936345257c8a61e25fbb301992badeada",
+  "releaseManifestSha256": "cbddf30191e9f883c0cfe64e3213ee0bd63c7bb36441458658eb0eb82d433ca5",
+  "receiptSha256": "a3534814417bd681c562bd03b8f977aa56d19377a4760952afd5205027bcd6fe",
+  "backendSha256": "f29d4aa0a291396a25d27779964a4e9838ed5f26c5b1963f6504db721cf746f0",
+  "activeModulePointersUnchanged": 125,
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "checks": {
+    "rtpProfiles": 39,
+    "stakePolicies": 21,
+    "typecheck": true,
+    "githubVerified": true,
+    "walletServerTests": 19,
+    "browser": {
+      "windowDesktop": true,
+      "windowTouchEmulation": true,
+      "walletDesktop": true,
+      "walletMobileViewport": true,
+      "stakeUnits": "10",
+      "acceptedRoundRecoveredAfterClose": true,
+      "sameOperationId": true,
+      "oneDebit": true,
+      "fixture": "Prepared host and backend, byte-verified production roulette package, temporary PostgreSQL"
+    },
+    "public": {
+      "healthz": 200,
+      "sha256Matched": [
+        "/assets/ActivitiesUI-BKtrNJtH.js",
+        "/assets/ClubWorld-Pi-VbWOx.js",
+        "/assets/GameHostRuntime-XYiFpT7G.js",
+        "/assets/index-C6NbuosC.js",
+        "/assets/main-BBYiizQY.js",
+        "/assets/phaser-CI5e1zrc.js",
+        "/assets/playerLevelStatus-BhW8_3Ml.js",
+        "/assets/PvpUI-Dr1JUdLG.js",
+        "/"
+      ]
+    }
+  },
+  "maintenance": {
+    "startedAt": 1795643632.4064202,
+    "status": "completed",
+    "freeBefore": 11077730304,
+    "freeAfter": 11088277504,
+    "removedEntries": 24,
+    "removedImageTags": 4,
+    "durationSeconds": 84.5,
+    "timer": "enabled and active"
+  }
+}

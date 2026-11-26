@@ -1,0 +1,66 @@
+{
+  "release": "caribbean-voyage-20261125-v1",
+  "published": true,
+  "preparedImage": "sha256:8b0b056d2026350a6c66bba22e6c1c1ed3123a6cd766af920380f3a0e7488a06",
+  "runningImage": "sha256:8b0b056d2026350a6c66bba22e6c1c1ed3123a6cd766af920380f3a0e7488a06",
+  "containerRestarted": true,
+  "sourceCommit": "a99cb80c0b08800a8e9b0e59b5c2b9df12e06da1",
+  "changedSources": 5,
+  "clientDeltaFiles": 0,
+  "configurationsAndMountsPreserved": true,
+  "gameDataPreserved": true,
+  "backendDeltaFiles": 1,
+  "otherBackendProgramsAndModulesPreserved": true,
+  "oldAssetsPreserved": true,
+  "otherPersistentServicesPreserved": 10,
+  "baseCommit": "ab4db47f2a2fd77240532a23864d73ec185c7526",
+  "rollbackImage": "sha256:524a479b06f4fb5614af0da5d9ddcddafdd96ea82ee65a4a0227c3ec72a8894f",
+  "releaseManifestSha256": "2dc81405b8c0e6397e1200ae9f47c80a7c205ac08740c50768572777d2b0cbad",
+  "receiptSha256": "a9ad120fc84c81a726bd883240a79b80f58ae8d2cbd5f2b8d5499f6afac150c5",
+  "backendSha256": "2b2576e30b204c15c784de778e8eb159de9a3333164efddc81aaaae46073d2a5",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "migration": {
+    "id": "caribbean-voyage-v1",
+    "tables": [
+      "caribbean_voyage_start",
+      "caribbean_voyage_profiles",
+      "caribbean_voyage_rounds",
+      "caribbean_voyage_met"
+    ],
+    "carriesOver": "tokens one to one, opened pirates, chosen pirate",
+    "walletTablesTouched": false,
+    "productionRowsRead": false
+  },
+  "checks": {
+    "rtp": "39 profiles, 21 stake policies",
+    "typecheck": true,
+    "githubVerified": true,
+    "hostClientByteIdentical": true,
+    "serverTests": 51,
+    "builtBackend": "voyage 200 and 401, closed token unlock 410, locked pirate 403, Cosmic crew 200 on a temporary PostgreSQL",
+    "public": {
+      "healthz": 200,
+      "home": 200,
+      "voyageWithoutSession": 401,
+      "cosmicCrewWithoutSession": 401
+    }
+  },
+  "order": "server first, then the module",
+  "notTested": [
+    "a signed-in production account"
+  ],
+  "maintenance": {
+    "startedAt": 1795638717.273656,
+    "status": "completed",
+    "freeBefore": 11162333184,
+    "plannedEntries": 25,
+    "plannedImages": 1,
+    "removedEntries": 25,
+    "removedImageTags": 14,
+    "freeAfter": 11172601856,
+    "durationSeconds": 86.71,
+    "timer": "enabled and active"
+  }
+}

@@ -7,6 +7,13 @@ type Part={x:number;y:number;w:number;h:number;pivot:Point;hand:Point};
 export const TOILET_RESIDENT_RIG_KEY='toilet-visitor-reference-rig-v2';
 export const TOILET_RESIDENT_RIG_URL='/assets/toilet/visitor-rig-v2-161e9417f4a0.png';
 const scale=102/1024,centerX=595,top=27;
+const seatedScale=2/3,seatAnchor={x:50,y:130},floorAnchor={x:50,y:126};
+export const toiletResidentBounds={
+  x:floorAnchor.x+(9-seatAnchor.x)*seatedScale,
+  y:floorAnchor.y+(9-seatAnchor.y)*seatedScale,
+  w:82*seatedScale,
+  h:123*seatedScale,
+};
 const body={x:330,y:0,w:530,h:1024};
 const left:Part={x:1070,y:584,w:190,h:312,pivot:{x:1147,y:653},hand:{x:1174,y:831}};
 const right:Part={x:1046,y:152,w:185,h:315,pivot:{x:1153,y:221},hand:{x:1125,y:399}};
@@ -42,7 +49,9 @@ function arm(c:Paint,part:Part,pivot:Point,target:Point):Point{
 /** Reference artwork is a rig, not a redrawn face. The shirt conceals the gesture. */
 export function paintToiletResident(c:Paint,pose:ToiletResidentPose){
   if(!rig)return;
-  c.save();c.beginPath();c.rect(9,9,82,123);c.clip();
+  // Scale the seat, body, arms and props together around the feet.
+  c.save();c.translate(floorAnchor.x,floorAnchor.y);c.scale(seatedScale,seatedScale);c.translate(-seatAnchor.x,-seatAnchor.y);
+  c.beginPath();c.rect(9,9,82,123);c.clip();
   oval(c,50,129,43,5,'#57635b33','');
   for(const p of [{x:78,y:123},{x:73,y:128}])paper(c,p);
   // The visible seat hugs the seated hips instead of appearing behind the head.

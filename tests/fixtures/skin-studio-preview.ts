@@ -26,14 +26,14 @@ const studio = new SkinStudioUI({ setLocked: () => {} } as unknown as RoomScene,
     void loadSkinSheet(id);
     return dialog.querySelector<HTMLImageElement>('.mira-player-avatar')!.src;
   },
-  async render(id: string) {
+  async render(id: string, isPlayer = false) {
     const host = document.createElement('div'); host.id = 'skin-game-preview'; document.body.append(host);
     const scene = new Phaser.Scene('skin-preview');
     let game: Phaser.Game;
     await new Promise<void>(resolve => {
       scene.create = function () {
         createCharacters(this);
-        const key = characterTexture(this, 0, JSON.stringify({ version: 2, skinId: id, theme: SKIN_THEME.id }));
+        const key = characterTexture(this, 0, JSON.stringify({ version: 2, skinId: id, theme: SKIN_THEME.id }), isPlayer);
         this.add.sprite(160, 350, key, 'down-6').setScale(3);
         (window as any).skinPreview.scene = this; (window as any).skinPreview.key = key;
         resolve();
@@ -49,8 +49,8 @@ const studio = new SkinStudioUI({ setLocked: () => {} } as unknown as RoomScene,
   },
   async motion(id: string) {
     const preview = (window as any).skinPreview;
-    await preview.render(id);
-    const [{ RoomScene }, { gameAudio }, { CHARACTER_SCALE, characterScaleY }] = await Promise.all([
+    await preview.render(id, true);
+    const [{ RoomScene }, { gameAudio }, { characterScaleX, characterScaleY }] = await Promise.all([
       import('../../src/game/RoomScene'), import('../../src/game/GameAudio'), import('../../src/game/characters'),
     ]);
     const scene = preview.scene as Phaser.Scene;
@@ -70,7 +70,7 @@ const studio = new SkinStudioUI({ setLocked: () => {} } as unknown as RoomScene,
       (scene as any).reducedMotion = input.reduced ?? false;
       (RoomScene.prototype as any).animateActor.call(scene, actor, input.time, input.moving ?? true);
       return { frame: sprite.frame.name, sounds, x: sprite.x, y: sprite.y,
-        scaleX: sprite.scaleX / CHARACTER_SCALE, scaleY: sprite.scaleY / characterScaleY(actor.appearance),
+        scaleX: sprite.scaleX / characterScaleX(sprite.frame), scaleY: sprite.scaleY / characterScaleY(actor.appearance, characterScaleX(sprite.frame)),
         phase: actor.motion.distance, playing: sprite.anims.isPlaying };
     };
     preview.motionFrame = () => sprite.frame.name;

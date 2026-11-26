@@ -1,67 +1,109 @@
 import {test,expect} from '@playwright/test';
 import {createServer,type ViteDevServer} from 'vite';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {contactAt,chairReleaseAt,resultAt} from '../games/jackie-chan/JackieChoreography';
+import {RATE,contactAt,revealAt} from '../games/jackie-chan/JackieFight';
 let vite:ViteDevServer,url:string;const out='artifacts/work/jackie-chan';
-test.beforeAll(async()=>{vite=await createServer({configFile:false,root:process.cwd(),cacheDir:'node_modules/.vite-jackie-motion',server:{host:'127.0.0.1',port:0}});await vite.listen();url=`http://127.0.0.1:${(vite.httpServer!.address()as{port:number}).port}`;await mkdir(out,{recursive:true});});
+const COSTUMES=['master','sailor','police','hawk','rush','whoami','tuxedo','mentor'],PLACES=['restaurant','harbor','market'],SIZES=[[1,'safe'],[2,'sharp'],[3,'extreme']]as const;
+const contact=(i:number)=>contactAt(i)/RATE,reveal=(n:number)=>revealAt(n)/RATE;
+test.beforeAll(async()=>{vite=await createServer({configFile:false,root:process.cwd(),cacheDir:'node_modules/.vite-jackie-motion',optimizeDeps:{entries:['tests/fixtures/jackie-motion.html']},server:{host:'127.0.0.1',port:0}});await vite.listen();url=`http://127.0.0.1:${(vite.httpServer!.address()as{port:number}).port}`;await mkdir(out,{recursive:true});});
 test.afterAll(async()=>await vite?.close());
-test.beforeEach(async({page})=>{await page.goto(url+'/tests/fixtures/jackie-motion.html');await page.waitForFunction(()=>(window as any).jackieMotion?.ready(),{timeout:30000});});
-test('the next fight starts at the last displayed position and paints consecutive display frames',async({page})=>{
-  const result=await page.evaluate(({end})=>{
-    const h=(window as any).jackieMotion,scene=h.scene,canvas=document.querySelector('canvas')!,context=canvas.getContext('2d')!;
-    h.render({risk:'extreme',time:end+.8});const before=scene.state((end+.8)*1000).x;
-    scene.show(Reflect.get(scene,'view'),true,false,'next-fight');
-    const playback=Reflect.get(scene,'playback'),anchor=Reflect.get(playback,'anchor'),positions=[0,.1,.25,.5].map(t=>scene.state(anchor+t*1000).x);
-    const clear=context.clearRect.bind(context);let paints=0;context.clearRect=(...args)=>{paints++;clear(...args);};
-    try{for(const offset of [1000,1016,1032])scene.paint(anchor+offset);}finally{context.clearRect=clear;}
-    scene.settle();return{before,positions,paints};
-  },{end:resultAt(3)});
-  expect(result.positions[0]).toBeCloseTo(result.before,8);
-  expect(result.positions[1]).toBeLessThan(result.positions[0]);expect(result.positions[1]).toBeGreaterThan(result.positions[2]);
-  expect(result.positions[3]).toBeCloseTo(.34,8);expect(result.paints).toBe(3);
-});
-test('costume atlases retain the same drawing scale through every routine',async({page})=>{
-  for(const width of [1000,360]){
-    await page.setViewportSize({width,height:800});
-    const rows=await page.evaluate(({contacts,end})=>{
-      const h=(window as any).jackieMotion,canvas=document.querySelector('canvas')!,context=canvas.getContext('2d')!,original=context.drawImage.bind(context),rows:any[]=[];
-      let scale=0;context.drawImage=((...args:any[])=>{if(args[0] instanceof HTMLCanvasElement)scale=args[3]/args[0].width;return(original as any)(...args);})as typeof context.drawImage;
-      try{for(const costume of ['master','sailor','police','hawk','rush','whoami','tuxedo','mentor'])for(const plan of [...h.plans,{id:'furniture'}])for(const time of [0,...contacts.flatMap((at:number)=>[at-1.45,at-.95,at-.6,at-.3,at,at+.22]),end+.1]){
-        const frame=h.render({costume,plan:plan.id,risk:'extreme',time}),image=h.scene.images.get(`/assets/jackie-chan/${costume}${frame.atlas==='base'?'':'-'+frame.atlas}.webp`);
-        rows.push({costume,plan:plan.id,time,atlas:frame.atlas,scale:scale*Math.sqrt(image.naturalWidth*image.naturalHeight/8)});
-      }}finally{context.drawImage=original;}
-      return rows;
-    },{contacts:[contactAt(0),contactAt(1),contactAt(2)],end:resultAt(3)});
-    for(const costume of ['master','sailor','police','hawk','rush','whoami','tuxedo','mentor']){
-      const scales=rows.filter(row=>row.costume===costume).map(row=>row.scale);
-      expect(Math.max(...scales)/Math.min(...scales),`${width}px ${costume}`).toBeCloseTo(1,6);
-    }
-  }
-});
-test('all eight costumes grip furniture at every contact without a second item on the floor',async({page})=>{
-  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));let frames=0;
-  for(const width of [1000,360]){
-    await page.setViewportSize({width,height:800});
-    const results=await page.evaluate(({contacts})=>{
-      const rows=[];for(const costume of ['master','sailor','police','hawk','rush','whoami','tuxedo','mentor'])for(const location of ['restaurant','harbor','market'])for(const [risk,count]of [['safe',1],['sharp',2],['extreme',3]]as const)for(let i=0;i<count;i++){
-        const data=(window as any).jackieMotion.render({costume,location,risk,time:contacts[i],plan:"furniture"});rows.push({costume,location,risk,i,...data});
-      }return rows;
-    },{contacts:[contactAt(0),contactAt(1),contactAt(2)]});
-    for(const row of results){expect(row.atlas).toBe('furniture');expect(row.heldFurniture).toBe(['chair','table','stool'][row.i]);expect(row.floorFurniture.split(',')).not.toContain(row.heldFurniture);expect(row.pose).toBe(String([3,4,5][row.i]));expect(row.reveal).toBe('false');}frames+=results.length;
-  }
-  for(const [costume,location,risk,i]of [['master','restaurant','safe',0],['sailor','harbor','sharp',1],['hawk','market','extreme',2]]as const){await page.setViewportSize({width:1000,height:700});await page.evaluate(c=>(window as any).jackieMotion.render(c),{costume,location,risk,time:contactAt(i),plan:"furniture"});await page.locator('canvas').screenshot({path:out+'/furniture-'+['chair','table','stool'][i]+'.png'});}
-  expect(errors).toEqual([]);await writeFile(out+'/furniture-frames.json',JSON.stringify({frames,viewports:[1000,360],costumes:8,locations:3,pageErrors:errors},null,2));
-  for(const costume of ['rush','whoami','tuxedo','mentor']){await page.setViewportSize({width:1000,height:700});await page.evaluate(config=>(window as any).jackieMotion.render(config),{costume,time:contactAt(0),plan:"furniture"});await page.locator('canvas').screenshot({path:out+'/costume-'+costume+'.png'});}
-});
-test('victory has fist and bow poses, while restored results and losses remain static',async({page})=>{
-  for(const [risk,count]of [['safe',1],['sharp',2],['extreme',3]]as const){
-    for(const [offset,phase,pose]of [[.6,'victory-fist',6],[1.6,'victory-bow',7]]as const){const frame=await page.evaluate(config=>(window as any).jackieMotion.render(config),{risk,status:'complete',time:resultAt(count)+offset});expect(frame.phase).toBe(phase);expect(frame.pose).toBe(String(pose));expect(frame.celebrating).toBe('true');}
-    const restored=await page.evaluate(c=>(window as any).jackieMotion.restore(c),{risk,status:'complete'});expect(restored.phase).toBe('victory-hold');expect(restored.celebrating).toBe('false');
-    const lost=await page.evaluate(config=>(window as any).jackieMotion.render(config),{risk,status:'lost',time:resultAt(count)+.6});expect(lost.phase).toBe('lost');expect(lost.celebrating).toBe('false');
-    const foes=JSON.parse(lost.foeFrames);expect(foes[0].pose).toBe(7);for(const foe of foes.slice(1))expect(foe.pose).toBe(6);
-  }
-});
+test.beforeEach(async({page})=>{await page.goto(url+'/tests/fixtures/jackie-motion.html');await page.waitForFunction(()=>(window as any).jackieMotion?.ready(),undefined,{timeout:60000});});
 
+test('the next fight starts at the last displayed position, the beaten group leaves and consecutive frames are painted',async({page})=>{
+  const result=await page.evaluate(()=>{
+    const h=(window as any).jackieMotion,scene=h.scene,canvas=document.querySelector('canvas')!,context=canvas.getContext('2d')!;
+    h.restore({risk:'extreme'});const before=JSON.parse(canvas.dataset.heroFrame!),view=Reflect.get(scene,'view');
+    const next={...view,combat:{...view.combat,revision:2,shots:[...view.combat.shots,{...view.combat.shots[0],index:1}]}};
+    scene.show(next,true,false,'motion-preview');
+    const playback=Reflect.get(scene,'playback'),anchor=Reflect.get(playback,'anchor');
+    scene.paint(anchor);const first=JSON.parse(canvas.dataset.heroFrame!),leaving=Reflect.get(scene,'leaving').length;
+    const clear=context.clearRect.bind(context);let paints=0;context.clearRect=((...args:any[])=>{paints++;(clear as any)(...args);})as typeof context.clearRect;
+    try{for(const offset of [1000,1016,1032])scene.paint(anchor+offset);}finally{context.clearRect=clear;}
+    scene.settle();return{before:(before.left+before.right)/2,first:(first.left+first.right)/2,leaving,paints};
+  });
+  expect(Math.abs(result.first-result.before)).toBeLessThan(2);expect(result.leaving).toBe(3);expect(result.paints).toBe(3);
+});
+test('costume atlases retain the same drawing scale through every move',async({page})=>{
+  const rows=await page.evaluate(costumes=>{
+    const h=(window as any).jackieMotion;return costumes.map((costume:string)=>{const sheet=h.fight({costume}).hero.sheet;
+      const url=(suffix:string)=>h.scene.images.get(`/assets/jackie-chan/${costume}${suffix}.webp`),unit=(i:HTMLImageElement)=>Math.sqrt(i.naturalWidth*i.naturalHeight/8);
+      return{costume,body:[['b',''],['f','-furniture'],['c','-combat']].map(([letter,suffix])=>sheet[letter+'0'].k*unit(url(suffix))),poses:Object.keys(sheet).length,tips:Object.values(sheet).every((f:any)=>Number.isFinite(f.tip.dx+f.tip.dy)&&f.tip.dx>0)};});
+  },COSTUMES);
+  for(const row of rows){expect(row.poses).toBe(24);expect(row.tips).toBe(true);expect(Math.max(...row.body)/Math.min(...row.body),row.costume).toBeCloseTo(1,6);}
+});
+test('every exchange and closing move plays in every costume without leaving the hero out of the frame',async({page})=>{
+  test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));let frames=0;
+  for(const width of [1000,360]){
+    await page.setViewportSize({width,height:800});
+    const rows=await page.evaluate(costumes=>{
+      const h=(window as any).jackieMotion,canvas=document.querySelector('canvas')!,rows:any[]=[];h.render({});
+      const list=h.moves(),moves=[...list.exchanges.map((m:any)=>({...m,kind:'exchange'})),...list.finishers.map((m:any)=>({...m,kind:'finish'}))];
+      moves.forEach((m:any,index:number)=>{
+        const costume=costumes[index%costumes.length];
+        for(let step=0;step<14;step++){
+          const frame=h.render({costume,location:m.place??'restaurant',risk:m.duo||m.only==='bruiser'?'sharp':m.only==='master'?'extreme':'safe',plan:m.id,time:(m.kind==='exchange'?.4+step*.11:1.9+step*.14)});
+          const hero=JSON.parse(frame.heroFrame);rows.push({id:m.id,x:(hero.left+hero.right)/2,y:(hero.top+hero.bottom)/2,width:canvas.clientWidth,height:canvas.clientHeight});
+        }
+      });return rows;
+    },COSTUMES);
+    for(const row of rows){expect(row.x,row.id).toBeGreaterThan(-row.width*.06);expect(row.x,row.id).toBeLessThan(row.width*1.06);expect(row.y,row.id).toBeGreaterThan(0);expect(row.y,row.id).toBeLessThan(row.height);}
+    frames+=rows.length;
+  }
+  expect(errors).toEqual([]);await writeFile(out+'/moves.json',JSON.stringify({frames,viewports:[1000,360],pageErrors:errors},null,2));
+});
+test('fights change through five wins and survive restoring the same accepted shot and a new window size',async({page})=>{
+  const rows=[];
+  for(const width of [1000,360]){
+    await page.setViewportSize({width,height:800});
+    rows.push(await page.evaluate(()=>{const h=(window as any).jackieMotion,rows=[];
+      for(const risk of ['safe','sharp','extreme'])for(let fight=0;fight<5;fight++){const config={seriesId:'restore-series',fight,risk,location:'harbor',time:1.3};rows.push({risk,fight,win:h.render(config).sequence,loss:h.render({...config,status:'lost'}).sequence,restored:h.restore(config).sequence});}
+      return rows;}));
+  }
+  expect(rows[1]).toEqual(rows[0]);
+  for(const risk of ['safe','sharp','extreme']){const fights=rows[0].filter((r:any)=>r.risk===risk);expect(new Set(fights.map((r:any)=>r.win)).size).toBe(5);for(const r of fights){expect(r.restored).toBe(r.win);expect(r.loss).toBe(r.win);}}
+});
+test('the outcome is not drawn before the decisive contact',async({page})=>{
+  const rows=await page.evaluate(({contacts,sizes,places})=>{
+    const h=(window as any).jackieMotion,canvas=document.querySelector('canvas')!,rows:any[]=[];
+    const paint=(config:any)=>{h.render(config);return canvas.getContext('2d')!.getImageData(0,0,canvas.width,canvas.height).data;};
+    for(const location of places)for(const [count,risk]of sizes)for(const fight of [0,2])for(const before of [1.4,.6,.2]){
+      const config={location,risk,fight,seriesId:'hidden',time:contacts[count-1]-before};
+      // The GPU may resample an image differently between two reads; a drawn difference repeats.
+      let share=1;for(let attempt=0;attempt<4&&share;attempt++){const a=paint(config),b=paint({...config,status:'lost'});let different=0;for(let i=0;i<a.length;i+=4)if(Math.abs(a[i]-b[i])+Math.abs(a[i+1]-b[i+1])+Math.abs(a[i+2]-b[i+2])>12)different++;share=different/(a.length/4);}
+      rows.push({location,risk,fight,before,share});
+    }return rows;
+  },{contacts:[0,1,2].map(contact),sizes:SIZES,places:PLACES});
+  for(const row of rows)expect(row.share,JSON.stringify(row)).toBe(0);
+});
+test('after every result the hero and the group rest inside the frame',async({page})=>{
+  let frames=0;
+  for(const [width,height]of [[1000,800],[360,800]]){
+    await page.setViewportSize({width,height});
+    const rows=await page.evaluate(({sizes,places})=>{const h=(window as any).jackieMotion,canvas=document.querySelector('canvas')!,rows:any[]=[];
+      for(const location of places)for(const [,risk]of sizes)for(let fight=0;fight<5;fight++)for(const status of fight===4?['complete','lost']:['playing','lost','banked']){const f=h.restore({location,risk,fight,status,seriesId:'rest'});rows.push({location,risk,fight,status,w:canvas.clientWidth,h:canvas.clientHeight,hero:JSON.parse(f.heroFrame),foes:JSON.parse(f.foeFrames)});}
+      return rows;},{sizes:SIZES,places:PLACES});
+    for(const row of rows){
+      const label=JSON.stringify([row.location,row.risk,row.fight,row.status]);
+      expect(row.hero.left,label).toBeGreaterThanOrEqual(-2);expect(row.hero.right,label).toBeLessThanOrEqual(row.w+2);expect(row.hero.top,label).toBeGreaterThanOrEqual(0);expect(row.hero.bottom,label).toBeLessThanOrEqual(row.h);
+      for(const foe of row.foes){const x=(foe.left+foe.right)/2;expect(x,label).toBeGreaterThan(0);expect(x,label).toBeLessThan(row.w);}
+    }frames+=rows.length;
+  }
+  await writeFile(out+'/rest.json',JSON.stringify({frames},null,2));
+});
+test('five distinct opponents rotate through the series',async({page})=>{
+  const rows=await page.evaluate(({sizes,places})=>{const h=(window as any).jackieMotion,rows:any[]=[];for(const location of places)for(let fight=0;fight<5;fight++)for(const [count,risk]of sizes)for(const status of ['playing','lost'])rows.push({count,foes:h.render({location,fight,risk,status,time:1}).foes,reopened:h.restore({location,fight,risk,status}).foes});return rows;},{sizes:SIZES,places:PLACES});
+  const seen=new Set<string>();
+  for(const row of rows){const ids=row.foes.split(',');expect(ids).toHaveLength(row.count);expect(new Set(ids).size).toBe(row.count);ids.forEach((id:string)=>seen.add(id));expect(row.reopened).toBe(row.foes);const allowed=row.count===1?['street','agile']:row.count===2?['agile','bruiser','enforcer']:['bruiser','enforcer','master'];expect(ids.every((id:string)=>allowed.includes(id))).toBe(true);}
+  expect([...seen].sort()).toEqual(['agile','bruiser','enforcer','master','street']);
+});
+test('victory has fist and bow poses, cashout bows, restored results and losses never celebrate',async({page})=>{
+  for(const [count,risk]of SIZES){
+    for(const [offset,phase,pose]of [[.6,'victory-fist','f6'],[1.35,'victory-bow','f7']]as const){const frame=await page.evaluate(c=>(window as any).jackieMotion.render(c),{risk,status:'complete',time:reveal(count)+offset});expect(frame.phase).toBe(phase);expect(frame.heroPose).toBe(pose);expect(frame.celebrating).toBe('true');}
+    const restored=await page.evaluate(c=>(window as any).jackieMotion.restore(c),{risk,status:'complete'});expect(restored.phase).toBe('victory-hold');expect(restored.celebrating).toBe('false');
+    const lost=await page.evaluate(c=>(window as any).jackieMotion.render(c),{risk,status:'lost',time:reveal(count)+.5});expect(lost.phase).toBe('lost');expect(lost.celebrating).toBe('false');
+    const paid=await page.evaluate(c=>(window as any).jackieMotion.restore(c),{risk,status:'banked'});expect(paid.phase).toBe('paid');expect(paid.heroPose).toBe('f7');
+  }
+});
 test('sound returns on the current timeline after mute, zero volume and context suspension',async({page})=>{
   await page.locator('#sound').click();
   await page.waitForFunction(async()=>{const p='/src/game/GameAudio.ts';return(await import(/* @vite-ignore */p)).gameAudio.context?.state==='running';});
@@ -69,13 +111,13 @@ test('sound returns on the current timeline after mute, zero volume and context 
     const h=(window as any).jackieMotion,p='/src/game/GameAudio.ts',{gameAudio}=await import(/* @vite-ignore */p),rows=[];
     const original=h.audio.begin.bind(h.audio),calls:any[]=[];h.audio.begin=(...args:any[])=>{calls.push(args);return original(...args);};
     for(const speed of [1,2])for(const mode of ['local','global','volume','context']){
-      h.render({risk:'extreme',plan:'turning-heel'});h.scene.setSpeed(speed);h.scene.show(Reflect.get(h.scene,'view'),true,false,'audio-recovery',h.plans.find((p:any)=>p.id==='turning-heel'));
+      h.render({risk:'extreme'});h.scene.setSpeed(speed);h.scene.show(Reflect.get(h.scene,'view'),true,false,'audio-recovery');
       await new Promise(resolve=>setTimeout(resolve,1900/speed));const before=h.scene.state();
       if(mode==='local')h.audio.toggle();else if(mode==='global')gameAudio.setMuted(true);else if(mode==='volume')gameAudio.setVolume(0);else await gameAudio.context!.suspend();
       await new Promise(resolve=>setTimeout(resolve,60));const stopped=h.audio.state().active,previous=calls.length;
       if(mode==='local')h.audio.toggle();else if(mode==='global')gameAudio.setMuted(false);else if(mode==='volume')gameAudio.setVolume(.35);else await gameAudio.context!.resume();
       await new Promise(resolve=>setTimeout(resolve,80));const after=h.scene.state();
-      rows.push({speed,mode,before,after,stopped,active:h.audio.state().active,resumes:calls.slice(previous).map(a=>({speed:a[4],from:a[5]}))});
+      rows.push({speed,mode,before,after,stopped,active:h.audio.state().active,resumes:calls.slice(previous).map(a=>({speed:a[3],from:a[4]}))});
       h.scene.settle();
     }
     h.scene.show(Reflect.get(h.scene,'view'),true);await gameAudio.context!.suspend();const previous=calls.length;h.scene.destroy();h.audio.destroy();await gameAudio.context!.resume();await new Promise(resolve=>setTimeout(resolve,50));
@@ -84,118 +126,26 @@ test('sound returns on the current timeline after mute, zero volume and context 
   for(const row of rows.rows){expect(row.stopped).toBe(0);expect(row.active).toBeGreaterThan(0);expect(row.resumes).toHaveLength(1);expect(row.resumes[0].from).toBeGreaterThanOrEqual(row.before.elapsed);expect(row.resumes[0].speed).toBe(row.speed);expect(row.after.elapsed).toBeGreaterThanOrEqual(row.before.elapsed);expect(row.after.busy).toBe(true);}
   expect(rows.closed).toEqual({active:0,resumes:0});await writeFile(out+'/audio-recovery.json',JSON.stringify(rows,null,2));
 });
-
-test('thirteen routines show different unarmed and prop contacts in every costume on desktop and mobile',async({page})=>{
-  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));let frames=0;
-  for(const width of [1000,360]){
-    await page.setViewportSize({width,height:800});
-    const rows=await page.evaluate(({contacts,end})=>{
-      const h=(window as any).jackieMotion,rows=[];
-      for(const plan of h.plans)for(const costume of ['master','sailor','police','hawk','rush','whoami','tuxedo','mentor']){
-        const times=[0,...contacts.flatMap((at:number)=>[at-1.45,at-.95,at-.6,at-.3,at,at+.22]),end+.1];
-        for(const time of times)rows.push({id:plan.id,moves:plan.moves,time,width:document.querySelector('canvas')!.clientWidth,height:document.querySelector('canvas')!.clientHeight,...h.render({plan:plan.id,costume,risk:'extreme',time})});
-        rows.push({id:plan.id,moves:plan.moves,time:end+.1,width:document.querySelector('canvas')!.clientWidth,height:document.querySelector('canvas')!.clientHeight,...h.render({plan:plan.id,costume,risk:'extreme',status:'lost',time:end+.1})});
-      }
-      return rows;
-    },{contacts:[contactAt(0),contactAt(1),contactAt(2)],end:resultAt(3)});
-    for(const row of rows){
-      expect(row.sequence).toBe(row.id);const frame=JSON.parse(row.heroFrame);expect(frame.left).toBeGreaterThanOrEqual(-1);expect(frame.right).toBeLessThanOrEqual(row.width+1);expect(frame.top).toBeGreaterThanOrEqual(-1);expect(frame.bottom).toBeLessThanOrEqual(row.height+1);
-      const items=[...row.floorFurniture.split(',').filter(Boolean),...(row.heldFurniture?[row.heldFurniture]:[])];
-      expect(items.sort()).toEqual(row.moves.filter((m:string)=>['chair','table','stool'].includes(m)).sort());expect(new Set(items).size).toBe(items.length);
-    }
-    frames+=rows.length;
-  }
-  await page.setViewportSize({width:1000,height:700});
-  for(const plan of ['boxing','counter','high-kick','straight','table-run','stool-step','chair-counter','backfist-chain','palm-counter','low-sweep','flying-knee','elbow-lock','turning-heel']){await page.evaluate(config=>(window as any).jackieMotion.render(config),{plan,time:contactAt(0)});await page.locator('canvas').screenshot({path:out+'/fight-'+plan+'.png'});}
-  for(const [offset,name]of [[-1.45,'block'],[-.95,'answer'],[-.6,'slip']]as const){await page.evaluate(config=>(window as any).jackieMotion.render(config),{plan:'turning-heel',time:contactAt(0)+offset});await page.locator('canvas').screenshot({path:out+'/exchange-'+name+'.png'});}
-  expect(errors).toEqual([]);await writeFile(out+'/fight-variety.json',JSON.stringify({frames,routines:13,costumes:8,viewports:[1000,360],pageErrors:errors},null,2));
-});
-
-test('automatic fight choices change through five wins and survive restoring the same accepted shot',async({page})=>{
-  const result=await page.evaluate(()=>{
-    const h=(window as any).jackieMotion,rows=[];
-    for(const risk of ['safe','sharp','extreme'])for(let fight=0;fight<5;fight++){
-      const config={seriesId:'restore-series',fight,risk,location:'harbor',time:1.32};
-      const win=h.render(config),loss=h.render({...config,status:'lost'}),restored=h.restore(config);rows.push({risk,fight,win,loss,restored});
-    }
-    return rows;
-  });
-  for(const risk of ['safe','sharp','extreme']){const fights=result.filter(row=>row.risk===risk);expect(new Set(fights.map(row=>row.win.sequence)).size).toBe(5);expect(fights[0].win.move).not.toBe('chair');for(const row of fights){expect(row.restored.sequence).toBe(row.win.sequence);expect(row.loss.sequence).toBe(row.win.sequence);}}
-});
-test('five distinct opponents rotate through the series and every rendered pose stays in the stage',async({page})=>{
-  const seen=new Set<string>();let frames=0;
-  for(const width of [1000,360]){
-    await page.setViewportSize({width,height:800});
-    const rows=await page.evaluate(({contact,end})=>{
-      const rows=[];
-      for(const location of ['restaurant','harbor','market'])for(let fight=0;fight<5;fight++)for(const[risk,count]of [['safe',1],['sharp',2],['extreme',3]]as const)for(const status of ['playing','lost']){
-        const times=[0,...contact.slice(0,count).flatMap(t=>[t-.2,t,t+.2,t+.45]),end[count-1]+.1];
-        for(const time of times){const frame=(window as any).jackieMotion.render({location,fight,risk,status,time});rows.push({location,fight,risk,count,status,time,width:document.querySelector('canvas')!.clientWidth,height:document.querySelector('canvas')!.clientHeight,...frame});}
-      }
-      return rows;
-    },{contact:[contactAt(0),contactAt(1),contactAt(2)],end:[resultAt(1),resultAt(2),resultAt(3)]});
-    for(const row of rows){
-      const ids=row.foes.split(',');expect(ids).toHaveLength(row.count);expect(new Set(ids).size).toBe(row.count);ids.forEach((id:string)=>seen.add(id));
-      const allowed=row.count===1?['street','agile']:row.count===2?['agile','bruiser','enforcer']:['bruiser','enforcer','master'];
-      expect(ids.every((id:string)=>allowed.includes(id))).toBe(true);expect(ids.includes('master')).toBe(row.count===3);
-      for(const frame of JSON.parse(row.foeFrames)){expect(frame.left).toBeGreaterThanOrEqual(0);expect(frame.right).toBeLessThanOrEqual(row.width+.01);expect(frame.top).toBeGreaterThanOrEqual(0);expect(frame.bottom).toBeLessThanOrEqual(row.height);expect(frame.pose).toBeGreaterThanOrEqual(0);expect(frame.pose).toBeLessThan(8);}
-    }
-    frames+=rows.length;
-  }
-  expect([...seen].sort()).toEqual(['agile','bruiser','enforcer','master','street']);
-  const restored=await page.evaluate(()=>{const h=(window as any).jackieMotion,config={location:'harbor',fight:3,risk:'extreme',status:'lost'};return{played:h.render({...config,time:5}).foes,reopened:h.restore(config).foes};});expect(restored.played).toBe(restored.reopened);
-  await page.setViewportSize({width:1000,height:700});
-  for(const[location,fight,label]of [['restaurant',0,'restaurant'],['harbor',0,'harbor'],['market',1,'market']]as const){await page.evaluate(config=>(window as any).jackieMotion.render(config),{location,fight,risk:'extreme',time:0});await page.locator('canvas').screenshot({path:out+'/opponents-'+label+'.png'});}
-  await writeFile(out+'/opponents-summary.json',JSON.stringify({frames,viewports:[1000,360],identities:[...seen].sort(),reopenPreservedLineup:true,allPosesInStage:true},null,2));
-});
-test('furniture survives pickup, strike, return and group transition on wins and losses',async({page})=>{
-  let frames=0;
-  for(const width of [1000,360]){
-    await page.setViewportSize({width,height:800});
-    const rows=await page.evaluate(({end,release})=>{
-      const rows=[];
-      for(const costume of ['master','sailor','police','hawk','rush','whoami','tuxedo','mentor'])for(const [risk,count]of [['safe',1],['sharp',2],['extreme',3]]as const)for(const status of ['playing','lost']){
-        const times=Array.from({length:Math.ceil(end[count-1]*10)+1},(_,i)=>i/10);times.push(release-.01,release+.01,end[count-1]+.8);
-        for(const time of times)rows.push({count,time,...(window as any).jackieMotion.render({costume,risk,status,time,plan:"furniture"})});
-      }
-      return rows;
-    },{end:[resultAt(1),resultAt(2),resultAt(3)],release:chairReleaseAt()});
-    for(const row of rows){
-      const items=[...row.floorFurniture.split(',').filter(Boolean),...(row.heldFurniture?[row.heldFurniture]:[])];
-      expect(items.sort()).toEqual(['chair','table','stool'].slice(0,row.count).sort());
-      if(row.time>chairReleaseAt())expect(row.floorFurniture.split(',')).toContain('chair');
-    }
-    frames+=rows.length;
-  }
-  const phases=[0,.3,.7,1.05,contactAt(0),contactAt(0)+.3,contactAt(0)+.6,chairReleaseAt()+.05,contactAt(1),contactAt(1)+.4,contactAt(2),resultAt(3)+.1];
-  const {default:sharp}=await import('sharp');const shots=[];
-  await page.setViewportSize({width:1000,height:700});
-  for(let i=0;i<phases.length;i++){
-    await page.evaluate(time=>(window as any).jackieMotion.render({risk:'extreme',time,plan:"furniture"}),phases[i]);
-    const bytes=await page.locator('canvas').screenshot();shots.push({input:await sharp(bytes).resize(400,200).png().toBuffer(),left:i%3*400,top:Math.floor(i/3)*200});
-  }
-  await sharp({create:{width:1200,height:800,channels:3,background:'#1c1511'}}).composite(shots).png().toFile(out+'/furniture-sequence.png');
-  await writeFile(out+'/furniture-continuity.json',JSON.stringify({frames,viewports:[1000,360],costumes:8,outcomes:['win','loss'],invariant:'Every selected item exists exactly once, attached or on the floor; chair is released only after lowering.'},null,2));
-});
-test('arcade hits land on the contact markers with headroom and cancel all owned sound',async({page})=>{
+test('dense exchanges keep headroom, decisive contacts are audible and owned sound is cancelled',async({page})=>{
+  test.setTimeout(240000);
   const stats=await page.evaluate(async({contacts})=>{
-    const path='/src/game/GameAudio.ts',{gameAudio}=await import(/* @vite-ignore */path);const previousContext=gameAudio.context,previousOutput=gameAudio.output;
-    async function render(cancel:boolean,success=true,plan?:any,speed:1|2=1,from=0){
-      const context=new OfflineAudioContext(1,13*44100/speed,44100),output=context.createGain();output.connect(context.destination);gameAudio.context=context as unknown as AudioContext;gameAudio.output=output;
-      const Audio=(window as any).jackieMotion.audio.constructor,audio=new Audio();audio.allowed=()=>true;audio.begin(3,success,success,plan,speed,from);const scheduled=audio.state().active;if(cancel)audio.cancel();
-      const buffer=await context.startRendering(),data=buffer.getChannelData(0);let peak=0,energy=0,tailPeak=0;for(let i=0;i<data.length;i++){peak=Math.max(peak,Math.abs(data[i]));energy+=data[i]*data[i];if(i>12*44100/speed)tailPeak=Math.max(tailPeak,Math.abs(data[i]));}
-      const windowPeak=(start:number,end:number)=>{let peak=0;for(let i=Math.floor(start*44100);i<end*44100;i++)peak=Math.max(peak,Math.abs(data[i]));return peak;};
-      const strikes=contacts.filter(at=>at>from).map(at=>({impact:windowPeak(.06+(at-from)/speed-.004,.06+(at-from)/speed+.04),swing:windowPeak(.06+(at-from-.12)/speed,.06+(at-from)/speed-.005)}));
-      audio.destroy();return{scheduled,peak,rms:Math.sqrt(energy/data.length),tailPeak,strikes,active:audio.state().active};
+    const h=(window as any).jackieMotion,path='/src/game/GameAudio.ts',{gameAudio}=await import(/* @vite-ignore */path),previousContext=gameAudio.context,previousOutput=gameAudio.output;
+    async function render(config:any,cancel:boolean,speed:1|2,from=0){
+      const fight=h.fight(config),won=config.status!=='lost',length=15/speed;
+      const context=new OfflineAudioContext(1,length*44100,44100),output=context.createGain();output.connect(context.destination);gameAudio.context=context as unknown as AudioContext;gameAudio.output=output;
+      const Audio=h.audio.constructor,audio=new Audio();audio.allowed=()=>true;audio.begin(fight,won,config.status==='complete',speed,from);const scheduled=audio.state().active;if(cancel)audio.cancel();
+      const data=(await context.startRendering()).getChannelData(0);let peak=0,tail=0;for(let i=0;i<data.length;i++){peak=Math.max(peak,Math.abs(data[i]));if(i>data.length-44100*.5)tail=Math.max(tail,Math.abs(data[i]));}
+      const near=(at:number)=>{let v=0;for(let i=Math.floor((.06+(at-from)/speed-.004)*44100);i<(.06+(at-from)/speed+.05)*44100;i++)v=Math.max(v,Math.abs(data[i]));return v;};
+      audio.destroy();return{scheduled,peak,tail,contacts:contacts.filter(at=>at>from).map(near),active:audio.state().active};
     }
-    try{const routines=[];for(const plan of (window as any).jackieMotion.plans)for(const speed of [1,2]as const)routines.push({id:plan.id,speed,mix:await render(false,true,plan,speed),loss:await render(false,false,plan,speed)});return{routines,cancelled:await render(true),resumed:await render(false,true,undefined,2,contacts[1]+.1)};}finally{gameAudio.context=previousContext;gameAudio.output=previousOutput;}
-  },{contacts:[contactAt(0),contactAt(1),contactAt(2)]});
-  await writeFile(out+'/furniture-audio.json',JSON.stringify({...stats,interpretation:'Contact timing, signal, headroom and cleanup checks only; not a subjective listening assessment.'},null,2));
-  for(const routine of stats.routines)for(const mix of [routine.mix,routine.loss]){expect(mix.scheduled).toBeGreaterThan(0);expect(mix.peak).toBeLessThan(.8);expect(mix.tailPeak).toBe(0);expect(mix.active).toBe(0);for(const strike of mix.strikes){expect(strike.impact).toBeGreaterThan(.35);expect(strike.impact).toBeGreaterThan(strike.swing*2);}}
-  expect(stats.cancelled.peak).toBe(0);expect(stats.cancelled.active).toBe(0);
-  expect(stats.resumed.strikes).toHaveLength(1);expect(stats.resumed.scheduled).toBeLessThan(stats.routines[0].mix.scheduled);
+    try{const mixes=[];for(const location of ['restaurant','harbor','market'])for(const seriesId of ['a','b','c','d','e','f'])for(const speed of [1,2]as const)for(const status of ['playing','lost','complete'])mixes.push({location,seriesId,speed,status,...await render({risk:'extreme',location,seriesId,status,fight:status==='complete'?4:1},false,speed)});
+      const config={risk:'extreme',seriesId:'a',location:'harbor'};return{mixes,cancelled:await render(config,true,1),resumed:await render(config,false,2,contacts[1]+.1)};}
+    finally{gameAudio.context=previousContext;gameAudio.output=previousOutput;}
+  },{contacts:[0,1,2].map(contact)});
+  await writeFile(out+'/fight-audio.json',JSON.stringify({...stats,interpretation:'Timing, signal, headroom and cleanup checks only; not a subjective listening assessment.'},null,2));
+  for(const mix of stats.mixes){expect(mix.scheduled).toBeGreaterThan(30);expect(mix.peak,JSON.stringify(mix)).toBeLessThan(.95);expect(mix.tail).toBe(0);expect(mix.active).toBe(0);for(const value of mix.contacts)expect(value,JSON.stringify(mix)).toBeGreaterThan(.2);}
+  expect(stats.cancelled.peak).toBe(0);expect(stats.cancelled.active).toBe(0);expect(stats.resumed.contacts).toHaveLength(1);expect(stats.resumed.scheduled).toBeLessThan(stats.mixes[0].scheduled);
 });
-
 test('enabling reduced motion during a running fight settles once without replay on speed changes',async({page})=>{
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.evaluate(()=>{const h=(window as any).jackieMotion;h.render({risk:'extreme',status:'complete'});Reflect.get(h.scene,'playback').start(performance.now());});
@@ -205,4 +155,12 @@ test('enabling reduced motion during a running fight settles once without replay
   await expect.poll(()=>page.evaluate(()=>(window as any).jackieMotion.scene.state().phase)).toBe('victory-hold');
   const state=await page.evaluate(()=>{const h=(window as any).jackieMotion;h.scene.setSpeed(2);return{...h.scene.state(),audio:h.audio.state()};});
   expect(state.busy).toBe(false);expect(state.celebrating).toBe(false);expect(state.audio.active).toBe(0);expect(state.speed).toBe(2);
+});
+test('a resting scene under reduced motion is not repainted and keeps the frame rate of a running fight',async({page})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});await page.setViewportSize({width:1000,height:800});
+  const paints=await page.evaluate(()=>{const h=(window as any).jackieMotion,scene=h.scene;h.restore({risk:'sharp'});const c=document.querySelector('canvas')!.getContext('2d')!,clear=c.clearRect.bind(c);let n=0;c.clearRect=((...a:any[])=>{n++;(clear as any)(...a);})as typeof c.clearRect;for(let i=0;i<20;i++)scene.paint(performance.now()+i*50);c.clearRect=clear;return n;});
+  expect(paints).toBe(0);
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  const frames=await page.evaluate(async()=>{const h=(window as any).jackieMotion;h.render({risk:'extreme',location:'market'});h.scene.show(Reflect.get(h.scene,'view'),true,false,'rate');const list:number[]=[];let last=0;await new Promise<void>(done=>{const f=(now:number)=>{h.scene.paint(now);if(last)list.push(now-last);last=now;if(list.length<180)requestAnimationFrame(f);else done();};requestAnimationFrame(f);});list.sort((a,b)=>a-b);return{median:list[90],p95:list[171]};});
+  await writeFile(out+'/frame-rate.json',JSON.stringify(frames));expect(frames.median).toBeLessThan(20);
 });

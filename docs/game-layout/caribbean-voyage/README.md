@@ -15,4 +15,4 @@ The pirate setting of the earlier game is kept: the same harbour, frame, symbols
 
 The scene lives in `games/caribbean-treasures/scene`. `scripts/export-caribbean-scene.mjs` makes the water mask and the gun. `prototype/` is the approved mock-up, `screenshots/` comes from the real host with connected chat.
 
-Verified locally on 25 November 2026 with package `1.8.0-686fa470b01a`: `tests/caribbean-host.spec.ts` (16 scenarios in Chrome), server tests of the voyage, wallet and transport, RTP gate inside the module build.
+Published on 25 November 2026 as package `1.8.0-42fe662a97ca`, [release verification](../../../deployment/releases/caribbean-voyage-module-20261125-v1/verification.json).

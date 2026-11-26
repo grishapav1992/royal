@@ -1,0 +1,54 @@
+<title>Гонконгский воин: Большая драка</title>
+<style>
+/* A review desk around the game. The game keeps its own dark film-set palette in both themes. */
+:root{--bg:#171210;--fg:#efe0c2;--muted:#b09b7c;--line:#4a3728;--gold:#d8a45e;--red:#a53b2e;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 Arial,Helvetica,sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 40px}
+.desk-head{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:end;max-width:1440px;margin:0 auto 14px}
+.desk-head h1{font:400 24px/1 Impact,'Arial Narrow',Arial,sans-serif;letter-spacing:.8px;margin:0 auto 0 0}
+.desk-head h1 b{color:var(--gold);font-weight:400}
+.desk-head label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);min-width:0}
+.desk-head select,.desk-head button{font:14px Arial;color:var(--fg);background:#2b211a;border:1px solid var(--line);border-radius:4px;min-height:36px;padding:4px 10px;max-width:100%}
+.desk-head .row{flex-direction:row;align-items:center;gap:8px;min-height:36px}
+.desk-head .reel{display:flex;gap:6px;align-items:end;min-width:0}#move{max-width:260px}
+#desk{max-width:1440px;margin:0 auto;overflow:hidden}
+#device{transform-origin:0 0;position:relative}
+.notes{max-width:1440px;margin:14px auto 0;color:var(--muted);font-size:13px}
+.notes p{max-width:75ch;margin:0}
+select:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #f8dca0;outline-offset:2px}
+/*HUD*/
+</style>
+<div class="desk-head">
+  <h1>ГОНКОНГСКИЙ <b>ВОИН</b></h1>
+  <label>Экран<select id="view"><option value="desktop">Компьютер с чатом</option><option value="phone">Телефон</option><option value="land">Телефон боком</option></select></label>
+  <label>Исход боя<select id="outcome"><option value="random">По шансам игры</option><option value="win">Победа</option><option value="lose">Поражение</option></select></label>
+  <div class="reel"><label>Отдельный приём<select id="move"><option value="">Загрузка</option></select></label><button id="again">Ещё раз</button></div>
+  <label class="row"><input type="checkbox" id="slow"> Замедлить в 4 раза</label>
+</div>
+<div id="desk"><div id="device" data-view="desktop">
+  <div class="host"><b>Гонконгский воин</b><span>Демо</span><i>Все игры</i><i>Чат</i><i>×</i></div>
+  <div class="chat"><b>Общий чат</b><p>Место чата в зале</p></div>
+  <section class="hw" aria-label="Гонконгский воин">
+    <div class="stage"><canvas id="scene" aria-label="Рисованная сцена кунг-фу"></canvas>
+      <div class="load" id="load">Готовим съёмочную площадку</div>
+      <div class="brand"><small>ROYAL PICTURES PRESENTS</small><strong>ГОНКОНГСКИЙ <b>ВОИН</b> <i>功夫</i></strong>
+        <button id="place"><small id="place-no"></small><span id="place-name"></span> ▾</button></div>
+      <div class="tools"><button id="wardrobe">Костюмы <b>8/8</b></button><button id="speed" aria-label="Темп боя">1×</button><button id="sound" aria-pressed="false">♪</button><button aria-label="Правила">?</button></div>
+      <div class="result" id="result" role="status" hidden><small id="r-cap"></small><strong id="r-title"></strong><span id="r-money"></span></div>
+      <div class="clap" id="clap" aria-hidden="true"><i></i><div><small>ДУБЛЬ</small><b id="clap-take">1</b><em>МОТОР!</em></div></div>
+      <div class="cast"><strong>КАСКАДЁР</strong><span id="film-name"></span></div><div class="versus"><small id="versus-cap">ПРОТИВНИКИ</small><span id="foes"></span></div>
+      <div class="sheet" id="sheet" hidden></div>
+    </div>
+    <ol class="film" id="film"></ol>
+    <div class="console">
+      <div class="risks" role="group" aria-label="Сложность боя">
+        <button data-risk="safe"><span class="men"><i></i></span><b>Лёгкий</b><small>1 противник</small><small class="pc">75% победы</small><em></em></button>
+        <button data-risk="sharp"><span class="men"><i></i><i></i></span><b>Средний</b><small>2 противника</small><small class="pc">60% победы</small><em></em></button>
+        <button data-risk="extreme"><span class="men"><i></i><i></i><i></i></span><b>Сложный</b><small>3 противника</small><small class="pc">45% победы</small><em></em></button>
+      </div>
+      <div class="money"><label>СТАВКА<select id="stake"><option value="10">0,10 USDT</option><option value="20">0,20 USDT</option><option value="50">0,50 USDT</option><option value="100">1 USDT</option><option value="500">5 USDT</option><option value="1000">10 USDT</option><option value="5000">50 USDT</option></select></label><p><small>БАЛАНС</small><b id="balance"></b></p></div>
+      <div class="actions"><button id="go"><span>МОТОР!</span><small></small></button><button id="cash" hidden><span>ЗАБРАТЬ</span><b></b></button></div>
+    </div>
+  </section>
+</div></div>
+<div class="notes"><p>Макет: деньги и исходы условные, шансы и выплаты по формуле игры. Исход не влияет на бой до завершающего удара.</p></div>
+<script src="mock.js"></script>

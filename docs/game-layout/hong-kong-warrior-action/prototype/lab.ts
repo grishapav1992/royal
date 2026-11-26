@@ -1,0 +1,2 @@
+import {Scene} from './scene';
+const c=document.querySelector('canvas')!,s=new Scene(c);(window as any).lab={s,async show(o:any){await s.load(o);s.seek(0);},at(t:number){s.seek(t);s.paint(5000+t*1000);},info(){const f=s.fight!;return{reveal:f.reveal,end:f.end,hits:f.hits,beats:f.beats};},list(){const f=s.fight!;return{p:f.phrases().map(x=>({id:x.id,duo:x.duo,only:x.only,place:x.place,d:x.d})),f:f.finishers().map(x=>({id:x.id,place:x.place}))};}};
