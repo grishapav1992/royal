@@ -9,7 +9,7 @@ const out=process.env.LAYOUT_ARTIFACTS_DIR||'artifacts/work/game-layout-iframes'
 const profiles={
  'studio-dracona':{root:'.game',board:'#board',primary:'#spin',stake:'.bet-control',essential:['#reserve-grid','#bonus-description']},
  'studio-forest-heart':{root:'.fh',board:'.fh-board',primary:'.fh-primary>button:not([hidden])',stake:'.fh-bet',essential:['.fh-source','.fh-flowers']},
- 'studio-flooded-temple':{root:'.ft-cascade',board:'.ft-reels',primary:'[data-ft=primary]',stake:'.ft-stake',essential:['.ft-multiplier','[data-free-count]']},
+ 'studio-flooded-temple':{root:'.ebb',board:'.ebb-grid',primary:'[data-ft=primary]',stake:'.ebb-console .stake',essential:['.ebb-top','.ebb-console .pay']},
 };
 type Id=keyof typeof profiles;
 const ids=Object.keys(profiles) as Id[];

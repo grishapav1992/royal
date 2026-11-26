@@ -12,6 +12,7 @@ import {referenceStyles} from './referenceStyles';
 import {characterStyles} from './characterStyles';
 import {playbackStyles} from './playbackStyles';
 import {navigationStyles} from './navigationStyles';
+import {ebbStyles} from './ebbStyles';
 import './shell.css';
 export const gameId='studio-flooded-temple';
 export const apiVersion=1;
@@ -44,7 +45,7 @@ export const mount:GameModuleV1['mount']=(host,context)=>{
     if(disposed||!frame.contentDocument)return;
     game?.destroy();
     const doc=frame.contentDocument;doc.documentElement.lang=services.i18n.language;doc.title=title;
-    const style=doc.createElement('style');style.textContent=styles+feedbackStyles+referenceStyles+characterStyles+playbackStyles+navigationStyles+cascadeStyles+cascadeFeedbackStyles+cascadeResultStyles+cascadeLayoutStyles+priorityStyles;doc.head.replaceChildren(style);
+    const style=doc.createElement('style');style.textContent=styles+feedbackStyles+referenceStyles+characterStyles+playbackStyles+navigationStyles+cascadeStyles+cascadeFeedbackStyles+cascadeResultStyles+cascadeLayoutStyles+priorityStyles+ebbStyles;doc.head.replaceChildren(style);
     app=doc.createElement('main');doc.body.replaceChildren(app);game=undefined;sync();
   });
   frame.src='about:blank';host.replaceChildren(frame);

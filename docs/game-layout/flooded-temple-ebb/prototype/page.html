@@ -1,0 +1,17 @@
+<title>Затопленный храм: Отлив</title><style>/*HUD*/</style>
+<div id="review" aria-label="Панель просмотра макета"><b>Макет «Отлив»</b><span>Показать:</span>
+<button data-show="loss">Без выигрыша</button><button data-show="partial">Частичный возврат</button><button data-show="win">Выигрыш</button><button data-show="chain">Цепочка до ×5</button><button data-show="big">Крупный</button><button data-show="huge">Огромный</button><button data-show="bonus">Бонус</button><button data-show="lost">Потерянный ответ</button><i></i><button id="chat" aria-pressed="false">Чат рядом</button><button id="calm" aria-pressed="false">Меньше движения</button></div>
+<div id="shell"><main id="game" aria-label="Затопленный храм">
+<canvas id="bg"></canvas><canvas id="back"></canvas><canvas id="hero"></canvas><canvas id="board"></canvas><canvas id="fx"></canvas>
+<header><h1>Затопленный храм</h1><div id="free" hidden></div><nav><button id="rules" aria-label="Правила"><svg viewBox="0 0 24 24"><path d="M9 9a3 3 0 1 1 4.4 2.7c-1 .5-1.4 1-1.4 2.1M12 17.4v.2"/></svg></button><button id="sound" aria-label="Звук выключен" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10zM17 9.5a4 4 0 0 1 0 5"/><path class="off" d="m16 9 6 6m0-6-6 6"/></svg></button></nav></header>
+<div id="say" role="status" aria-live="polite"></div>
+<section id="console" aria-label="Управление">
+<div class="money"><span>Баланс</span><strong id="balance"></strong></div>
+<div class="stake"><span id="stake-label">Ставка за раунд</span><div><button id="less" aria-label="Меньше">−</button><input id="stake" inputmode="decimal" aria-labelledby="stake-label" autocomplete="off"><button id="more" aria-label="Больше">+</button></div></div>
+<div class="pay"><span>Выплата раунда</span><strong id="pay">0,00</strong><em id="net"></em></div>
+<div class="modes"><button id="fast" aria-pressed="false">Быстро</button><button id="auto">Авто</button></div>
+<button id="spin"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20"/><path d="m24 7 4 13 13 4-13 4-4 13-4-13-13-4 13-4z"/></svg><span>Вращать</span></button>
+</section>
+<div id="pop" hidden></div>
+</main><aside id="chatbox" hidden aria-hidden="true"><b>Чат Royal</b><p>Здесь в игре подключённый чат. В макете показано только его место.</p></aside></div>
+<script src="mock.js"></script>
