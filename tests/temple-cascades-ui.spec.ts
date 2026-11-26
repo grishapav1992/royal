@@ -98,8 +98,10 @@ test('real Royal host keeps connected chat, heroine lane, controls and close/reo
       const online=await page.evaluate(()=>{try{return (window as any).royalDemo?.getState().online===true;}catch{return false;}});
       if(online)return true;
       const mode=page.locator('.entry-options [data-entry-mode="club"]'),enter=page.getByRole('button',{name:'Enter the hall',exact:true});
-      if(await mode.isVisible())await mode.click({timeout:2000});
-      else if(await enter.isVisible())await enter.click({timeout:2000});
+      const step=mode.or(enter).filter({visible:true}).first();
+      if(await step.isVisible()&&await step.isEnabled()){
+        await step.click({timeout:1500}).catch(error=>{if(error.name!=='TimeoutError')throw error;});
+      }
       return false;
     },{timeout:60000}).toBe(true);
     await page.locator('#games-tab').click();await page.locator('[data-cabinet=studio-dracona]').click();await page.locator('[data-platform-game=studio-flooded-temple]').click();await expect(game(page).locator('.ebb')).toBeVisible({timeout:45000});await expect(game(page).locator('[data-ft=primary]')).toBeEnabled();
