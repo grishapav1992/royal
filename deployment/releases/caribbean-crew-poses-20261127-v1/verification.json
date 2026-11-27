@@ -1,0 +1,167 @@
+{
+  "published": true,
+  "release": "caribbean-crew-poses-20261127-v1",
+  "sourceCommit": "74c563c32dcb8121f42c12e7b95a3f6ab7c575ff",
+  "baseCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/caribbean-crew-poses-20261127-v1/source.tgz",
+    "sha256": "b9fd2f010f20cf107bd1285a8e102938715a141bd803c183c07c4f50bd4970f7",
+    "bytes": 78193,
+    "oldVersion": "1.8.0-42fe662a97ca",
+    "imageTag": "royal-game:before-caribbean-crew-poses-20261127-v1",
+    "image": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/caribbean-treasures/scene/crewGestures.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-caribbean-treasures",
+    "version": "1.9.0-52b612cfbce3",
+    "bytes": 15896757,
+    "files": 126,
+    "beforeSha256": "a960481ad68ce38a5073993405d9bc035fe807fbee7b68d5c58226c7246fcbe5",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "beb9eecb6b9b2b10804112d8b7ff43663d42e75501ab3ec1bbfc37cb79e22e6e",
+    "history": "/opt/royal-game-modules-state/history/20261127T101717-39650b90975f49b5a3c46fa434de1266.json"
+  },
+  "freeBefore": 10923016192,
+  "freeAfter": 10906681344,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8845,
+  "servicesPreserved": 11,
+  "verifiedAt": "2026-11-27T10:18:10.907Z",
+  "previousVersion": "1.8.0-42fe662a97ca",
+  "contracts": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 1
+  },
+  "wrapperSourceCommit": "74c563c32dcb8121f42c12e7b95a3f6ab7c575ff",
+  "pointerSha256": "beb9eecb6b9b2b10804112d8b7ff43663d42e75501ab3ec1bbfc37cb79e22e6e",
+  "priorPointerSha256": "a960481ad68ce38a5073993405d9bc035fe807fbee7b68d5c58226c7246fcbe5",
+  "releaseManifestSha256": "7c2f0b9d3066c6bf8765fec709753fe80f481f57eaf730542e557409ae2a771a",
+  "receiptSha256": "2967b11525c2a0bffc5c133122824d61b61e373e48f9b37f8a9e5126bb00a396",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "installedSourceFiles": 19,
+  "changedExistingSources": [
+    "games/caribbean-treasures/CaribbeanUI.ts",
+    "games/caribbean-treasures/caribbean.css",
+    "games/caribbean-treasures/package.json",
+    "games/caribbean-treasures/scene/effects.ts",
+    "games/caribbean-treasures/scene/pirate.ts",
+    "games/caribbean-treasures/scene/stage.ts",
+    "games/caribbean-treasures/scene/voyage.ts"
+  ],
+  "unchangedListedSources": [
+    "games/caribbean-treasures/CaribbeanAudio.ts",
+    "games/caribbean-treasures/CaribbeanCrew.ts",
+    "games/caribbean-treasures/CaribbeanVoyageClient.ts",
+    "games/caribbean-treasures/entry.ts",
+    "games/caribbean-treasures/presentation.ts",
+    "games/caribbean-treasures/scene/clock.ts",
+    "games/caribbean-treasures/scene/gl.ts",
+    "games/caribbean-treasures/scene/harbor.ts",
+    "games/caribbean-treasures/scene/media.ts",
+    "games/caribbean-treasures/scene/symbols.ts",
+    "games/caribbean-treasures/scene/text.ts"
+  ],
+  "createdSources": [
+    "games/caribbean-treasures/scene/crewGestures.ts"
+  ],
+  "liveUncompiledSourcesKept": [
+    "games/caribbean-treasures/CaribbeanCaptain.ts",
+    "games/caribbean-treasures/CaribbeanCollection.ts",
+    "games/caribbean-treasures/CaribbeanMotion.ts",
+    "games/caribbean-treasures/icons.ts",
+    "games/caribbean-treasures/tsconfig.json",
+    "notes and prompts (*.md, assets/*)"
+  ],
+  "includedEarlierMainWork": "f1a5fafa character-specific crew gestures (26.11, same crew animation task) was in main but unpublished and is part of this package",
+  "firstInstallAttempt": "refused before any mutation: production inventory changed (star-spin-reactor-20261127-v1 published by another chat, wild-nudge only); inputs repackaged from a fresh snapshot, the unapplied upload replaced",
+  "assets": {
+    "crewFramesChanged": 90, "crewFilesPerPirate": "8 poses and 1 thumbnail for each of the ten added pirates",
+    "crewManifestChanged": true,
+    "isabellaUnchanged": true,
+    "crewBytes": 9383092
+  },
+  "publicChecks": {
+    "at": "2026-11-27T10:18:10.907Z",
+    "health": 200,
+    "home": 200,
+    "version": "1.9.0-52b612cfbce3",
+    "previous": "1.8.0-42fe662a97ca",
+    "pointerSha256": "beb9eecb6b9b2b10804112d8b7ff43663d42e75501ab3ec1bbfc37cb79e22e6e",
+    "pointerOk": true,
+    "pointerManifest": "/game-modules/studio-caribbean-treasures/versions/1.9.0-52b612cfbce3/manifest.json",
+    "manifestSha256": "57679940df35bed88563c935bb31aa4fc7513a619ab65c59ba6d1debbcddc6e8",
+    "manifestOk": true,
+    "files": 126,
+    "badFiles": [],
+    "previousManifestStatus": 200,
+    "previousManifestSha256": "8db0681d00be6c53d96a723736d0a8c4c695be9f19de01922073ce28a0845ebf",
+    "transport": "Public HTTPS hostname with normal certificate validation from the workstation",
+    "productionAccountsUsed": false,
+    "realWagers": false,
+    "changedPointers": [
+      "/opt/royal-game-modules/studio-caribbean-treasures/active.json"
+    ],
+    "activeModulePointers": 125,
+    "hostUnchanged": true,
+    "backendUnchanged": true,
+    "postMaintenanceHealth": 200,
+    "postMaintenancePointerSha256": "beb9eecb6b9b2b10804112d8b7ff43663d42e75501ab3ec1bbfc37cb79e22e6e"
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 82.09,
+    "timerEnabled": true,
+    "timerActive": true,
+    "freeBytes": 10899824640,
+    "hostHealthy": true
+  },
+  "browserReport": {
+    "version": "1.9.0-52b612cfbce3",
+    "moduleManifestSha256": "57679940df35bed88563c935bb31aa4fc7513a619ab65c59ba6d1debbcddc6e8",
+    "sourceCommit": "74c563c32dcb8121f42c12e7b95a3f6ab7c575ff",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "command": "CARIBBEAN_ARTIFACTS_DIR=artifacts/work/crew-poses/host npx playwright test --config=playwright.caribbean.config.ts against node --import tsx scripts/caribbean-preview.ts serving module-dist",
+    "result": "exact bytes: 15 of 18 passed in the full run; the three others passed on a rerun, except one more intermittent hall-state read after a full page reload in the purchased-tactics scenario (royalDemo.getState().view undefined before the game opens); the same scenario passed on exact bytes. The earlier 1.9.0-e60b1247a264 build from the same game sources passed 18 of 18.",
+    "walletSuite": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts: 19 passed",
+    "unitSuites": "npm run test:caribbean: 49 passed; npm run check:rtp: 39 verified, 21 stake policies",
+    "viewports": [
+      "1280x800 with chat column",
+      "1440x900 with chat column",
+      "393x852 phone with chat overlay"
+    ],
+    "uniqueBrowserScenariosPassed": [
+      "every selected pirate plays her own win gesture with chat on desktop and phone",
+      "minimum start debits ten cents with price, payout and net",
+      "accepted start survives a lost response and reopening without duplicate debit",
+      "purchased tactic series restored after a full reload for its owner",
+      "stakes, autoplay, keyboard, closing and audio release"
+    ],
+    "notCovered": [
+      "physical phones",
+      "Safari",
+      "listening review of sound",
+      "production accounts"
+    ],
+    "at": "2026-11-27T10:09:43.392Z"
+  },
+  "a6api": {
+    "model": "gpt-image-2.6-flare",
+    "endpoint": "/v1/images/edits",
+    "paidImageRequests": "53 completed image generations for the ten pirates, including 4 regenerations; instant too_many_requests refusals and one upstream_unavailable reply generated nothing and are not counted"
+  }
+}

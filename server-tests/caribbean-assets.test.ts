@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile,stat} from 'node:fs/promises';
 import sharp from 'sharp';
 import {CARIBBEAN_CREW,DEFAULT_CAPTAIN} from '../games/caribbean-treasures/CaribbeanCrew';
+import {CREW_STYLE} from '../games/caribbean-treasures/scene/crewGestures';
 import {CARIBBEAN_PROGRESS_VERSION,CARIBBEAN_RULES_VERSION} from '../src/shared/caribbeanTreasures';
 test('Caribbean runtime media decodes, preserves prop alpha and fits the reference art budget',async()=>{
  let total=0;
@@ -35,6 +36,22 @@ test('ten additional pirate captains have eight complete transparent states and 
  assert.equal(createHash('sha256').update(originalThumbnail).digest('hex'),manifest.defaultThumbnail.sha256);
  assert.equal(identities.size,10);assert.equal(bytes,manifest.bytes);assert(bytes<12*1024*1024);
  const pkg=JSON.parse(await readFile('games/caribbean-treasures/package.json','utf8'));assert(!pkg.preload.some((file:string)=>file.includes('/crew/')),'Only the selected captain loads her reaction set');
+});
+test('every added pirate has her own temperament, win accent and prop light inside her portrait',()=>{
+ const poses=['idle','win','blink','focus','surprise','bonus','soft','laugh'],inside=(p:readonly number[])=>p.length===2&&p.every(v=>v>=0&&v<=1);
+ const signatures=new Set<string>();
+ for(const member of CARIBBEAN_CREW){
+  const style=CREW_STYLE[member.id];
+  if(member.id===DEFAULT_CAPTAIN){assert.equal(style.mood,undefined,'Isabella keeps her original motion');continue;}
+  assert(style.mood&&style.flair&&style.prop,member.id);
+  for(const v of Object.values(style.mood))assert(Number.isFinite(v)&&v>=0&&v<=2,member.id);
+  assert(style.prop.when>0&&style.prop.when<1,member.id);
+  const spots=Object.entries(style.prop.at);assert(spots.length>0,member.id);
+  for(const [pose,points] of spots){assert(poses.includes(pose),member.id+' '+pose);for(const p of points)if(p)assert(inside(p),member.id+' '+pose);}
+  if(style.prop.idle)for(const p of style.prop.idle)if(p)assert(inside(p),member.id+' idle');
+  signatures.add(style.flair+'/'+style.prop.kind+'/'+style.prop.tint+'/'+JSON.stringify(style.mood));
+ }
+ assert.equal(signatures.size,CARIBBEAN_CREW.length-1,'no two pirates move and shine the same way');
 });
 test('recorded audio exports preserve licensed provenance, inventory and bounded signal edges',async()=>{
  const {createHash}=await import('node:crypto');

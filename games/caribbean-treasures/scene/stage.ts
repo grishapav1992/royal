@@ -1,5 +1,5 @@
 import {Clock,clamp,ease,lerp} from './clock';
-import {Effects,coin} from './effects';
+import {Effects,coin,propLight} from './effects';
 import {Harbor} from './harbor';
 import {Pirate} from './pirate';
 import {alive,plain,prepare,rolling,images,type Spawn} from './symbols';
@@ -212,6 +212,7 @@ export class Stage{
   /* Frame ----------------------------------------------------------------------------- */
   step(dt:number){
     this.clock.step(dt);this.fx.step(dt);this.knock=Math.max(0,this.knock-dt*7);
+    for(const cue of this.pirate.takeProps())if(this.L&&this.L.pirate.h>60&&!this.clock.hurry)propLight(this.fx,cue,this.L.pirate);
     if(this.tour){this.tour.t+=dt;if(this.tour.t>1.15){this.tour.t=0;this.tour.line=(this.tour.line+1)%this.tour.count;}}
     for(const c of this.cols)if(c.mode==='roll')c.p+=c.v*dt;else if(c.mode==='land'&&c.p<0)c.p=c.p;
     if(this.harbor.storm>.5&&!this.clock.reduced){this.boltT-=dt;if(this.boltT<0){this.boltT=4+Math.random()*5;this.bolt();}}
