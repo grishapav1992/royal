@@ -27,8 +27,8 @@ async function open(page:Page){
  await page.locator(`[data-platform-game="${game}"]`).click();await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:30000});await expect(page.locator('.gn')).toBeVisible();await expect.poll(()=>page.locator('[data-gn=board]').evaluate(el=>el.clientWidth)).toBeGreaterThan(200);await chat(page);
 }
 async function chat(page:Page,closeOverlay=true){
- // After a resize the host may still be switching the chat between docked and overlay modes; retry the toggle until it settles open.
- await expect.poll(async()=>{if(await page.locator('#mini-dialog #club-chat-dock').isVisible()&&await page.locator('#chat-input').isVisible())return true;if(await page.locator('#mini-dialog .game-chat-toggle').getAttribute('aria-expanded')!=='true')await page.locator('#mini-dialog .game-chat-toggle').click();return false;},{timeout:15000,intervals:[250,500,1000]}).toBe(true);
+ // After a resize the host may still be switching the chat between docked and overlay modes; retry the toggle until it stays open on two consecutive checks.
+ let open=0;await expect.poll(async()=>{if(await page.locator('#mini-dialog #club-chat-dock').isVisible()&&await page.locator('#chat-input').isVisible())return ++open>=2;open=0;if(await page.locator('#mini-dialog .game-chat-toggle').getAttribute('aria-expanded')!=='true')await page.locator('#mini-dialog .game-chat-toggle').click();return false;},{timeout:15000,intervals:[300,300,500,1000]}).toBe(true);
  await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();await expect(page.locator('#chat-input')).toBeInViewport();
  if(closeOverlay&&await page.locator('#mini-dialog').getAttribute('data-game-chat')==='overlay')await page.locator('#club-chat-dock .game-chat-close').click();
 }
