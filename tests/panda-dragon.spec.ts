@@ -264,7 +264,7 @@ test('пояс меняется после результата и пережи�
   // Во время вращения мастер идёт или замахивается посохом.
   await expect(hero.locator('.panda-hero-stage')).toHaveAttribute('data-action', /spin|charge/);
   await expect(label).toHaveAttribute('data-belt', 'blue');
-  await expect(hero.locator('.panda-hero')).toHaveAttribute('src', /panda-blue-(idle|cheer)\.webp$/);
+  await expect(hero.locator('.panda-hero')).toHaveAttribute('src', /panda-(hero|tiptoe)-blue\.webp$/);
   await expect(mini.locator('.panda-belt-notice')).toHaveText('Новый пояс: Синий пояс');
   await mini.locator('.mini-top [data-close]').click();
   await openDragonPath(page);

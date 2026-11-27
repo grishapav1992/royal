@@ -490,6 +490,10 @@
 .panda-hero-stage[data-action="cheer"] .panda-hero {
   animation: panda-cheer 0.9s ease-in-out infinite;
 }
+/* Клип оживает сам: покадровая анимация позы поверх ролика только мешает. */
+.panda-hero-stage[data-media="clip"] .panda-hero {
+  animation: none;
+}
 /* Победа: мягкое свечение вокруг мастера. */
 .panda-hero-wrap[data-action="cheer"] .panda-hero-stage::after {
   content: '';

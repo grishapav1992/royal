@@ -9,7 +9,7 @@ import { paylineCells } from "../../templates/slot-primitive/src/paylines.ts";
 import { PANDA_LAYOUT, SYMBOLS } from "./layout";
 import type { PandaView } from "./PandaView";
 import type { PandaState } from "./mountPanda";
-import { heroImages, symbolImages } from "./assets";
+import { heroActionPose, heroClips, heroImages, symbolImages } from "./assets";
 import { usePandaBelt } from "./usePandaBelt";
 import { GameInfo, RoundDetails } from "./GameInfo";
 import { StakeControl } from "./StakeControl";
@@ -570,6 +570,9 @@ function HeroPanel({
   reducedMotion: boolean;
 }) {
   const images = heroImages[belt];
+  // Клип, если он есть, заменяет статичную позу: анимация внутри кадра, а не поверх.
+  const clip = heroClips[belt]?.[action];
+  const source = clip ?? images[heroActionPose[action]];
   const stageRef = useRef<HTMLDivElement>(null);
   useImpactShake(stageRef, impact, reducedMotion, HERO_RECOIL, RECOIL_OPTIONS);
   return (
@@ -578,10 +581,11 @@ function HeroPanel({
         ref={stageRef}
         className="panda-hero-stage"
         data-action={action}
+        data-media={clip ? "clip" : "pose"}
       >
         <img
           key={`${action}-${impact}`}
-          src={images[action]}
+          src={source}
           alt={t('Мастер-панда с посохом')}
           data-mood={mood}
           className="panda-hero"
