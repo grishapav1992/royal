@@ -1,6 +1,6 @@
 {
   "name": "@royal/flag-battle",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "private": true,
   "gameId": "flag-battle",
   "apiVersion": 1,

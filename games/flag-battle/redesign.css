@@ -1,0 +1,59 @@
+/* Flag Battle redesign: same palette and layout, livelier surfaces and motion. */
+.fb-root{background:radial-gradient(120% 80% at 30% 0%,#123a3f 0%,#0b2028 55%,#081a21 100%)}
+.fb-header h2{text-shadow:0 0 24px #74d8b733}
+.fb-kicker{position:relative;padding-left:22px}
+.fb-kicker::before{content:'';position:absolute;left:0;top:50%;width:16px;height:4px;margin-top:-2px;border-radius:2px;background:linear-gradient(90deg,#f69575 0 33%,#e7c27b 33% 66%,#74d8b7 66%)}
+.fb-help{transition:background .2s,border-color .2s}.fb-help:hover{background:#74d8b71a;border-color:#74d8b799}
+
+.fb-stage{border-color:#74d8b733;background:radial-gradient(ellipse at 50% 42%,#1a4a4766,transparent 66%),linear-gradient(180deg,#0f2d33 0%,#0a2128 100%);box-shadow:inset 0 1px 0 #d9f4e51a,inset 0 0 60px #0006,0 18px 40px #0004;transition:border-color .5s,box-shadow .5s}
+.fb-stage::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(160deg,#ffffff0d 0%,transparent 28%)}
+.fb-badge{border:1px solid #74d8b733;border-radius:999px;padding:4px 9px;background:#0b222a99}
+.fb-counter{display:inline-flex;align-items:baseline;gap:3px;border-radius:999px;padding:3px 10px;background:#0b222a99;border:1px solid #74d8b722}
+.fb-counter b{font-variant-numeric:tabular-nums;display:inline-block}
+.fb-counter.fb-beat b{animation:fb-beat .42s cubic-bezier(.2,1.6,.4,1)}
+@keyframes fb-beat{0%{transform:scale(1.55);color:#ffb59b}100%{transform:scale(1);color:var(--fb-ink)}}
+
+.fb-root[data-phase=final] .fb-stage{border-color:#f6957566;box-shadow:inset 0 1px 0 #d9f4e51a,inset 0 0 70px #2a0c0855,0 0 0 1px #f6957522,0 18px 40px #0004;animation:fb-final 1.5s ease-in-out infinite}
+@keyframes fb-final{50%{box-shadow:inset 0 1px 0 #d9f4e51a,inset 0 0 90px #3a120b66,0 0 26px #f6957533,0 18px 40px #0004}}
+.fb-root[data-phase=final] .fb-badge{color:#ffb59b;border-color:#f6957566}
+.fb-root[data-won=true] .fb-stage{border-color:#e7c27b88;box-shadow:inset 0 1px 0 #f2cb7733,inset 0 0 80px #3a2d0c55,0 0 32px #e7c27b33,0 18px 40px #0004}
+
+.fb-moment{position:relative}
+.fb-root[data-phase=idle] .fb-moment strong{animation:fb-rise-idle .5s ease-out}
+.fb-root[data-phase=live] .fb-moment strong{animation:fb-rise-live .45s ease-out}
+.fb-root[data-phase=final] .fb-moment strong{animation:fb-rise-final .5s cubic-bezier(.2,1.5,.4,1);color:#ffd2c2}
+.fb-root[data-phase=done] .fb-moment strong{animation:fb-rise-done .7s cubic-bezier(.2,1.5,.4,1)}
+.fb-root[data-phase=final] .fb-moment>span:first-child{color:#ffb59b}
+.fb-root[data-won=true] .fb-moment strong{text-shadow:0 0 18px #e7c27b88;background:linear-gradient(100deg,#e7c27b 20%,#fff3cf 45%,#e7c27b 70%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:fb-rise-done .7s cubic-bezier(.2,1.5,.4,1),fb-shine 2.4s linear .7s infinite}
+.fb-root[data-won=true] .fb-moment>span:last-child{color:#f2d69f;font-weight:700}
+@keyframes fb-rise-idle{from{opacity:0;transform:translateY(6px)}}
+@keyframes fb-rise-live{from{opacity:0;transform:translateY(8px)}}
+@keyframes fb-rise-final{from{opacity:0;transform:scale(.7)}}
+@keyframes fb-rise-done{from{opacity:0;transform:scale(.6)}}
+@keyframes fb-shine{to{background-position:-220% 0}}
+
+.fb-ticker span{transition:opacity .3s}
+.fb-ticker span.fb-fresh{opacity:1;animation:fb-chip .55s cubic-bezier(.2,1.6,.4,1)}
+.fb-ticker span.fb-fresh img{box-shadow:0 0 0 1px #f69575,0 0 10px #f6957588}
+@keyframes fb-chip{0%{transform:translateY(-14px) scale(1.8) rotate(-12deg);opacity:0}60%{opacity:1}100%{transform:none}}
+
+.fb-countries button,.fb-modes button{transition:transform .16s ease,border-color .2s,background .2s,box-shadow .2s}
+.fb-countries button:hover:enabled,.fb-modes button:hover:enabled{transform:translateY(-2px);border-color:#74d8b777;background:#24474655;box-shadow:0 6px 14px #0004}
+.fb-countries button img{transition:transform .2s;box-shadow:0 1px 3px #0006}
+.fb-countries button:hover:enabled img{transform:scale(1.08)}
+.fb-countries button[aria-pressed=true],.fb-modes button[aria-pressed=true]{box-shadow:inset 0 0 0 1px #d3b27144,0 0 16px #e7c27b2e}
+.fb-countries button[aria-pressed=true] img{transform:scale(1.1);box-shadow:0 0 0 1px #e7c27b,0 2px 8px #0006}
+
+.fb-play{position:relative;overflow:hidden;background:linear-gradient(180deg,#f4d598 0%,#e7c27b 55%,#d8ae5f 100%);box-shadow:0 6px 20px #e7c27b33,inset 0 1px 0 #fff6;transition:transform .15s,box-shadow .2s,filter .2s}
+.fb-play::after{content:'';position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,transparent,#ffffff8c,transparent);transform:skewX(-18deg);animation:fb-sweep 3.2s ease-in-out infinite}
+.fb-play:hover:enabled{background:linear-gradient(180deg,#fbe2ad 0%,#f0cd8a 55%,#e0b96b 100%);transform:translateY(-1px);box-shadow:0 10px 26px #e7c27b4d,inset 0 1px 0 #fff8}
+.fb-play:active:enabled{transform:translateY(1px)}
+.fb-play:disabled::after{display:none}
+@keyframes fb-sweep{0%,55%{left:-40%}100%{left:130%}}
+.fb-quote b{transition:color .2s}
+.fb-root[data-won=true] .fb-quote b{color:var(--fb-gold)}
+
+@media(prefers-reduced-motion:reduce){
+  .fb-root *,.fb-root *::before,.fb-root *::after{animation:none!important;transition:none!important}
+  .fb-root[data-won=true] .fb-moment strong{color:var(--fb-gold);background:none}
+}
