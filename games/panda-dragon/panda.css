@@ -474,9 +474,10 @@
   transform-origin: bottom center;
   transition: opacity 0.08s;
 }
-/* Каждая поза оживает своей анимацией: шаг, замах, удар, протянутая лапа, прыжок. */
+/* Каждая поза оживает своей анимацией: бег, замах, удар, протянутая лапа, победа. */
 .panda-hero-stage[data-action="spin"] .panda-hero {
-  animation: panda-tiptoe 0.92s ease-in-out infinite;
+  /* Бег уже внутри кадра: это анимированный WebP на 120 кадров, сдвигать его нельзя. */
+  animation: none;
 }
 .panda-hero-stage[data-action="charge"] .panda-hero {
   animation: panda-windup 0.32s ease-in-out infinite alternate;
@@ -866,29 +867,6 @@
     transform: translateX(4px) rotate(0.4deg);
   }
 }
-@keyframes panda-tiptoe {
-  0% {
-    transform: translateX(-10px) translateY(0) rotate(-2deg) scale(1, 1);
-  }
-  12% {
-    transform: translateX(-7px) translateY(2px) rotate(-1deg) scale(1.02, 0.97);
-  }
-  30% {
-    transform: translateX(0) translateY(-17px) rotate(3deg) scale(0.99, 1.02);
-  }
-  50% {
-    transform: translateX(22px) translateY(0) rotate(3deg) scale(1, 1);
-  }
-  62% {
-    transform: translateX(7px) translateY(2px) rotate(1deg) scale(1.02, 0.97);
-  }
-  80% {
-    transform: translateX(0) translateY(-17px) rotate(-3deg) scale(0.99, 1.02);
-  }
-  100% {
-    transform: translateX(-22px) translateY(0) rotate(-3deg) scale(1, 1);
-  }
-}
 /* Замах: мастер отводит посох назад и собирается с силой. */
 @keyframes panda-windup {
   from {
@@ -908,14 +886,14 @@
     transform: translateX(8px) rotate(-1.5deg);
   }
 }
-/* Победа: прыжок с поднятыми лапами. */
+/* Победа: мастер уже в прыжке, остаётся лёгкое покачивание. */
 @keyframes panda-cheer {
   0%,
   100% {
     transform: translateY(0) scale(1, 1);
   }
   45% {
-    transform: translateY(-14px) scale(1.03, 0.99);
+    transform: translateY(-6px) scale(1.02, 0.99);
   }
 }
 

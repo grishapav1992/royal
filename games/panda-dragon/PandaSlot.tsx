@@ -9,7 +9,7 @@ import { paylineCells } from "../../templates/slot-primitive/src/paylines.ts";
 import { PANDA_LAYOUT, SYMBOLS } from "./layout";
 import type { PandaView } from "./PandaView";
 import type { PandaState } from "./mountPanda";
-import { heroActionPose, heroClips, heroImages, symbolImages } from "./assets";
+import { heroClips, heroImages, symbolImages } from "./assets";
 import { usePandaBelt } from "./usePandaBelt";
 import { GameInfo, RoundDetails } from "./GameInfo";
 import { StakeControl } from "./StakeControl";
@@ -572,7 +572,7 @@ function HeroPanel({
   const images = heroImages[belt];
   // Клип, если он есть, заменяет статичную позу: анимация внутри кадра, а не поверх.
   const clip = heroClips[belt]?.[action];
-  const source = clip ?? images[heroActionPose[action]];
+  const source = clip ?? images[action];
   const stageRef = useRef<HTMLDivElement>(null);
   useImpactShake(stageRef, impact, reducedMotion, HERO_RECOIL, RECOIL_OPTIONS);
   return (
