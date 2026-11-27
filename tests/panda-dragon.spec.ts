@@ -276,6 +276,56 @@ test('пояс меняется после результата и пережи�
   await expect(mini.getByRole('button', { name: 'Вращать' })).toBeEnabled();
 });
 
+test('путь пояса, счётчик свитков и удар посоха показываются игроку', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await enterRoyal(page);
+  await page.route('**/api/dragon-path-progress', route => route.fulfill({ json: { completedRounds: 0 } }));
+  // Поле 5×5: вторая линия даёт пять тигров, два свитка в углах считаются к бонусу.
+  const tickets = [5, 9, 31, 22, 0, 9, 14, 22, 31, 41, 14, 14, 14, 14, 14, 22, 31, 41, 5, 9, 0, 41, 5, 9, 14];
+  await page.route('**/api/demo-wallet/expansion', async route => {
+    if (route.request().method() !== 'POST') return route.continue();
+    const op = route.request().postDataJSON();
+    if (op.gameId !== gameId || op.action !== 'start') return route.continue();
+    let i = 0;
+    const result = startDragonPath(op.stakeUnits, () => tickets[i++ % tickets.length]);
+    const precision = makeRoundPrecision(dragonPathFinalAward(result.round), result.baseCreditUnits, () => 0);
+    const wallet = { balance: (4990 + Number(precision.creditedUnits)) / 100, entries: [] };
+    const session = { id: op.id, gameId, rulesVersion: 1, state: 'settled', stakeUnits: op.stakeUnits,
+      spentUnits: op.stakeUnits, returnedUnits: precision.creditedUnits, view: dragonPathExpansionView(result), precision };
+    await route.fulfill({ json: { wallet, session, sessions: [session], replayed: false } });
+  });
+  const mini = await openDragonPath(page);
+  // Путь мастера: четыре ступени, текущая подсвечена, цель считается до следующей.
+  const path = mini.locator('.panda-path');
+  await expect(path.locator('i')).toHaveCount(4);
+  await expect(path.locator('i[data-state="current"]')).toHaveCount(1);
+  await expect(mini.locator('.panda-belt')).toContainText('Зелёный пояс');
+  await expect(mini.locator('.panda-belt')).toContainText('До следующего пояса: 10');
+  // Счётчик свитков показывает, сколько знаков осталось до бонуса.
+  const meter = mini.locator('.panda-scroll-meter');
+  await expect(meter.locator('.panda-scroll-pips i')).toHaveCount(3);
+  await expect(meter).toHaveAttribute('data-state', 'none');
+  await mini.getByRole('button', { name: 'Вращать' }).click();
+  // Мастер отмечает выигрышную линию ударом посоха.
+  const strike = mini.locator('.panda-strike-label');
+  await expect(strike).toBeVisible();
+  expect(await strike.textContent()).toBe('Линия 1 · удар 1 из 1');
+  // Два свитка на поле: до бонуса не хватает одного знака.
+  await expect(meter).toHaveAttribute('data-state', 'near');
+  await expect(meter.locator('.panda-scroll-pips i[data-on]')).toHaveCount(2);
+  // Выигрыш показан вместе с множителем раунда.
+  await expect(mini.locator('.panda-mult')).toHaveText(/^×/);
+  await expect(mini.locator('.panda-stat-win')).toHaveAttribute('data-tier', 'large');
+  // Барабан останавливается с отдачей, поле остаётся квадратным.
+  await expect(mini.locator('.panda-reel-hit')).toHaveCount(5);
+  const grid = await mini.getByRole('group', { name: 'Барабаны' }).boundingBox();
+  expect(Math.abs(grid!.height - grid!.width)).toBeLessThanOrEqual(1);
+  // Мастер стоит на одной линии с нижним краем поля.
+  const hero = await mini.locator('.panda-hero-stage').boundingBox();
+  const frame = await mini.locator('.panda-frame').boundingBox();
+  expect(Math.abs(hero!.y + hero!.height - (frame!.y + frame!.height))).toBeLessThanOrEqual(2);
+});
+
 test('отказ по балансу остаётся видим после обновления кошелька', async ({ page }) => {
   await enterRoyal(page, 'ru', false);
   const mini = await openDragonPath(page);

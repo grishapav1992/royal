@@ -1,6 +1,7 @@
 import type { GameHostV1 } from '../../src/modules/GameHostContract';
 
-type Sfx = "click" | "spin" | "stop" | "strike" | "win" | "bigwin" | "bonus" | "loss" | "partial" | "return";
+type Sfx = "click" | "spin" | "stop" | "strike" | "win" | "bigwin" | "bonus" | "loss" | "partial" | "return"
+  | "whoosh" | "clink" | "spark" | "charge";
 
 function makeReverb(a: AudioContext) {
   const seconds = 2.8;
@@ -189,15 +190,40 @@ export function createPandaAudio(host: GameHostV1['gameAudio']) {
         noise(t, 0.45, 0.18, 300, 1800);
         pluck(hz(0), t, 0.2);
         pluck(hz(7), t + 0.06, 0.15);
+        // Быстрая дробь: раунд начинается с напором, а не с тихого щелчка.
+        [0, 0.09, 0.18].forEach((offset, index) => drum(t + offset, 140 + index * 26, 0.16 + index * 0.05, sfxBus, 0.14));
         break;
       case "stop":
         drum(t, 180, 0.22, sfxBus, 0.12);
         pluck(hz(-12 + ([0, 2, 4, 7, 9][Math.floor((t * 7) % 5)] ?? 0)), t, 0.12);
+        // Металлический отскок барабана о край ленты.
+        bell(1320, t + 0.01, 0.045, 0.5);
+        noise(t, 0.07, 0.09, 2600, 5200, "highpass");
         break;
       case "strike":
         noise(t, 0.22, 0.35, 1200, 7000, "highpass"); // свист замаха
         drum(t + 0.16, 140, 0.55, sfxBus, 0.25); // удар
         bell(880, t + 0.18, 0.06, 1.2); // звон разреза
+        // Искры от клинка: короткий металлический выброс поверх удара.
+        noise(t + 0.17, 0.11, 0.14, 3200, 9000, "highpass");
+        bell(1760, t + 0.18, 0.035, 0.45);
+        break;
+      case "whoosh":
+        // Свист замаха перед ударом посоха.
+        noise(t, 0.34, 0.22, 500, 4200);
+        break;
+      case "charge":
+        // Нарастающее напряжение перед последним барабаном.
+        noise(t, 0.5, 0.12, 180, 2400);
+        drum(t, 62, 0.26, sfxBus, 0.5);
+        break;
+      case "clink":
+        bell(1560, t, 0.05, 0.6);
+        noise(t, 0.06, 0.08, 3000, 6400, "highpass");
+        break;
+      case "spark":
+        noise(t, 0.13, 0.16, 3400, 9500, "highpass");
+        bell(2100, t + 0.01, 0.045, 0.4);
         break;
       case "win":
         [0, 4, 7, 12].forEach((s, i) => pluck(hz(s + 12), t + i * 0.1, 0.3));

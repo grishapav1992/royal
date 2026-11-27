@@ -27,7 +27,7 @@
   --lacquer: oklch(0.32 0.07 205);
   --lacquer-deep: oklch(0.16 0.05 205);
   --gradient-gold: linear-gradient(
-    180deg,
+    30deg,
     oklch(0.92 0.12 92),
     oklch(0.78 0.15 75) 55%,
     oklch(0.6 0.13 60)
@@ -117,27 +117,49 @@
   outline-offset: 2px;
 }
 
+/* Игровое поле и пульт: одна колонка, герой появляется рядом с полем. */
 .panda-game {
   display: grid;
-  gap: clamp(10px, 2cqw, 22px);
-  align-items: center;
   justify-content: center;
-  grid-template-columns: minmax(0, min(var(--panda-field-limit), 100%));
+  align-items: start;
+  gap: 0;
+  grid-template-columns: minmax(0, min(calc(var(--panda-field-limit) + var(--panda-hero-width) + var(--panda-column-gap)), 100%));
+  --panda-hero-width: 0px;
+  --panda-column-gap: 0px;
 }
 .panda-icon-btn.panda-hero-toggle { display: none; }
 @container panda (min-width: 680px) {
   .panda-game:not([data-hero="off"]) {
-    grid-template-columns: minmax(0, min(24cqw, 230px)) minmax(0, min(var(--panda-field-limit), 70cqw));
+    --panda-hero-width: clamp(118px, 17cqw, 224px);
+    --panda-column-gap: clamp(8px, 1.4cqw, 18px);
   }
   .panda-icon-btn.panda-hero-toggle { display: grid; }
 }
+.panda-game[data-hero="off"] {
+  --panda-hero-width: 0px;
+  --panda-column-gap: 0px;
+}
+
+/* Доска: шапка, поле с героем, пульт и строка состояния. */
 .panda-board {
   container: panda-board / inline-size;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(5px, 1.15cqw, 10px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--panda-hero-width);
+  grid-template-areas:
+    "topbar topbar"
+    "field   hero"
+    "console console"
+    "status  status";
+  align-items: start;
+  column-gap: var(--panda-column-gap);
+  row-gap: clamp(5px, 1.15cqw, 10px);
   min-width: 0;
 }
+.panda-topbar { grid-area: topbar; }
+.panda-frame { grid-area: field; }
+.panda-hero-wrap { grid-area: hero; }
+.panda-bar { grid-area: console; }
+.panda-feedback { grid-area: status; }
 
 .panda-topbar {
   display: flex;
@@ -145,13 +167,22 @@
   justify-content: space-between;
   gap: 0.75rem;
 }
-.panda-topbar h1 {
+.panda-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.1rem 0.55rem;
+  min-width: 0;
+}
+.panda-heading h1 {
+  margin: 0;
   font-size: clamp(1.4rem, 5vw, 2.2rem);
   line-height: 1;
   text-shadow:
     0 2px 0 var(--gold-deep),
     0 4px 14px oklch(0.1 0.04 205);
 }
+.panda-mode { grid-column: 2; color: var(--muted-foreground); font-size: 0.75rem; }
 .panda-icon-btn {
   display: grid;
   place-items: center;
@@ -184,6 +215,33 @@
 .panda-frame[data-celebrate] {
   animation: panda-shake 0.5s ease-in-out 2;
 }
+.panda-frame[data-tier="medium"] {
+  box-shadow:
+    0 24px 60px oklch(0.1 0.04 205 / 70%),
+    inset 0 2px 0 oklch(1 0 0 / 40%),
+    0 0 26px oklch(0.83 0.14 82 / 35%);
+}
+.panda-frame[data-tier="large"],
+.panda-frame[data-tier="epic"] {
+  box-shadow:
+    0 24px 60px oklch(0.1 0.04 205 / 70%),
+    inset 0 2px 0 oklch(1 0 0 / 40%),
+    0 0 44px oklch(0.86 0.15 84 / 60%);
+}
+/* Вспышка в момент удара: короткая и не закрывающая поле. */
+.panda-impact {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  border-radius: inherit;
+  animation: panda-impact-flash 0.36s ease-out both;
+}
+@keyframes panda-impact-flash {
+  0% { background: oklch(0.99 0.03 90 / 26%); }
+  45% { background: oklch(0.99 0.03 90 / 6%); }
+  100% { background: transparent; }
+}
 .panda-grid {
   --gap: clamp(2px, 0.65cqw, 6px);
   position: relative;
@@ -207,6 +265,16 @@
     inset 0 10px 12px -8px oklch(0.05 0.02 205 / 90%),
     inset 0 -10px 12px -8px oklch(0.05 0.02 205 / 90%);
 }
+.panda-reel[data-charge] {
+  box-shadow:
+    inset 0 10px 12px -8px oklch(0.05 0.02 205 / 90%),
+    inset 0 -10px 12px -8px oklch(0.05 0.02 205 / 90%),
+    inset 0 0 22px oklch(0.86 0.15 84 / 45%);
+  animation: panda-charge-glow 0.34s ease-in-out infinite alternate;
+}
+@keyframes panda-charge-glow {
+  to { box-shadow: inset 0 0 30px oklch(0.88 0.16 86 / 70%); }
+}
 .panda-column,
 .panda-strip {
   display: grid;
@@ -222,6 +290,20 @@
 }
 .panda-column[data-landed] {
   animation: panda-land 0.42s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+/* Удар барабана о край: волна снизу вверх. */
+.panda-reel-hit {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 100%, oklch(1 0 0 / 55%), transparent 72%);
+  animation: panda-reel-hit 0.44s ease-out both;
+}
+@keyframes panda-reel-hit {
+  0% { opacity: .85; transform: scaleY(.35); }
+  100% { opacity: 0; transform: scaleY(1.15); }
 }
 
 .panda-cell {
@@ -341,7 +423,8 @@
   z-index: 5;
   text-align: center;
   display: grid;
-  place-items: center;
+  place-content: center;
+  gap: 0.35rem;
   pointer-events: none;
   background: radial-gradient(circle, oklch(0.85 0.16 85 / 35%), transparent 65%);
 }
@@ -354,12 +437,20 @@
     0 0 30px oklch(0.85 0.16 85);
   animation: panda-pop 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both;
 }
+.panda-bigwin small {
+  font: 700 clamp(1.1rem, 3.4vw, 1.8rem)/1 var(--font-display);
+  color: oklch(0.99 0.03 90);
+  text-shadow: 0 2px 0 var(--gold-deep), 0 0 18px oklch(0.85 0.16 85);
+  animation: panda-pop 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) 0.12s both;
+}
 
 /* Персонаж */
 .panda-hero-wrap {
   display: none;
   align-items: center;
   gap: 0.5rem;
+  align-self: end;
+  min-width: 0;
 }
 @container panda (min-width: 680px) {
   .panda-hero-wrap {
@@ -394,16 +485,19 @@
   bottom: 0;
   opacity: 0;
 }
-.panda-hero-stage[data-tiptoe]:not([data-striking]) .panda-hero:not(.panda-hero-tiptoe) {
-  opacity: 0;
-}
-.panda-hero-stage[data-tiptoe]:not([data-striking]) .panda-hero-tiptoe {
+.panda-hero-stage[data-action="spin"] .panda-hero:not(.panda-hero-tiptoe) { opacity: 0; }
+.panda-hero-stage[data-action="spin"] .panda-hero-tiptoe {
   opacity: 1;
+  animation: panda-tiptoe 0.92s ease-in-out infinite;
 }
-.panda-hero-stage[data-striking] .panda-hero:not(.panda-hero-strike) {
-  opacity: 0;
+/* Заминка перед последним барабаном: панда собирается с силой. */
+.panda-hero-stage[data-action="charge"] .panda-hero:not(.panda-hero-tiptoe) { opacity: 0; }
+.panda-hero-stage[data-action="charge"] .panda-hero-tiptoe {
+  opacity: 1;
+  animation: panda-charge 0.26s ease-in-out infinite alternate;
 }
-.panda-hero-stage[data-striking] .panda-hero-strike {
+.panda-hero-stage[data-action="strike"] .panda-hero:not(.panda-hero-strike) { opacity: 0; }
+.panda-hero-stage[data-action="strike"] .panda-hero-strike {
   opacity: 1;
   animation: panda-lunge 0.42s ease-out both;
 }
@@ -413,15 +507,29 @@
 .panda-hero:is([data-mood="win"], [data-mood="bigwin"], [data-mood="bonus"]) {
   animation: panda-jump 0.7s ease-out 1;
 }
+/* Победа: мягкое свечение вокруг мастера. */
+.panda-hero-wrap[data-action="win"] .panda-hero-stage::after {
+  content: '';
+  position: absolute;
+  inset: -8% -14% 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 78%, oklch(0.86 0.15 84 / 38%), transparent 62%);
+  animation: panda-aura 1.6s ease-in-out infinite alternate;
+}
+@keyframes panda-aura {
+  to { opacity: .55; transform: scale(1.06); }
+}
 /* Посох проходит вдоль линии выигрыша, следом рисуется зачёркивание. */
 .panda-bubble {
   position: relative;
+  margin: 0;
   padding: 0.5rem 0.9rem;
   border-radius: var(--radius-xl);
   background: var(--foreground);
   color: var(--primary-foreground);
   font-weight: 700;
   font-size: 1rem;
+  text-align: center;
   box-shadow: 0 8px 20px oklch(0.1 0.04 205 / 60%);
 }
 .panda-bubble:is([data-mood="win"], [data-mood="bigwin"]) {
@@ -437,17 +545,28 @@
 .panda-choice {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem;
+  gap: 0.6rem;
+  padding: 0.5rem;
   border-radius: var(--radius-md);
   cursor: pointer;
   border: 1px solid var(--border);
   background: var(--muted);
   font-size: 0.9rem;
+  text-align: start;
 }
 .panda-choice:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
+}
+.panda-choice-text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.panda-choice-name { font-weight: 650; }
+.panda-choice-note {
+  font: 0.72rem/1.2 system-ui, sans-serif;
+  color: var(--muted-foreground);
 }
 
 /* Нижняя панель */
@@ -464,7 +583,7 @@
 }
 .panda-console {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content 6.35rem;
+  grid-template-columns: minmax(0, 1fr) max-content minmax(6.4rem, 7rem);
   grid-template-areas: 'totals stake play';
   align-items: center;
   gap: clamp(6px, 1.6cqw, 14px);
@@ -485,6 +604,33 @@
   font: 700 clamp(0.95rem, 3.4cqw, 1.22rem)/1.15 var(--font-display);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
+}
+.panda-stat-win dd {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.35rem;
+}
+.panda-mult {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  padding: 0.05rem 0.42rem;
+  border-radius: 999px;
+  background: oklch(0.83 0.14 82 / 16%);
+  border: 1px solid oklch(0.83 0.14 82 / 45%);
+  color: var(--gold);
+  font: 700 0.74rem/1.5 var(--font-display);
+  white-space: nowrap;
+}
+.panda-mult[data-tier="medium"] {
+  background: oklch(0.83 0.14 82 / 28%);
+}
+.panda-mult[data-tier="large"],
+.panda-mult[data-tier="epic"] {
+  background: var(--gradient-gold);
+  color: var(--primary-foreground);
+  border-color: var(--gold-deep);
 }
 .panda-stake {
   grid-area: stake;
@@ -719,6 +865,14 @@
     transform: translateX(-22px) translateY(0) rotate(-3deg) scale(1, 1);
   }
 }
+@keyframes panda-charge {
+  from {
+    transform: translateY(0) scale(1, 1);
+  }
+  to {
+    transform: translateY(-5px) scale(1.03, 0.97);
+  }
+}
 @keyframes panda-bob {
   50% {
     transform: translateY(-5px) rotate(-1deg);
@@ -793,14 +947,15 @@
 }
 
 .panda-topbar h1, .panda-reward-title { font-family: var(--font-display); color: var(--primary); }
-.panda-mode { color: var(--muted-foreground); font-size: 0.75rem; }
+/* Пояс мастера: ступени пути и цель до следующего пояса. */
 .panda-belt {
   --panda-belt-color: #64ac86;
+  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: .1em .55em;
-  padding-block-start: .18rem;
+  gap: .2em .55em;
+  padding-block-start: .22rem;
   color: #f5e4c5;
   font: 650 .75rem/1.15 system-ui, sans-serif;
   text-shadow: 0 1px 3px #142220;
@@ -808,14 +963,36 @@
 .panda-belt[data-belt="blue"] { --panda-belt-color: #72acd9; }
 .panda-belt[data-belt="red"] { --panda-belt-color: #d67759; }
 .panda-belt[data-belt="black"] { --panda-belt-color: #25282b; }
-.panda-belt > span { display: inline-flex; align-items: center; gap: .35em; }
-.panda-belt > span::before {
+.panda-belt-name { display: inline-flex; align-items: center; gap: .35em; }
+.panda-belt-name::before {
   content: '';
   width: .85em;
   height: .5em;
   background: var(--panda-belt-color);
   border: 1px solid #c9b588;
   transform: skewX(-12deg);
+}
+/* Путь мастера: пройденные пояса, текущий и грядущие ступени. */
+.panda-path {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.panda-path i {
+  width: 1.5em;
+  height: .32em;
+  border-radius: 999px;
+  background: oklch(0.83 0.14 82 / 16%);
+  border: 1px solid oklch(0.83 0.14 82 / 30%);
+}
+.panda-path i[data-state="done"] {
+  background: var(--gold-deep);
+  border-color: var(--gold);
+}
+.panda-path i[data-state="current"] {
+  background: linear-gradient(90deg, var(--gold) var(--part, 0%), oklch(0.83 0.14 82 / 16%) 0);
+  border-color: var(--gold);
+  box-shadow: 0 0 8px oklch(0.85 0.16 85 / 55%);
 }
 .panda-belt small { color: #e8d7b5; font-size: .94em; font-weight: 500; }
 .panda-belt-notice { margin: 0; color: #efe0c0; }
@@ -828,22 +1005,90 @@
 .panda-stake-presets:disabled { opacity: 0.45; }
 .panda-round-totals { display: grid; grid-template-columns: 1fr auto; gap: 0.4rem 1rem; }
 .panda-round-totals dd { margin: 0; color: var(--gold); font-variant-numeric: tabular-nums; }
-.panda-choice-image { width: 2.5rem; height: 2.5rem; border-radius: 0.375rem; }
+.panda-choice-image { width: 2.5rem; height: 2.5rem; border-radius: 0.375rem; flex: none; }
 .panda-feedback { min-height: 2.5em; font: 0.85rem/1.25 system-ui, sans-serif; text-align: center; }
 .panda-status, .panda-error { margin: 0; overflow-wrap: anywhere; }
 .panda-status { color: var(--gold); }
 .panda-error { color: var(--destructive-soft); }
+/* Лента бонуса: свободное вращение и множитель. */
 .panda-bonus-ribbon {
   position: absolute;
   inset: 0.65rem 0.65rem auto;
   z-index: 7;
-  padding: 0.3rem 0.5rem;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.panda-bonus-ribbon span {
+  padding: 0.3rem 0.75rem;
   border-radius: var(--radius-md);
   background: var(--lacquer-deep);
+  border: 1px solid var(--gold);
   color: var(--gold);
   font-size: 0.8rem;
   text-align: center;
+  box-shadow: 0 6px 16px oklch(0.1 0.04 205 / 60%);
+  animation: panda-ribbon-in 0.32s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+@keyframes panda-ribbon-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Подпись текущего удара посоха. */
+.panda-strike-label {
+  position: absolute;
+  inset: auto 0.6rem 0.6rem auto;
+  z-index: 4;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  background: oklch(0.16 0.05 205 / 84%);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font: 700 0.76rem/1.2 system-ui, sans-serif;
   pointer-events: none;
+  animation: panda-pop 0.26s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+/* Путь к бонусу: собрано свитков из трёх. */
+.panda-scroll-meter {
+  position: absolute;
+  inset: auto auto 0.6rem 0.6rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: oklch(0.16 0.05 205 / 80%);
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 16px oklch(0.1 0.04 205 / 55%);
+  color: var(--muted-foreground);
+  font: 600 0.72rem/1 system-ui, sans-serif;
+  pointer-events: none;
+}
+.panda-scroll-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 0.25rem;
+  flex: none;
+}
+.panda-scroll-pips { display: inline-flex; gap: 3px; }
+.panda-scroll-pips i {
+  width: 0.44rem;
+  height: 0.44rem;
+  border-radius: 50%;
+  background: oklch(0.83 0.14 82 / 20%);
+  border: 1px solid oklch(0.83 0.14 82 / 40%);
+}
+.panda-scroll-pips i[data-on] {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 6px var(--gold);
+}
+.panda-scroll-meter[data-state="near"] { border-color: var(--gold-deep); color: #e8d7b5; }
+.panda-scroll-meter[data-state="ready"] {
+  border-color: var(--gold);
+  color: var(--gold);
+  animation: panda-pulse 1.1s ease-in-out infinite;
 }
 .panda-cut[data-static] polyline { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; opacity: .85; }
 .panda-info { width: min(36rem, calc(100% - 1.5rem)); max-height: 85dvh; padding: 1rem; color: var(--foreground); }
@@ -887,10 +1132,15 @@
 @container panda-board (max-width: 450px) {
   .panda-topbar h1 { font-size: clamp(1.1rem, 5cqw, 1.4rem); }
   .panda-topbar, .panda-topbar-actions { gap: 0.35rem; }
-  .panda-mode { display: block; }
+  .panda-mode { display: block; grid-column: 1 / -1; }
+  .panda-belt { padding-block-start: .1rem; }
 }
 @container panda (min-width: 500px) and (max-height: 570px) {
-  .panda-game:not([data-hero="off"]), .panda-game { grid-template-columns: minmax(0, min(780px, 100%)); }
+  .panda-game:not([data-hero="off"]), .panda-game {
+    --panda-hero-width: 0px;
+    --panda-column-gap: 0px;
+    grid-template-columns: minmax(0, min(780px, 100%));
+  }
   .panda-game .panda-icon-btn.panda-hero-toggle, .panda-game .panda-hero-wrap { display: none; }
   .panda-board {
     display: grid;
@@ -907,6 +1157,9 @@
   .panda-frame { grid-area: field; align-self: start; width: 100%; }
   .panda-bar { grid-area: controls; }
   .panda-feedback { grid-area: status; align-self: start; }
+  /* В низком окне путь пояса уступает место названию: остаётся текущая ступень. */
+  .panda-belt { padding-block-start: 0; }
+  .panda-path, .panda-belt small { display: none; }
 }
 @container panda (500px <= width <= 610px) and (max-height: 570px) {
   .panda-board { grid-template-columns: min(43%, 100cqh) minmax(0, 1fr); }
@@ -917,4 +1170,5 @@
 @container panda (max-width: 350px) {
   .panda-choices { gap: 0.35rem; padding-inline: 0.35rem; }
   .panda-choice { flex-direction: column; justify-content: center; }
+  .panda-scroll-text { display: none; }
 }
