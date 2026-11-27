@@ -1,0 +1,268 @@
+{
+ "format": 1,
+ "productionCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+ "moduleGames": [
+  "wild-nudge"
+ ],
+ "moduleContracts": {
+  "studio-wild-nudge": {
+   "apiVersion": 1,
+   "rulesVersion": 2,
+   "progressVersion": 1
+  }
+ },
+ "moduleAssets": {
+  "public/assets/wild-nudge/background.webp": "08da069a40ecd93db5ea3698f561b31fc6478f92f139f8117a5fa9aff89171fb",
+  "public/assets/wild-nudge/characters/aeliri-rive.json": "fa036e2a1fecf47875b1f361143daa23b0b60cb6624074480b98be49f2ed8dbb",
+  "public/assets/wild-nudge/characters/aeliri.webp": "1db152e1e067a5545480c17857ac6fae9edf6d2877a154a0d7aecaa02b68207e",
+  "public/assets/wild-nudge/characters/lyra-rive.json": "f4c917291389f3ab712133e0da4176ccee435feea88e9e136e36217264fe199a",
+  "public/assets/wild-nudge/characters/lyra.webp": "bd61ed5a356ed4a64a5777bf3cd75dd8f3867d0c7ff11399e1107ab7040d63ea",
+  "public/assets/wild-nudge/characters/nyxara-rive.json": "f1eff64dc71669616892c069637704ae96bec69908ea3e2fa764773273489718",
+  "public/assets/wild-nudge/characters/nyxara.webp": "0bd85ec325898d6653cd965ffdc45661b7c246b9e5db63b84fb17b6745b0cf2f",
+  "public/assets/wild-nudge/characters/rive-runtime.json": "53d7a6fde857630ef2368df86afa57a1c53e98a7ee633d8b878703ba3ea2b809",
+  "public/assets/wild-nudge/characters/vespera-rive.json": "e43390097d90e245efa477a4e626a95defd7a142f9281dadeb076bdb83b8b0b1",
+  "public/assets/wild-nudge/characters/vespera.webp": "ce383b93698909c9cb9205811976033326abfec1d0713f6b65ee00b85f5bda2e",
+  "public/assets/wild-nudge/cover.webp": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
+  "public/assets/wild-nudge/score.wav": "282b5a2b358905645e3741d7d6ec198f07e391262f57430ac8ebc4d27cd875d2",
+  "public/assets/wild-nudge/symbol-0.webp": "4818486e2fcfa37fd7eec9804026fa4336e45821f95611d1fb4cd9152e143065",
+  "public/assets/wild-nudge/symbol-1.webp": "9df6f55cdc45fe27152099d1e093bc103bb4c8d89472d53c7da0cfdbee08b275",
+  "public/assets/wild-nudge/symbol-2.webp": "41043b4d4b7c82948db8557921e6681dd88ae656101b30a4dd567583be446cb9",
+  "public/assets/wild-nudge/symbol-3.webp": "40e59f13410534a6cff7fe468e75e64e1f84f0a7b636c7def5cff7ec90d2b929",
+  "public/assets/wild-nudge/symbol-4.webp": "47983bd14981cd900c542370c6c2ad3438a6ccdbbce0831c307078414103caf2",
+  "public/assets/wild-nudge/symbol-5.webp": "012e71be56c422c1b3ccef61d1cb27de356ad3ecb84fcf98dd4dd0ec27467ff6",
+  "public/assets/wild-nudge/symbol-6.webp": "733ee68cc2704841d1ec941d11de5d8d6e051661d203582279a403327fc406d1",
+  "public/assets/wild-nudge/symbol-7.webp": "fe2d129f02f2b3cd7559b0a0f1eb074f13a17910637163632164b0ba9ebfc70b"
+ },
+ "files": {
+  "games/wild-nudge/GalacticAudio.ts": {
+   "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
+   "path": "games/wild-nudge/GalacticAudio.ts",
+   "baseSha256": "d0989ca101b85f4848c9fb5be5ab541aebcaa19afc6a58ccbf6b64f7a288ce87",
+   "sha256": "d0989ca101b85f4848c9fb5be5ab541aebcaa19afc6a58ccbf6b64f7a288ce87"
+  },
+  "games/wild-nudge/GalacticReactorUI.ts": {
+   "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
+   "path": "games/wild-nudge/GalacticReactorUI.ts",
+   "baseSha256": "48bfd38d143e9d0dda1e669bd95fef7d66f34bb8fdddbbb617d110a92ecc6aee",
+   "sha256": "48bfd38d143e9d0dda1e669bd95fef7d66f34bb8fdddbbb617d110a92ecc6aee"
+  },
+  "games/wild-nudge/StarSpinCharacter.ts": {
+   "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
+   "path": "games/wild-nudge/StarSpinCharacter.ts",
+   "baseSha256": "af665a3bf2b89c5727773868656fd5513022bc81993d4423a1c098689408b773",
+   "sha256": "af665a3bf2b89c5727773868656fd5513022bc81993d4423a1c098689408b773"
+  },
+  "games/wild-nudge/StarSpinCollection.ts": {
+   "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
+   "path": "games/wild-nudge/StarSpinCollection.ts",
+   "baseSha256": "6d62280c9b659beade713bba8ec5528c87438b530a3c906e3a25abc39faff206",
+   "sha256": "6d62280c9b659beade713bba8ec5528c87438b530a3c906e3a25abc39faff206"
+  },
+  "games/wild-nudge/StarSpinFx.ts": {
+   "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
+   "path": "games/wild-nudge/StarSpinFx.ts",
+   "baseSha256": "aaa4798760decb14f15ac450b81addabe0e6c952856c60bab141876bfa521e08",
+   "sha256": "aaa4798760decb14f15ac450b81addabe0e6c952856c60bab141876bfa521e08"
+  },
+  "games/wild-nudge/StarSpinLayout.ts": {
+   "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
+   "path": "games/wild-nudge/StarSpinLayout.ts",
+   "baseSha256": "d1a9f15598d39376f646f09c2b4d6a6188dcd32de4590fe38fa07fcfa1870dfc",
+   "sha256": "d1a9f15598d39376f646f09c2b4d6a6188dcd32de4590fe38fa07fcfa1870dfc"
+  },
+  "games/wild-nudge/entry.ts": {
+   "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
+   "path": "games/wild-nudge/entry.ts",
+   "baseSha256": "cc7a4613bb668d8425f4fcb516207523e6a917da4e6ab64148ee1312462535bb",
+   "sha256": "cc7a4613bb668d8425f4fcb516207523e6a917da4e6ab64148ee1312462535bb"
+  },
+  "games/wild-nudge/package.json": {
+   "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
+   "path": "games/wild-nudge/package.json",
+   "baseSha256": "f738a8e4b63c0aed106656c5dda67065187b909df9a0e8bbab57c46215bd4030",
+   "sha256": "f738a8e4b63c0aed106656c5dda67065187b909df9a0e8bbab57c46215bd4030"
+  },
+  "games/wild-nudge/reactor.css": {
+   "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
+   "path": "games/wild-nudge/reactor.css",
+   "baseSha256": "a921e226dd687191778ed121b4a0be84b18a38473c0072ce963073aabcfa8566",
+   "sha256": "a921e226dd687191778ed121b4a0be84b18a38473c0072ce963073aabcfa8566"
+  },
+  "games/wild-nudge/tsconfig.json": {
+   "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
+   "path": "games/wild-nudge/tsconfig.json",
+   "baseSha256": "4e89d09f5ce0bfda80d9b75a0a79916e55e831ddfca6c86037d68b3ae2b6eb21",
+   "sha256": "4e89d09f5ce0bfda80d9b75a0a79916e55e831ddfca6c86037d68b3ae2b6eb21"
+  },
+  "src/modules/GameHostContract.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/modules/GameHostContract.ts",
+   "baseSha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0",
+   "sha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0"
+  },
+  "src/modules/GameModuleCatalog.ts": {
+   "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+   "path": "src/modules/GameModuleCatalog.ts",
+   "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+   "sha256": "c30c2056c5e5f4e9de50fb6cc0a022581448512938e6d8eed6d6d1817523c835",
+   "patches": [
+    {
+     "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+     "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+    },
+    {
+     "from": "ion:1},\n] as con",
+     "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+    },
+    {
+     "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+     "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+    },
+    {
+     "from": ":2,",
+     "to": ":3,"
+    },
+    {
+     "from": ":3,",
+     "to": ":4,"
+    },
+    {
+     "from": "export const STUDIO_GAME_MODULES = [\n",
+     "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+    },
+    {
+     "from": "/** Independent client packages",
+     "to": "import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol.ts';\n\n/** Independent client packages"
+    },
+    {
+     "from": "export const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES] as const;",
+     "to": "export const DRAGON_PATH = { gameId: DRAGON_PATH_GAME, slug: 'panda-dragon', apiVersion: 1, rulesVersion: DRAGON_PATH_RULES_VERSION, progressVersion: 2, title: DRAGON_PATH_TITLE } as const;\nexport const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES, DRAGON_PATH] as const;"
+    },
+    {
+     "from": "import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol.ts';",
+     "to": "const DRAGON_PATH_GAME = 'panda-dragon-preview';\nconst DRAGON_PATH_RULES_VERSION = 1;\nconst DRAGON_PATH_TITLE = '\u041f\u0443\u0442\u044c \u0434\u0440\u0430\u043a\u043e\u043d\u0430';"
+    }
+   ]
+  },
+  "src/shared/caribbeanTreasuresMath.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/caribbeanTreasuresMath.ts",
+   "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+   "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+  },
+  "src/shared/dragonPathLayout.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/dragonPathLayout.ts",
+   "baseSha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458",
+   "sha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458"
+  },
+  "src/shared/dragonPathMath.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/dragonPathMath.ts",
+   "baseSha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e",
+   "sha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e"
+  },
+  "src/shared/dragonPathProtocol.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/dragonPathProtocol.ts",
+   "baseSha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca",
+   "sha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca"
+  },
+  "src/shared/dragonPathRound.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/dragonPathRound.ts",
+   "baseSha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794",
+   "sha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794"
+  },
+  "src/shared/forestHeartMath.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/forestHeartMath.ts",
+   "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+   "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+  },
+  "src/shared/gameStakes.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/gameStakes.ts",
+   "baseSha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
+   "sha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b"
+  },
+  "src/shared/neopolisMath.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/neopolisMath.ts",
+   "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+   "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+  },
+  "src/shared/neopolisStakePayouts.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/neopolisStakePayouts.ts",
+   "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+   "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+  },
+  "src/shared/roundPrecision.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/roundPrecision.ts",
+   "baseSha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
+   "sha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870"
+  },
+  "src/shared/starSpinCollection.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/starSpinCollection.ts",
+   "baseSha256": "b58b4347a5b447080b07ec30282a369bb36315071533c0fcdc95c58b8f3e48d1",
+   "sha256": "b58b4347a5b447080b07ec30282a369bb36315071533c0fcdc95c58b8f3e48d1"
+  },
+  "src/shared/walletAccount.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/walletAccount.ts",
+   "baseSha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
+   "sha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560"
+  },
+  "src/shared/wildNudge.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/wildNudge.ts",
+   "baseSha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
+   "sha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624"
+  },
+  "src/shared/wildNudgeData.json": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/wildNudgeData.json",
+   "baseSha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
+   "sha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8"
+  },
+  "src/shared/wildNudgeMath.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/wildNudgeMath.ts",
+   "baseSha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
+   "sha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74"
+  },
+  "src/shared/wildNudgeStakes.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/shared/wildNudgeStakes.ts",
+   "baseSha256": "0feb85f4642cdf5cd88c0a5b69df24d7583fc8d1eae301540b8425ea54c4da61",
+   "sha256": "0feb85f4642cdf5cd88c0a5b69df24d7583fc8d1eae301540b8425ea54c4da61"
+  },
+  "src/ui/GameLayoutPolicy.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/ui/GameLayoutPolicy.ts",
+   "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+   "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+  },
+  "src/ui/operationFeedback.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/ui/operationFeedback.ts",
+   "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+   "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+  },
+  "src/ui/stakeSelection.ts": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "src/ui/stakeSelection.ts",
+   "baseSha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86",
+   "sha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86"
+  },
+  "tsconfig.json": {
+   "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+   "path": "tsconfig.json",
+   "baseSha256": "871f4c96ecc0b96ea5593acb7e4df809a8522239012b60cb18b5d6215c49c578",
+   "sha256": "871f4c96ecc0b96ea5593acb7e4df809a8522239012b60cb18b5d6215c49c578"
+  }
+ }
+}
