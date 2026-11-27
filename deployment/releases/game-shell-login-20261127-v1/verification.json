@@ -1,0 +1,120 @@
+{
+  "release": "game-shell-login-20261127-v1",
+  "published": true,
+  "preparedImage": "sha256:9d117d3a7c66143943775e87d04e0714d6bb41f640601ea4f803c3c59d029a57",
+  "runningImage": "sha256:9d117d3a7c66143943775e87d04e0714d6bb41f640601ea4f803c3c59d029a57",
+  "containerRestarted": true,
+  "sourceCommit": "287f69a3f5638f1a035f8648ee8eb2298f8be276",
+  "changedSources": 12,
+  "clientDeltaFiles": 11,
+  "configurationsAndMountsPreserved": true,
+  "gameDataPreserved": true,
+  "backendDeltaFiles": 0,
+  "otherBackendProgramsAndModulesPreserved": true,
+  "oldAssetsPreserved": true,
+  "otherPersistentServicesPreserved": 10,
+  "baseCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "featureCommits": {
+    "login": "8b1af2c8",
+    "header": "06e826fdad3d38b11946faf5fc946e9ec2848b64"
+  },
+  "rollbackImage": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+  "rollbackTag": "royal-game:before-game-shell-login-20261127-v1",
+  "backup": "/opt/royal-backups/game-shell-login-20261127-v1",
+  "financialBackupSha256": "8cf6dc2c4c084956281171f426982703e3f0d3c7227efa8487cb27dc983fc7b3",
+  "releaseManifestSha256": "89f59394eb24d30f1a459f9ed9e7928956e2858275261ea0f4ced6b7bd212329",
+  "receiptSha256": "4a1caa0d581e137b87cf98a0aa03ba8315ecba619ab4b7186d01432c563826a3",
+  "hostProjectionSha256": "5b93a523ec88fc013f21a5b38be4591ca8943f8e53e8f87fb6039a5acd1b87e7",
+  "activeModulePointersUnchanged": true,
+  "moduleHostContractUnchanged": true,
+  "activeCatalogue": 20,
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "checks": {
+    "rtpProfiles": 39,
+    "stakePolicies": 21,
+    "typecheck": true,
+    "githubVerified": true,
+    "walletServerTests": 19,
+    "installerTests": {
+      "passed": 20,
+      "platform": "macOS, not Linux"
+    },
+    "browser": {
+      "fixture": "Exact prepared dist through a local proxy over the entry stand with chat, temporary PostgreSQL and the local backend from main",
+      "entryModes": {
+        "passed": 9,
+        "desktop": {
+          "wallet": {
+            "stakeUnits": "10",
+            "acceptedRoundRecoveredAfterClose": true,
+            "sameOperationId": true,
+            "oneDebit": true,
+            "activeCatalogue": 20
+          }
+        },
+        "mobile": {
+          "loginCard": true,
+          "modeSwitchInCard": true,
+          "noHorizontalScroll": true
+        }
+      },
+      "characterSelection": {
+        "passed": 4
+      },
+      "screenshots": [
+        "casino and club, 1440x900 and 390x844, player menu open and closed"
+      ]
+    },
+    "public": {
+      "healthz": 200,
+      "guestWalletStatus": 401,
+      "sha256Matched": [
+        "/assets/ActivitiesUI-Dqx5BLrM.js",
+        "/assets/ClubWorld-0lnRdFoM.js",
+        "/assets/GameHostRuntime-C6IylWxk.js",
+        "/assets/index-BsZbMYCi.css",
+        "/assets/index-DdIFV7CG.js",
+        "/assets/main-BpinHaOW.js",
+        "/assets/main-CF3wOWnn.css",
+        "/assets/phaser-DezhecUQ.js",
+        "/assets/playerLevelStatus-2Zt1o9HR.js",
+        "/assets/PvpUI-tc2F6hh_.js",
+        "/"
+      ],
+      "oldAssetsServed": true,
+      "loginCard": {
+        "desktop": {
+          "clubPrefilled": true,
+          "label": "Войти в клуб",
+          "switchedLabel": "Войти и открыть игры",
+          "overflow": false,
+          "pageErrors": 0
+        },
+        "mobile": {
+          "clubPrefilled": true,
+          "label": "Войти в клуб",
+          "switchedLabel": "Войти и открыть игры",
+          "overflow": false,
+          "pageErrors": 0
+        }
+      }
+    },
+    "notRun": [
+      "Production accounts and stakes",
+      "Signed-in production header and player menu",
+      "Safari and real phones",
+      "Wallet dialog tests whose entry login predates the mode screen",
+      "Spec files that fail to load on main because of a JSON import attribute"
+    ]
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 83.43,
+    "timerEnabled": true,
+    "timerActive": true,
+    "health": "healthy",
+    "availableBytes": 10847498240
+  }
+}
