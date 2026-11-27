@@ -136,9 +136,10 @@ export class FlagRollPhysics {
         b.vy += .05 * ROLL_STEP;
         const speed = Math.hypot(b.vx, b.vy);
         // Soft energy regulation keeps inelastic impacts lively without random kicks.
-        if (speed > 1e-6 && speed < MIN_SPEED) { const k = 1 + .9 * ROLL_STEP; b.vx *= k; b.vy *= k; }
+        // A slowed flag regains pace within about half a second; a stopped one rolls along the rim.
+        if (speed < 1e-6) { const d = Math.hypot(b.x, b.y) || 1; b.vx = -b.y / d * .05 || .05; b.vy = b.x / d * .05; }
+        else if (speed < MIN_SPEED) { const k = Math.min(MIN_SPEED, speed + 1.5 * ROLL_STEP) / speed; b.vx *= k; b.vy *= k; }
         else if (speed > MAX_SPEED) { const k = 1 - 1.4 * ROLL_STEP; b.vx *= k; b.vy *= k; }
-        else if (speed <= 1e-6) { b.vx = .3; }
         b.spin *= 1 - .35 * ROLL_STEP;
       } else {
         b.vy += .65 * ROLL_STEP;

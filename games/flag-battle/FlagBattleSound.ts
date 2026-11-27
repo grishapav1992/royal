@@ -172,7 +172,7 @@ export class FlagBattleSound {
         } else {
           this.hiss('bandpass', 600, 3400, 1.4, .2, .11 * s, at, p * .4, .03, MAX_VOICES, p);
           this.tone('sine', 560 + v * 24, 150, .11, .085 * s, at + .05, p, .003);
-          this.hiss('highpass', 5200, 7000, .8, .09, .05 * s, at + .06, p, .002);
+          this.hiss('bandpass', 4600, 5600, 1.6, .09, .03 * s, at + .06, p, .004);
           this.tone('triangle', 1320 + v * 66, 1320 + v * 66, .12, .02 * s, at + .09, p, .004);
         }
         break;
@@ -182,8 +182,8 @@ export class FlagBattleSound {
         break;
       case 'final-two':
         this.hiss('bandpass', 300, 4200, 2, .42, .1, at, -.3, .12, MAX_VOICES, .3);
-        this.tone('sawtooth', 110, 110, .55, .028, at, 0, .01, MAX_VOICES, -6);
-        this.tone('sawtooth', 110, 110, .55, .028, at, 0, .01, MAX_VOICES, 6);
+        this.tone('triangle', 110, 110, .55, .04, at, 0, .01, MAX_VOICES, -6);
+        this.tone('triangle', 110, 110, .55, .04, at, 0, .01, MAX_VOICES, 6);
         this.tone('triangle', 440, 440, .26, .05, at, 0, .004);
         this.tone('triangle', 554.37, 554.37, .3, .04, at + .12, 0, .004);
         break;
@@ -192,7 +192,7 @@ export class FlagBattleSound {
         this.tone('sine', 58, 40, .15, .09 * s, at + .16, 0, .006);
         break;
       case 'reveal':
-        this.hiss('highpass', 3000, 9000, .7, .5, .05, at, 0, .12);
+        this.hiss('bandpass', 3600, 5600, 1.2, .5, .035, at, 0, .12);
         this.tone('sine', 523.25, 523.25, .6, .03, at, -.2, .03);
         this.tone('sine', 783.99, 783.99, .6, .025, at + .04, .2, .03);
         break;
@@ -202,7 +202,7 @@ export class FlagBattleSound {
           this.tone('sine', f * 2, f * 2, .32, .018, at + i * .085, (i - 1.5) * .25, .006, MAX_VOICES, 4);
         });
         this.tone('sine', 130.81, 130.81, .7, .07, at, 0, .02);
-        this.hiss('highpass', 5000, 8000, .6, .7, .07, at + .32, -.5, .05, MAX_VOICES, .5);
+        this.hiss('bandpass', 4200, 6000, 1.2, .7, .04, at + .32, -.5, .05, MAX_VOICES, .5);
         for (let i = 0; i < 4; i++) this.tone('sine', 2093 + i * 349, 2093 + i * 349, .09, .02, at + .4 + i * .07, i % 2 ? .45 : -.45, .002);
         break;
       case 'lose':
