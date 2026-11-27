@@ -1,0 +1,109 @@
+{
+  "published": true,
+  "release": "star-spin-reactor-20261127-v1",
+  "sourceCommit": "27449941da590933f2bf0ffa97ca7e70ca789e29",
+  "baseCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/star-spin-reactor-20261127-v1/source.tgz",
+    "sha256": "c08b41794235e006afa1192494e2a869284ac96734d83fed052692b4346f3cfb",
+    "bytes": 26391,
+    "oldVersion": "1.6.0-62f793156f10",
+    "imageTag": "royal-game:before-star-spin-reactor-20261127-v1",
+    "image": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/wild-nudge/StarSpinFx.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-wild-nudge",
+    "version": "1.7.0-d04fb0584242",
+    "bytes": 12597115,
+    "files": 22,
+    "beforeSha256": "75ef8258ad0ac5db5abaa992fc525c66e103955f98041367b9e86f7e7eda4ec4",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "1359521525b5e3960263f283f388b67f6035046e42adc458c5ac635d41f2c08d",
+    "history": "/opt/royal-game-modules-state/history/20261127T095206-80b231703f894bc6938cacff0c820525.json"
+  },
+  "freeBefore": 10942169088,
+  "freeAfter": 10929385472,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8845,
+  "servicesPreserved": 11,
+  "verifiedAt": "2026-11-27T10:05:00.000Z",
+  "previousVersion": "1.6.0-62f793156f10",
+  "contracts": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 1
+  },
+  "wrapperSourceCommit": "27449941da590933f2bf0ffa97ca7e70ca789e29",
+  "pointerSha256": "1359521525b5e3960263f283f388b67f6035046e42adc458c5ac635d41f2c08d",
+  "priorPointerSha256": "75ef8258ad0ac5db5abaa992fc525c66e103955f98041367b9e86f7e7eda4ec4",
+  "releaseManifestSha256": "b6ee3be7ec7ed38e622ac683b0bc5752e2a9b0979b9b31841b1fdfe687a18192",
+  "receiptSha256": "d98d25eabc2ba1ac59b95fa5a1f3bbefa5ab56aaf7d44be490077f55284654ae",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "installedSourceFiles": 10,
+  "changedExistingSources": [
+    "games/wild-nudge/GalacticAudio.ts",
+    "games/wild-nudge/GalacticReactorUI.ts",
+    "games/wild-nudge/StarSpinLayout.ts",
+    "games/wild-nudge/package.json",
+    "games/wild-nudge/reactor.css"
+  ],
+  "unchangedListedSources": [
+    "games/wild-nudge/StarSpinCharacter.ts",
+    "games/wild-nudge/StarSpinCollection.ts",
+    "games/wild-nudge/entry.ts",
+    "games/wild-nudge/tsconfig.json"
+  ],
+  "newPackageAssets": [],
+  "packageMediaUnchanged": true,
+  "moduleDependencies": {
+    "node_modules/@rive-app/webgl2/rive.js": "abe9dda86ab90382f565ce3cc6fbd458be549dbfcd26df1218480db5bb48793f"
+  },
+  "publicChecks": {
+    "health": 200,
+    "home": 200,
+    "version": "1.7.0-d04fb0584242",
+    "previous": "1.6.0-62f793156f10",
+    "files": 22,
+    "filesMatchedOverHttps": 23,
+    "manifestSha256": "05db7ce621cb30ff13598a762271e14a7c87df926189937e180470f546626a85",
+    "pointerSha256": "1359521525b5e3960263f283f388b67f6035046e42adc458c5ac635d41f2c08d"
+  },
+  "browserValidation": {
+    "passed": 19,
+    "failed": 0,
+    "moduleManifestSha256": "05db7ce621cb30ff13598a762271e14a7c87df926189937e180470f546626a85",
+    "sourceCommit": "27449941da590933f2bf0ffa97ca7e70ca789e29",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "notVerified": [
+      "Safari",
+      "physical phones",
+      "listening to the sound"
+    ]
+  },
+  "rtp": {
+    "verified": 39,
+    "stakePoliciesVerified": 21
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 75.86,
+    "timerEnabled": true,
+    "timerActive": true,
+    "hostHealth": "healthy",
+    "freeBytes": 10922590208
+  }
+}
