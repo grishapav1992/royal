@@ -33,6 +33,9 @@
   "public/assets/wild-nudge/symbol-6.webp": "733ee68cc2704841d1ec941d11de5d8d6e051661d203582279a403327fc406d1",
   "public/assets/wild-nudge/symbol-7.webp": "fe2d129f02f2b3cd7559b0a0f1eb074f13a17910637163632164b0ba9ebfc70b"
  },
+ "moduleDependencies": {
+  "node_modules/@rive-app/webgl2/rive.js": "abe9dda86ab90382f565ce3cc6fbd458be549dbfcd26df1218480db5bb48793f"
+ },
  "files": {
   "games/wild-nudge/GalacticAudio.ts": {
    "commit": "a3923bb2cf1997d76d54e497ea61700832f85c02",
