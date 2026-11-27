@@ -1,0 +1,38 @@
+{
+  "activeBefore": [
+    "panda-dragon-preview",
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge"
+  ],
+  "sourceUpdates": {
+    "src/entry.ts": "1b6d2d88166b1977cc0883e7c9c986e027e899e32bca18cc4ec8ac1a9a1a008c",
+    "src/i18n/entryModesEn.ts": "1c66baa9249e078963517465d25cf7167857a25264e14096b726b3945fc869b2",
+    "src/main.ts": "1e110534eab8ace9bbc454ec6340105c0e92b423f263a22373ec2419b8ff313b",
+    "src/ui/AuthUI.ts": "42e3a79a15391c6cced8d7da61b27cccdd5ff631d4b53376cf0c0034a1f5b29d",
+    "src/ui/CryptoWalletUI.ts": "fb9255b5836a24f59384e5edaab30001e7a1c4705570c92718c3289c07f60692",
+    "src/ui/DemoWalletUI.ts": "959406b1c51f615a544713e39ae2381a16cea8b4c1f4d25f0c2f95d26c0d53b6",
+    "src/ui/EntryLogin.ts": "90b55868e7a0650559ac458101cb67b9a426662dbb42625428a3690106a69e4e",
+    "src/ui/LoginForm.ts": "515a596ce0e945e20d76b6842dfc573efb434eac956938f06ca73c6d878db3a9",
+    "src/ui/SkinStudioUI.ts": "ee1e6380bc88ee9202bf42d8ce74a1735f33bdef7bb26b80b5d99eb71dc97b84",
+    "src/ui/casino-lobby.css": "f5db7678320c4ae7325966ef0d3c561144b9c6a1cf69b31f33e37877d6190e5b",
+    "src/ui/compact-header.css": "180d068cb7d394d918af85380fc039cfde5b229cce2895621ca59e24f3deddfa",
+    "src/ui/entry-modes.css": "1dd1c0692bfdd49ad4680809722349bd423393035d2f2fd256f57b949205724f"
+  }
+}
