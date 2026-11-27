@@ -1,3 +1,4 @@
+import { revealHeaderItem } from './entry-mode';
 import { test, expect } from '@playwright/test';
 
 for (const width of [1440, 390]) test(`Stars checkout shows the fixed USDT amount and restores the same invoice at ${width}px`, async ({ page }) => {
@@ -24,7 +25,7 @@ for (const width of [1440, 390]) test(`Stars checkout shows the fixed USDT amoun
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 15000 });
-  await page.locator('#crypto-wallet-button').click();
+  await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#telegram-stars')).toBeVisible();
   await expect(page.locator('#crypto-deposit-form')).toBeHidden();
   await expect(page.locator('#crypto-deposit-qr-placeholder')).toBeHidden();
@@ -39,7 +40,7 @@ for (const width of [1440, 390]) test(`Stars checkout shows the fixed USDT amoun
   const widthInDialog = await page.locator('#crypto-wallet-dialog').evaluate(el => ({ scroll: el.scrollWidth, client: el.clientWidth }));
   expect(widthInDialog.scroll).toBeLessThanOrEqual(widthInDialog.client + 1);
   await page.screenshot({ path: `artifacts/work/telegram-stars-20261028/stars-${width}.png` });
-  await page.locator('#crypto-wallet-close').click(); await page.locator('#crypto-wallet-button').click();
+  await page.locator('#crypto-wallet-close').click(); await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#stars-history a')).toHaveAttribute('href', orders[0].botUrl);
   expect(creates).toBe(1);
   expect(cryptoRequests).toBe(0);

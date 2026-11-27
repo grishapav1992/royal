@@ -1,3 +1,4 @@
+import { openPlayerMenu } from './entry-mode';
 import { selectEntryMode } from './entry-mode';
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
@@ -175,9 +176,9 @@ test('both purchased tactics show the accepted price and recover after a full re
 test('switching accounts hides the previous series and restores it only for its owner',async({page,roomPath})=>{
  const email=await enter(page,roomPath);await topup(page);await open(page);await lines(page,1);
  await page.request.post('/__test/caribbean/force-bonus');const original=await play(page);await close(page);
- await page.getByRole('button',{name:'Выйти',exact:true}).click();await selectEntryMode(page);await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
+ await openPlayerMenu(page);await page.getByRole('button',{name:'Выйти',exact:true}).click();await selectEntryMode(page);await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
  await enter(page,roomPath);await open(page);expect(await session(page)).toBeUndefined();await expect(page.locator('.ct-choice')).toBeHidden();await expect(page.locator('[data-ct-action=lines]')).toContainText('20');await close(page);
- await page.getByRole('button',{name:'Выйти',exact:true}).click();await selectEntryMode(page);await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
+ await openPlayerMenu(page);await page.getByRole('button',{name:'Выйти',exact:true}).click();await selectEntryMode(page);await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
  await enter(page,roomPath,email);await open(page);expect((await session(page)).id).toBe(original.id);await expect(page.locator('[data-ct-action=lines]')).toContainText('1');
  await action(page,'[data-ct-action=choose-flagship]');await finish(page);
 });

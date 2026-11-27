@@ -1,3 +1,4 @@
+import { openPlayerMenu } from './entry-mode';
 import { selectEntryMode } from './entry-mode';
 import { test, expect } from '@playwright/test';
 import { selectHall } from './room-ui';
@@ -40,7 +41,7 @@ test('an old Mira dialogue cannot animate a rejected drink after logging in else
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getNetworkState()?.status)).toBe('connected');
   await page.locator('#visit-bar').click();
   await expect(page.locator('#bar-dialog')).toBeVisible({timeout:15000});
-  await page.getByRole('button',{name:'Выйти',exact:true}).click();
+  await openPlayerMenu(page);await page.getByRole('button',{name:'Выйти',exact:true}).click();
   await selectEntryMode(page);
   await page.locator('#email').fill(`mira-order-new-${crypto.randomUUID()}@example.test`);
   await page.locator('#password').fill(password);

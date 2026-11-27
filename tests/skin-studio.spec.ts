@@ -1,3 +1,4 @@
+import { openPlayerMenu } from './entry-mode';
 import { test, expect } from '@playwright/test';
 import { SKIN_OFFERS, SKIN_THEME } from '../src/shared/skinStudio';
 import sharp from 'sharp';
@@ -15,7 +16,7 @@ test('holding left in the fitting room never reverses a shifted or mirrored gene
       job: { id: jobId, prompt: 'Сохранённый образ с неровными кадрами', state: 'ready', variantCount: 2, createdAt: 1,
         variants: ids.slice(0, 2).map(id => ({ id, jobId, prompt: '', createdAt: 1 })) } } }));
   await page.goto('/tests/fixtures/skin-studio.html');
-  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await page.getByRole('button', { name: 'Примерить вариант 1' }).click();
   await expect(page.locator('.skin-fitting-caption')).toContainText('Походи');
   const floor = page.getByLabel('Площадка для примерки скина');
@@ -70,7 +71,7 @@ test('actual artwork descriptions arrive without losing the tried variant or key
     await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, variantCount: 2, enabled: true, equippedId: chosen ? ids[1] : null,
       job: { id: jobId, prompt: 'Сумбурный исходный запрос', variantCount: 2, state: chosen ? 'selected' : 'ready', error: '', selectedId: chosen ? ids[1] : null, createdAt: 1, variants: chosen ? [] : cards }, wardrobe: chosen ? [cards[1]] : [] } });
   });
-  await page.goto('/tests/fixtures/skin-studio.html'); await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await page.goto('/tests/fixtures/skin-studio.html'); await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   const choice = page.getByRole('button', { name: 'Примерить вариант 2' });
   await choice.click(); await choice.focus(); described = true;
   await expect(page.locator('.skin-results .skin-card-description').nth(1)).toHaveText('Одногий пират с попугаем');
@@ -93,7 +94,7 @@ test('a late description refresh cannot resurrect candidates after a saved choic
       job: { id: jobId, prompt: 'Запрос', variantCount: 2, state: selected ? 'selected' : 'ready', error: '', selectedId: selected ? ids[0] : null, createdAt: 1, variants: selected ? [] : cards }, wardrobe: selected ? [{ ...cards[0], descriptionPending: false }] : [] } });
   });
   try {
-    await page.goto('/tests/fixtures/skin-studio.html'); await page.getByRole('button', { name: 'Образы', exact: true }).click();
+    await page.goto('/tests/fixtures/skin-studio.html'); await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
     await page.getByRole('button', { name: 'Примерить вариант 1' }).click();
     await expect.poll(() => reads).toBe(2);
     await page.getByRole('button', { name: 'Сохранить образ' }).click();
@@ -122,7 +123,7 @@ test('two variants, explicit single choice, wardrobe, preview controls and mobil
       job: { id: jobId, prompt: 'Космический пират', state, error: '', selectedId: chosen || null, createdAt: Date.now(), variants: state === 'ready' ? cards : [] }, wardrobe: chosen ? [cards[1]] : [] } });
   });
   await page.goto('/tests/fixtures/skin-studio.html');
-  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await expect(page.locator('.skin-results .skin-card')).toHaveCount(2);
   await expect(page.getByRole('button', { name: 'Сохранить образ' })).toBeDisabled();
   await page.getByRole('button', { name: 'Примерить вариант 2' }).click();
@@ -151,7 +152,7 @@ test('two variants, explicit single choice, wardrobe, preview controls and mobil
   await expect(floor).toHaveAttribute('data-moving', 'true');
   await page.getByRole('button', { name: 'Закрыть ателье' }).click();
   await page.keyboard.up('ArrowUp');
-  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await expect(floor).toHaveAttribute('data-moving', 'false');
   await page.getByRole('button', { name: 'Идти вперёд' }).focus();
   await page.keyboard.press('Enter');
@@ -170,18 +171,18 @@ test('lost creation response retries the same operation after reopening and acco
     }
     await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, enabled: true, job: sent.length > 1 ? { id: sent[0].id, prompt: sent[0].prompt, state: 'generating', variants: [], error: '', selectedId: null, createdAt: Date.now() } : null, wardrobe: [], equippedId: null } });
   });
-  await page.goto('/tests/fixtures/skin-studio.html'); await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await page.goto('/tests/fixtures/skin-studio.html'); await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await page.getByLabel('Опиши новый образ').fill('Поменяй только куртку на золотую');
   await page.getByRole('button', { name: 'Создать за $1', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Проверить отправленный запрос' })).toBeEnabled();
   await page.getByRole('button', { name: 'Закрыть ателье' }).click();
-  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await page.getByRole('button', { name: 'Проверить отправленный запрос' }).click();
   expect(sent).toHaveLength(2); expect(sent[0]).toEqual(sent[1]);
   await expect(page.locator('#skin-status')).toContainText('Рисуем два образа');
   await page.evaluate(() => (window as any).skinPreview.setAccount(null));
   await expect(page.locator('#skin-studio-dialog')).toBeHidden();
-  await expect(page.getByRole('button', { name: 'Образы', exact: true })).toBeHidden();
+  await openPlayerMenu(page);await expect(page.getByRole('button', { name: 'Образы', exact: true })).toBeHidden();
 });
 
 test('Phaser replaces the fallback atlas after download and renders distinct turns, walking and sitting frames', async ({ page }) => {
@@ -276,7 +277,7 @@ test('fitting room uses the live game walking cadence', async ({ page }) => {
       job: { id: jobId, prompt: 'Проверка походки', state: 'ready', variantCount: 2, createdAt: 1, variants: ids.slice(0, 2).map(id => ({ id, jobId, prompt: '', createdAt: 1 })) } } }));
   await page.goto('/tests/fixtures/skin-studio.html');
   await page.evaluate(id => (window as any).skinPreview.render(id), ids[0]);
-  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await page.getByRole('button', { name: 'Примерить вариант 1' }).click();
   await expect(page.locator('.skin-fitting-caption')).toContainText('Походи');
   const fps = await page.evaluate(() => { const p = (window as any).skinPreview; return p.scene.anims.get(p.key + '-walk-right').frameRate; });
@@ -330,7 +331,7 @@ test('a previously paid three-option order still shows all candidates on desktop
         variants: ids.map(id => ({ id, jobId, prompt: 'Старый заказ', createdAt: Date.now() })) } } });
   });
   await page.goto('/tests/fixtures/skin-studio.html');
-  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await expect(page.locator('.skin-results .skin-card')).toHaveCount(3);
   await expect(page.locator('.skin-offer')).toHaveText('3 варианта · 1 навсегда');
   await page.setViewportSize({ width: 390, height: 844 });
@@ -347,7 +348,7 @@ test('new orders send only a fresh brief, even with a generated pirate equipped'
       job: sent ? { id: sent.id, state: 'reserving', variantCount: 2, variants: [], error: '' } : null } });
   });
   await page.goto('/tests/fixtures/skin-studio.html');
-  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await page.getByLabel('Опиши новый образ').fill('Новый взрослый учёный в белом халате');
   await page.getByRole('button', { name: 'Создать за $1', exact: true }).click();
   await expect.poll(() => !!sent).toBe(true);
@@ -373,7 +374,7 @@ test('the atelier refreshes the same shared wallet as the games after a temporar
   }, user);
   await expect.poll(() => page.evaluate(() => !!(window as any).testWallet.wallet)).toBe(true);
   synchronized = false;
-  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await expect.poll(() => page.evaluate(() => !!(window as any).testWallet.error)).toBe(true);
   const failedCalls = walletCalls; synchronized = true;
   await expect.poll(() => page.evaluate(() => !!(window as any).testWallet.error), { timeout: 15000 }).toBe(false);
@@ -393,7 +394,7 @@ test('touch taps move the preview and closing stops a held input', async ({ brow
         job: { id: jobId, state: 'ready', variantCount: 2, variants: ids.slice(0, 2).map(id => ({ id, jobId, prompt: 'Примерка', createdAt: 1 })) } } });
     });
     await page.goto('/tests/fixtures/skin-studio.html');
-    await page.getByRole('button', { name: 'Образы', exact: true }).tap();
+    await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).tap();
     await page.getByRole('button', { name: 'Примерить вариант 1' }).tap();
     const floor = page.getByLabel('Площадка для примерки скина');
     await expect(page.locator('.skin-fitting-caption')).toContainText('Походи');
@@ -405,7 +406,7 @@ test('touch taps move the preview and closing stops a held input', async ({ brow
     await expect(floor).toHaveAttribute('data-moving', 'true');
     await page.getByRole('button', { name: 'Закрыть ателье' }).tap();
     await page.keyboard.up('KeyA');
-    await page.getByRole('button', { name: 'Образы', exact: true }).tap();
+    await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).tap();
     await expect(floor).toHaveAttribute('data-moving', 'false');
     await page.evaluate(() => (window as any).skinPreview.setAccount(null));
     await expect(page.locator('#skin-studio-dialog')).toBeHidden();
@@ -424,7 +425,7 @@ test('a new ready order replaces the wardrobe preview while polling keeps the ch
         : { id: jobId, state: 'selected', selectedId: ids[0], variants: [] } } });
   });
   await page.goto('/tests/fixtures/skin-studio.html');
-  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await page.getByRole('button', { name: 'Примерить', exact: true }).click();
   await expect(page.locator('.skin-fitting-caption')).toContainText('Образ из гардероба.');
   ready = true;
@@ -456,7 +457,7 @@ for(const mobile of [false,true])test('Zhora offers one outfit for $5 and shares
   await expect(page.getByLabel('Площадка для примерки скина')).toBeVisible();
   await page.screenshot({path:info.outputPath('zhora-single-outfit.png')});
   await page.getByRole('button',{name:'Сохранить образ',exact:true}).click();await expect(page.locator('.skin-wardrobe [data-skin-card]')).toHaveCount(1);
-  await page.getByRole('button',{name:'Закрыть образы Жоры',exact:true}).click();await page.getByRole('button',{name:'Образы',exact:true}).click();
+  await page.getByRole('button',{name:'Закрыть образы Жоры',exact:true}).click();await openPlayerMenu(page);await page.getByRole('button',{name:'Образы',exact:true}).click();
   await expect(page.locator('#skin-studio-title')).toHaveText('Ателье');await expect(page.getByRole('button',{name:'Создать за $1',exact:true})).toBeVisible();
   await expect(page.locator('.skin-offer')).toHaveText('2 варианта · 1 навсегда');await expect(page.locator('.skin-wardrobe [data-skin-card]')).toHaveCount(1);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -474,7 +475,7 @@ test('a lost Zhora order is recovered from the atelier with the original UUID an
   await page.goto('/tests/fixtures/skin-studio.html');await page.evaluate(()=>(window as any).skinPreview.studio.open('janitor'));
   await page.getByLabel('Опиши новый образ').fill('Новый уборщик');await page.getByRole('button',{name:'Создать за $5',exact:true}).click();
   await expect(page.getByRole('button',{name:'Проверить отправленный запрос',exact:true})).toBeEnabled();await page.getByRole('button',{name:'Закрыть образы Жоры',exact:true}).click();
-  await page.getByRole('button',{name:'Образы',exact:true}).click();await page.getByRole('button',{name:'Проверить отправленный запрос',exact:true}).click();
+  await openPlayerMenu(page);await page.getByRole('button',{name:'Образы',exact:true}).click();await page.getByRole('button',{name:'Проверить отправленный запрос',exact:true}).click();
   expect(sent).toHaveLength(2);expect(sent[0]).toEqual(sent[1]);expect(sent[1].offerId).toBe('janitor');
   await expect(page.locator('.skin-offer')).toHaveText('1 образ · навсегда');await expect(page.locator('.skin-existing-order')).toContainText('$5');
 });

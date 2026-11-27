@@ -24,7 +24,7 @@ export class CryptoWalletUI {
   private qrAddress = '';
   constructor(private scene: Pick<RoomScene, 'setLocked'>) {
     this.button.id = 'crypto-wallet-button'; this.button.type = 'button'; this.button.className = 'wallet-button'; this.button.hidden = true;
-    this.button.textContent = translateText('Денежный баланс'); this.button.onclick = () => this.show(); document.querySelector('.profile')!.prepend(this.button);
+    this.button.textContent = translateText('Денежный баланс'); this.button.onclick = () => this.show(); (document.querySelector('.header-wallets') ?? document.querySelector('.profile')!).append(this.button);
     this.dialog.id = 'crypto-wallet-dialog'; this.dialog.className = 'wallet-dialog crypto-wallet'; this.dialog.setAttribute('aria-labelledby', 'crypto-wallet-title');
     this.dialog.innerHTML = translateText(`<div class="wallet-heading"><div><span class="eyebrow">РОЯЛЬ · ПОПОЛНЕНИЕ</span><h2 id="crypto-wallet-title">Денежный баланс</h2></div><button type="button" class="icon-button" id="crypto-wallet-close" aria-label="Закрыть пополнение баланса">×</button></div>
       <p class="wallet-description">Реальные средства. Этот баланс хранится отдельно от тестового баланса клуба. Ставки на реальные средства пока недоступны.</p>

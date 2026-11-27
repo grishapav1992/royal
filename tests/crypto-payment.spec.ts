@@ -1,3 +1,4 @@
+import { revealHeaderItem } from './entry-mode';
 import { test, expect, type Page, type Route } from '@playwright/test';
 const wallet = () => ({ state: 'enabled', provider: 'nowpayments', asset: 'USDT', scale: 6, balanceUnits: '20000000', reservedUnits: '0', withdrawalsEnabled: false, gamesEnabled: false, ready: false, maxStakeUnits: { 'royal-coins': '0', 'royal-roulette': '0' }, operations: [] as any[], rounds: [] });
 const operation = (id: string, currency: string, address: string) => ({ id, kind: 'deposit', state: 'waiting', amountUnits: '20000000', creditedUnits: '0', currency, address, memo: '', payAmount: currency === 'btc' ? '0.0002' : '20', txHash: '', createdAt: Date.now() });
@@ -9,7 +10,7 @@ async function login(page: Page) {
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 15000 });
-  await page.locator('#crypto-wallet-button').click();
+  await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#crypto-deposit-currency option')).toHaveCount(2);
 }
 async function coins(page: Page) {

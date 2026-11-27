@@ -1,3 +1,4 @@
+import { openPlayerMenu } from './entry-mode';
 import { selectEntryMode } from './entry-mode';
 import { test, expect, type Page } from '@playwright/test';
 import { DEFAULT_APPEARANCE } from '../src/shared/appearance';
@@ -42,7 +43,7 @@ async function createAccount(page: Page, character: object) {
 async function openSettings(page: Page) {
   const profile = page.getByRole('button', { name: 'Профиль и настройки', exact: true });
   if (await profile.isVisible()) await profile.click();
-  await page.getByRole('button', { name: 'Настройки игрока', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Настройки игрока', exact: true }).click();
   await expect(page.locator('#name-dialog')).toBeVisible();
   await expect(page.locator('#settings-character-selection .character-choice')).toHaveCount(PLAYER_CHARACTERS.length);
   await expect(page.locator('.character-editor')).toHaveCount(0);

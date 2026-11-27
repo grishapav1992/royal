@@ -1,51 +1,102 @@
-/* Hall controls and account actions share one header above the game. */
+/* One header row for account and money; floor moves live in the room toolbar; the player menu is a list. */
 #app{grid-template-rows:auto minmax(0,1fr)}
-.header{height:auto;min-height:48px;visibility:visible;overflow:visible;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:12px;padding:6px 14px}
-.header .brand{flex-shrink:0;font-size:16px}
-.header .room-heading{display:contents}
-.header .room-heading>div:first-child{display:block;min-width:0}
-.header .room-heading h1{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px;line-height:1.5;margin:0;letter-spacing:-.3px}
-.header .room-heading h1 span{display:inline-block;vertical-align:middle;font-size:9px;line-height:1.2;margin-left:6px;padding:3px 5px}
-.header .room-tools{width:auto;min-width:0;gap:6px;flex-wrap:nowrap;justify-content:flex-end}
-.header .room-tools>*{flex-shrink:0}
-.header .room-tools .local-label{margin:0 4px;font-size:10px}
-.header .room-tools .icon-button,.header .profile-toggle{width:32px;height:32px}
-.header .room-tools #fullscreen{display:grid}
-.header .floor-links button{min-height:32px;padding:5px 9px;font-size:11px}
-.header .profile{position:static;inset:auto;display:flex;width:auto;min-width:0;margin:0;padding:0;border:0;background:none;color:inherit;overflow:visible;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.header .profile>button{flex-shrink:0;max-width:100%}
-.header .profile-name{max-width:120px}
-.header .profile .language-switcher select{min-height:32px;font-size:11px}
-.header .logout-button{min-height:32px;padding:6px 9px;white-space:nowrap}
-.header .profile-toggle{display:none}
+#app>.header{height:auto;min-height:64px;visibility:visible;overflow:visible;display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:16px;padding:8px 20px;box-sizing:border-box}
+.header .brand{flex-shrink:0;font-size:18px}
+.header .brand small,.header .header-center,.header .demo-badge{display:none}
+.header .entry-mode-switcher{flex:none}
+.header-actions{margin-inline-start:auto;display:flex;align-items:center;gap:10px;min-width:0}
+.header-wallets{display:flex;align-items:center;gap:8px}
+.header-wallets:not(:has(button:not([hidden]))){display:none}
+.header .header-wallets .wallet-button{min-height:38px;padding:0 12px;font-size:13px}
+.header-actions .room-tools{display:flex;align-items:center;gap:10px;width:auto;min-width:0;flex-wrap:nowrap;justify-content:flex-end}
+.header-actions .room-tools>*{flex-shrink:0}
+.header-actions .room-tools .local-label{display:flex;margin:0 2px;font-size:12px}
+.header-actions .room-tools .icon-button{width:38px;height:38px}
+.header-actions .room-tools #fullscreen{display:grid}
+.header-actions .room-tools #invite{min-height:38px;padding:0 12px;font-size:13px}
+.header .casino-chat-toggle{min-height:38px}
+
+.header .profile-toggle{flex:none;display:flex;align-items:center;gap:9px;height:44px;padding:0 10px 0 4px;border:2px solid #a78050;border-radius:6px;background:#3d2f47;color:#fff0c9;font:700 13px/1.1 'Trebuchet MS',Arial,sans-serif;cursor:pointer}
+.header .profile-toggle:hover{background:#4a3a56}
+.header .profile-toggle:focus-visible{outline:3px solid #f2c745;outline-offset:2px}
+.header .profile-toggle .avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#f2c745;color:#342f2a}
+.header .profile-toggle .avatar .icon{width:18px;height:18px}
+.profile-toggle-name{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-chevron{width:14px;height:14px}
+
+#profile-menu:not(:popover-open){display:none}
+#profile-menu:popover-open{position:fixed;inset:72px 20px auto auto;margin:0;width:min(320px,calc(100vw - 24px));max-height:calc(100dvh - 84px);overflow-y:auto;box-sizing:border-box;display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;gap:0;padding:6px;border:3px solid #a78050;border-radius:4px;background:#30273b;color:#f3e3c5;box-shadow:3px 3px 0 #161320}
+#profile-menu .profile-summary{order:-2;display:grid;grid-template-columns:44px minmax(0,1fr);align-items:center;column-gap:12px;row-gap:4px;padding:10px 10px 14px;margin-bottom:6px;border-bottom:2px solid #715365}
+#profile-menu .profile-summary .avatar{display:grid;place-items:center;grid-row:span 2;width:44px;height:44px;border-radius:50%;background:#f2c745;color:#342f2a}
+#profile-menu .profile-summary .avatar .icon{width:22px;height:22px}
+#profile-menu .profile-name{display:block;max-width:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff0c9;font:900 16px/1.2 'Arial Black',Arial,sans-serif}
+#profile-menu .profile-name small{display:none}
+#profile-menu .progression-button{justify-self:start;min-height:28px;padding:3px 9px;border:1px solid #b99159;border-radius:4px;background:transparent;color:#f2c745;font:700 12px 'Trebuchet MS',Arial,sans-serif;box-shadow:none}
+#profile-menu .profile-header-items{order:-1;display:flex;flex-direction:column}
+#profile-menu .profile-header-items:empty{display:none}
+#profile-menu>button,#profile-menu .profile-header-items button{display:flex;align-items:center;justify-content:flex-start;gap:12px;width:100%;max-width:none;min-height:44px;margin:0;padding:0 10px;border:0;border-radius:4px;background:transparent;color:#f3e3c5;font:700 14px 'Trebuchet MS',Arial,sans-serif;text-align:start;white-space:nowrap;box-shadow:none;transform:none}
+#profile-menu>button:hover,#profile-menu .profile-header-items button:hover{background:#3d2f47;color:#fff0c9}
+#profile-menu>button:focus-visible,#profile-menu .profile-header-items button:focus-visible{outline:2px solid #f2c745;outline-offset:-2px}
+#profile-menu>button[hidden],#profile-menu .profile-header-items [hidden]{display:none}
+#profile-menu #pvp-button{order:1}
+#profile-menu #skin-studio-button{order:2}
+#profile-menu .logout-button:not(#logout-button):not(#skin-studio-button){order:3}
+#profile-menu .language-switcher{order:4;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 6px 0 10px;font:700 14px 'Trebuchet MS',Arial,sans-serif}
+#profile-menu .language-caption{display:block}
+#profile-menu .language-switcher select{min-height:34px;font-size:13px}
+#profile-menu #logout-button{order:10;margin-top:6px;border-top:2px solid #715365;border-radius:0;color:#f0a58f}
+#profile-menu .profile-header-items .header-wallets,#profile-menu .profile-header-items .room-tools{display:flex;flex-direction:column;align-items:stretch;gap:0;width:auto;margin:0}
+#profile-menu .profile-header-items .room-tools{padding-bottom:6px;margin-bottom:6px;border-bottom:2px solid #715365}
+#profile-menu .profile-header-items .local-label{display:flex;min-height:36px;margin:0;padding:0 10px;font-size:13px}
+#profile-menu .profile-header-items .icon-button{display:flex;height:auto}
+#profile-menu .profile-header-items .icon-button::after{content:attr(aria-label)}
+
+/* The room toolbar names the place and holds the floor moves above the map. */
+#app .room-panel:not([hidden]){display:flex;flex-direction:column;align-items:stretch;padding:0;--room-toolbar-height:54px}
+.room-toolbar{flex:none;position:relative;z-index:3;display:flex;align-items:center;gap:10px;min-height:var(--room-toolbar-height);box-sizing:border-box;padding:6px 14px;border-bottom:2px solid #715365;background:#30273b;overflow-x:auto;scrollbar-width:none}
+.room-toolbar h1{flex:none;display:flex;align-items:center;gap:8px;margin:0 6px 0 0;color:#f1d395;font:900 17px/1.2 'Arial Black',Arial,sans-serif;letter-spacing:-.3px;white-space:nowrap}
+.room-toolbar h1 span{padding:2px 6px;border:1px solid #9a774f;border-radius:3px;background:#382b42;color:#debd82;font:700 11px/1.2 'Trebuchet MS',Arial,sans-serif}
+.room-toolbar .floor-links{flex:none;gap:8px}
+.room-toolbar :is(.floor-links button,.elevator-shortcut){flex:none;min-height:34px;padding:0 11px;border:2px solid #342f2a;border-radius:4px;background:#fff0c9;color:#342f2a;box-shadow:2px 2px 0 #161320;font:700 12px 'Trebuchet MS',Arial,sans-serif}
+.room-toolbar :is(.floor-links button,.elevator-shortcut):hover{background:#f2d07b;border-color:#342f2a}
+.room-toolbar :is(.floor-links button,.elevator-shortcut):focus-visible{outline:3px solid #f2c745;outline-offset:2px}
+.room-toolbar .elevator-shortcut[hidden]{display:none}
+#app .room-panel>#game{flex:1 1 auto;min-height:0;height:auto;width:100%}
+#app .room-panel>.room-overlay{top:calc(var(--room-toolbar-height) + 12px)}
+#app .room-panel>#room-sidebar{top:var(--room-toolbar-height)}
 main{padding-top:6px}
-@media(max-width:1400px){
-  .header{gap:8px}
-  .header .room-tools .local-label{display:none}
-  .header .room-heading h1{font-size:14px}
-  .header .profile-toggle{display:grid}
-  .header .profile{display:none}
-  .header .profile:popover-open{position:fixed;inset:54px 10px auto auto;display:flex;flex-wrap:wrap;justify-content:flex-start;gap:8px;width:min(360px,calc(100vw - 20px));max-height:calc(100dvh - 64px);overflow-y:auto;padding:12px;background:#302237;color:#f4d394;border:2px solid #b99159;border-radius:6px;box-shadow:0 8px 24px #0006}
-  .header .profile:popover-open .profile-name{display:block;order:-1;flex-basis:100%;max-width:100%}
-  .header .profile:popover-open>button,.header .profile:popover-open select{min-height:36px}
+@media(min-width:851px){
+  body:not([data-entry-mode=casino]) .workspace.with-chat>.chat-dock{align-self:stretch;height:auto}
 }
-@media(max-width:700px){
-  .header{padding:5px 6px;gap:6px}
+@media(max-width:1100px){
+  .header-actions .room-tools .local-label{display:none}
+  .profile-toggle-name{max-width:90px}
+}
+@media(max-width:850px){
+  #app>.header{gap:10px;padding:6px 12px}
+  .header-actions{gap:8px}
+  .header .profile-toggle-name,.header .profile-chevron{display:none}
+  .header .profile-toggle{padding:0 4px}
+}
+@media(max-width:600px){
+  #app>.header{min-height:56px;padding:6px 10px;gap:8px}
   .header .brand>span:last-child{display:none}
-  .header .brand-mark{width:26px;height:26px}
-  .header .room-heading h1{font-size:12px}
-  .header .room-heading h1 span{display:none}
-  .header .room-tools{flex-wrap:wrap}
-  .header .room-tools #invite{width:32px;height:32px;margin:0;padding:0;font-size:0}
-  .header .room-tools #invite:before{content:"↗";font-size:19px}
+  .header .brand-mark{width:32px;height:32px}
+  .header .profile-toggle{width:44px;padding:0;justify-content:center;border-radius:50%}
+  .header .profile-toggle .avatar{width:36px;height:36px}
+  #profile-menu:popover-open{inset:auto 0 0 0;width:auto;max-height:85dvh;padding:8px 10px 16px;border-width:3px 0 0;border-radius:12px 12px 0 0}
+  #profile-menu::backdrop{background:#161320a6}
+  #app .room-panel:not([hidden]){--room-toolbar-height:46px}
+  .room-toolbar{gap:6px;padding:6px 8px}
+  .room-toolbar h1{font-size:14px;margin-inline-end:2px}
+  .room-toolbar h1 span{display:none}
+  .room-toolbar .floor-links{gap:6px}
+  .room-toolbar :is(.floor-links button,.elevator-shortcut){min-height:32px;padding:0 8px;font-size:11px}
   main{padding-top:4px}
 }
-@media(max-width:380px){
-  .header{grid-template-columns:auto minmax(0,1fr) auto}
-  .header .room-heading>div:first-child{display:none}
-}
 @media(max-height:500px){
-  .header{min-height:40px;padding-top:3px;padding-bottom:3px}
+  #app>.header{min-height:44px;padding-top:3px;padding-bottom:3px}
+  #app .room-panel:not([hidden]){--room-toolbar-height:40px}
   main{padding-top:3px}
 }
 
@@ -54,3 +105,5 @@ body:has(:is(#mini-dialog,#casinoapipro-dialog,#pvp-dialog,#shared-dialog)[open]
   visibility:hidden;
   pointer-events:none;
 }
+#profile-menu .language-caption{font:inherit;color:inherit}
+body[data-entry-mode=casino] #profile-menu #help{display:none}

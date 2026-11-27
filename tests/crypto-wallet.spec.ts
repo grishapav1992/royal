@@ -1,3 +1,4 @@
+import { revealHeaderItem } from './entry-mode';
 import { test, expect, type Page } from '@playwright/test';
 import jsQR from 'jsqr';
 
@@ -25,7 +26,7 @@ const wallet = () => ({ state: 'enabled', provider: 'nowpayments', asset: 'USDT'
   withdrawalsEnabled: true, gamesEnabled: true, ready: true, maxStakeUnits: { 'royal-coins': '10000000', 'royal-roulette': '10000000' }, operations: [] as any[], rounds: [] as any[] });
 
 test('disabled gateway displays the deposit form without a payable address or QR', async ({ page }) => {
-  await login(page); await page.locator('#crypto-wallet-button').click();
+  await login(page); await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#crypto-wallet-message')).toContainText('еще не подключены');
   await expect(page.locator('#crypto-wallet-content')).toBeHidden();
   await expect(page.locator('#crypto-deposit-address')).toHaveValue('');
@@ -50,13 +51,13 @@ test('mobile deposit restores a lost response with the same request, displays me
     state.operations = [operation];
     if (attempts === 1) await route.abort('failed'); else await route.fulfill({ json: operation });
   });
-  await login(page); await page.locator('#crypto-wallet-button').click();
+  await login(page); await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#crypto-deposit-currency option')).toHaveCount(2);
   await page.locator('#crypto-deposit-currency').selectOption('xrp');
   await page.locator('#crypto-deposit-form button').click();
   await expect(page.locator('#crypto-wallet-retry')).toBeVisible();
   await page.reload(); await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 15000 });
-  await page.locator('#crypto-wallet-button').click(); await page.locator('#crypto-wallet-retry').click();
+  await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click(); await page.locator('#crypto-wallet-retry').click();
   await expect(page.locator('#crypto-wallet-retry')).toBeHidden(); expect(attempts).toBe(2);
   await expect(page.locator('#crypto-deposit-address')).toHaveValue('r' + 'A'.repeat(33));
   await expect(page.locator('#crypto-deposit-memo-value')).toHaveValue('1234567');
@@ -80,7 +81,7 @@ test('QR follows the created payment, remains bound when the form changes, and c
   await page.route('**/api/crypto-wallet', route => route.fulfill({ json: state }));
   await page.route('**/api/crypto-wallet/currencies', route => route.fulfill({ json: { currencies: [
     { code: 'btc', name: 'Bitcoin', network: 'btc', memo: false }, { code: 'usdttrc20', name: 'USDT', network: 'trx', memo: false }] } }));
-  await login(page); await page.locator('#crypto-wallet-button').click();
+  await login(page); await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#crypto-deposit-currency option')).toHaveCount(2);
   await page.locator('#crypto-deposit-continue').click();
   expect(await readPaymentQr(page)).toBe(bitcoin);
@@ -126,7 +127,7 @@ test('withdrawal requires a server quote and explicit confirmation; changed deta
     state.balanceUnits = '10000000'; state.reservedUnits = '10000000'; state.operations = [operation];
     return route.fulfill({ json: operation });
   });
-  await login(page); await page.locator('#crypto-wallet-button').click();
+  await login(page); await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#crypto-withdraw-currency option')).toHaveCount(1);
   await page.locator('#crypto-withdraw-address').fill('TestSolanaWalletAddress'); await page.locator('#crypto-withdraw-form button').click();
   await expect(page.locator('#crypto-withdraw-preview')).toBeVisible(); expect(payouts).toBe(0);
@@ -152,7 +153,7 @@ test('country currency is an estimate, checkout stays in USDT and shows confirme
     state.operations = [operation]; return route.fulfill({ json: operation });
   });
   await login(page); await expect(page.locator('#crypto-wallet-button')).toHaveText('Денежный баланс');
-  await page.locator('#crypto-wallet-button').click();
+  await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#crypto-display-currency')).toHaveValue('USDT');
   await page.locator('#crypto-display-currency').selectOption('RUB');
   await expect(page.locator('#crypto-wallet-balance')).toHaveText('≈ 1700.00');
@@ -178,7 +179,7 @@ test('unavailable or expired display rates show USDT without blocking the paymen
   await page.route('**/api/crypto-wallet', route => route.fulfill({ json: state }));
   await page.route('**/api/crypto-wallet/currencies', route => route.fulfill({ json: { currencies: [{ code: 'usdttrc20', name: 'USDT', network: 'trx', memo: false }] } }));
   await page.route('**/api/crypto-wallet/display-rate', route => route.fulfill({ json: { currency: 'RUB', usdtRate: '85', updatedAt: Date.now() - 120000, expiresAt: Date.now() - 60000 } }));
-  await login(page); await page.locator('#crypto-wallet-button').click();
+  await login(page); await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await page.locator('#crypto-display-currency').selectOption('RUB');
   await expect(page.locator('#crypto-display-rate-note')).toContainText('Курс сейчас недоступен');
   await expect(page.locator('#crypto-wallet-balance')).toHaveText('20');
@@ -190,9 +191,9 @@ test('real payment balance remains separate from Sandbox and does not enable rea
   const state = wallet();
   await page.route('**/api/crypto-wallet', route => route.fulfill({ json: state }));
   await page.route('**/api/crypto-wallet/currencies', route => route.fulfill({ json: { currencies: [] } }));
-  await login(page); await page.locator('#crypto-wallet-button').click();
+  await login(page); await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#crypto-wallet-balance')).toHaveText('20');
   await expect(page.locator('#crypto-wallet-dialog')).toContainText('Ставки на реальные средства пока недоступны');
-  await page.locator('#crypto-wallet-close').click(); await page.locator('#wallet-button').click();
+  await page.locator('#crypto-wallet-close').click(); await revealHeaderItem(page,'#wallet-button');await page.locator('#wallet-button').click();
   await expect(page.locator('#wallet-balance')).toHaveText('0');
 });

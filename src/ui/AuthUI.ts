@@ -111,9 +111,9 @@ export class AuthUI {
     this.dialog.querySelector('#retry-entry')!.addEventListener('click', () => void this.perform(() => this.continueEntry()));
     this.dialog.querySelector('#connection-logout')!.addEventListener('click', () => void this.logout());
     this.dialog.querySelector('#switch-account')!.addEventListener('click', () => void this.logout());
-    this.logoutButton.type = 'button'; this.logoutButton.className = 'logout-button'; this.logoutButton.textContent = translateText('Выйти'); this.logoutButton.hidden = true;
+    this.logoutButton.type = 'button'; this.logoutButton.id = 'logout-button'; this.logoutButton.className = 'logout-button'; this.logoutButton.textContent = translateText('Выйти'); this.logoutButton.hidden = true;
     this.logoutButton.addEventListener('click', () => void this.logout()); document.querySelector('.profile')!.append(this.logoutButton);
-    this.renameButton.type = 'button'; this.renameButton.className = 'logout-button'; this.renameButton.textContent = translateText('Настройки'); this.renameButton.setAttribute('aria-label',translateText('Настройки игрока')); this.renameButton.hidden = true;
+    this.renameButton.type = 'button'; this.renameButton.id = 'player-settings-button'; this.renameButton.className = 'logout-button'; this.renameButton.textContent = translateText('Настройки'); this.renameButton.setAttribute('aria-label',translateText('Настройки игрока')); this.renameButton.hidden = true;
     this.renameButton.addEventListener('click', () => {
       if (!this.account || this.dialog.open || this.nameDialog.open) return;
       this.nameDialog.querySelector<HTMLInputElement>('#new-game-name')!.value = this.account.name;

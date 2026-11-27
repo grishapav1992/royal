@@ -1,3 +1,4 @@
+import { openPlayerMenu } from './entry-mode';
 import { selectEntryMode } from './entry-mode';
 import { expect, test, type Page } from '@playwright/test';
 
@@ -70,7 +71,7 @@ test('changing accounts closes the old bar and the new player can consume a conf
   await expect.poll(async () => (await state(page)).serverX).toBeDefined();
   await page.locator('#visit-bar').click();
   await expect(page.locator('#bar-dialog')).toBeVisible({ timeout: 15000 });
-  await page.getByRole('button', { name: 'Выйти', exact: true }).click();
+  await openPlayerMenu(page);await page.getByRole('button', { name: 'Выйти', exact: true }).click();
   await selectEntryMode(page);
   await expect(page.locator('#login-step')).toBeVisible();
   await expect(page.locator('#bar-dialog')).toBeHidden();
