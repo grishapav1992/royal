@@ -44,8 +44,11 @@ export class MiraPortrait {
     this.reactionUntil = Date.now() + 2400;
   }
 
-  speak(message: string) {
-    this.speakingUntil = Date.now() + Math.min(8400, Math.max(1500, message.length * 42));
+  /** Returns the speaking time so the dialogue can reveal the reply in step with the mouth. */
+  speak(message: string): number {
+    const duration = Math.min(8400, Math.max(1500, message.length * 42));
+    this.speakingUntil = Date.now() + duration;
+    return duration;
   }
 
   stop() { this.speakingUntil = 0; this.reactionUntil = 0; this.lastFrame = -1; this.tick(Date.now()); }
