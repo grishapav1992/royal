@@ -6,7 +6,6 @@ import { readGameHost } from '../../src/modules/GameHostContract';
 import { type WalletResult } from '../../src/shared/demoWallet';
 import { rouletteRedNumbers, type RouletteInput, type RouletteRound } from '../../src/shared/gameCore';
 import type { WalletSettlement } from '../../src/wallet/WalletClient';
-import { rouletteWheelSvg } from './WheelArtwork';
 import { RouletteSound } from './RouletteSound';
 import { RouletteMotion } from './RouletteMotion';
 import './roulette.css';
@@ -15,6 +14,7 @@ import './priorities.css';
 const wheel = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 const reds = new Set<number>(rouletteRedNumbers);
 const color = (n: number) => n === 0 ? 'green' : reds.has(n) ? 'red' : 'black';
+const CHIP_TONES = ['#ece4cf','#d9b46a','#3f8f73','#b8323f','#2f5d9a','#6c3f8f','#1f2a26','#d0702c','#8e1f33'];
 
 export class RoyalRoulette {
   private host = readGameHost();
@@ -31,6 +31,7 @@ export class RoyalRoulette {
   private stakeSelect: HTMLSelectElement;
   private motion: RouletteMotion;
   private sound: RouletteSound;
+  private chip = document.createElement('i');
   private last?: RouletteRound;
   private history: number[] = [];
   private shown = new Set<string>();
@@ -38,6 +39,7 @@ export class RoyalRoulette {
   private text(ru: string, en: string) { return this.host.i18n.language === 'en' ? en : ru; }
   private el<T extends HTMLElement = HTMLElement>(query: string) { return this.root.querySelector<T>(query)!; }
   private money(units: string) { return this.host.walletCoins(Number(units) / 100); }
+  private colorName(n: number) { return n===0?this.text('Зеро','Zero'):reds.has(n)?this.text('Красное','Red'):this.text('Чёрное','Black'); }
   private label(input = this.input) {
     return input.bet === 'number' ? `${this.text('Число','Number')} ${input.number}`
       : ({red:this.text('Красное','Red'),black:this.text('Чёрное','Black'),even:this.text('Чётное','Even'),odd:this.text('Нечётное','Odd')})[input.bet];
@@ -45,13 +47,29 @@ export class RoyalRoulette {
   constructor(container: HTMLElement) {
     this.root.className = 'rr-root';
     this.root.setAttribute('aria-label', this.text('Европейская рулетка','European roulette'));
+    const outside = (['red','black','even','odd'] as const).map(bet=>`<button type="button" data-rr-bet="${bet}" class="rr-${bet}" aria-label="${this.label({bet})}"><i class="rr-bet-symbol" aria-hidden="true"></i><span>${this.label({bet})}</span><small>×2</small></button>`).join('');
+    const numbers = Array.from({length:37},(_,n)=>`<button type="button" data-rr-bet="number" data-rr-value="${n}" class="rr-${color(n)}" style="--rr-col:${n===0?1:Math.ceil(n/3)+1};--rr-row:${n===0?1:3-(n-1)%3};--rr-mobile-col:${n===0?1:(n-1)%6+2};--rr-mobile-row:${n===0?1:Math.floor((n-1)/6)+1}" aria-label="${this.label({bet:'number',number:n})}"><span>${n}</span></button>`).join('');
     this.root.innerHTML = `<header class="rr-header"><div class="rr-brand"><span class="rr-crest" aria-hidden="true">♛</span><div><span class="rr-eyebrow">ROYAL CASINO</span><h2>${this.text('Рулетка','Roulette')}</h2></div><span class="rr-edition">${this.text('ЕВРОПЕЙСКАЯ','EUROPEAN')}<b>SINGLE ZERO</b></span></div><button type="button" class="rr-wallet"><span class="rr-wallet-icon" aria-hidden="true">◈</span><span><small>${this.text('Общий баланс','Shared balance')}</small><strong data-rr-balance></strong></span><span class="rr-wallet-plus" aria-hidden="true">+</span></button></header>
-      <div class="rr-content"><div class="rr-wheel-area"><div class="rr-wheel-heading"><span>${this.text('ЕВРОПЕЙСКОЕ КОЛЕСО','EUROPEAN WHEEL')}</span><span>0 - 36</span></div><div class="rr-wheel">${rouletteWheelSvg(wheel,color)}</div><div class="rr-center"><div class="rr-result-orb"><strong data-rr-number>?</strong></div><div class="rr-result-copy"><span>${this.text('ПОСЛЕДНИЙ РЕЗУЛЬТАТ','LAST RESULT')}</span><small data-rr-color>${this.text('Сделайте ставку','Place your bet')}</small></div><span class="rr-result-mark" aria-hidden="true">✧</span></div><div class="rr-history" data-empty="${this.text('Здесь появятся последние результаты','Your recent results will appear here')}" aria-label="${this.text('Последние результаты','Recent results')}"></div></div>
-      <div class="rr-table-area"><div class="rr-table-heading"><div><span class="rr-eyebrow">${this.text('ИГРОВОЙ СТОЛ','BETTING TABLE')}</span><h3>${this.text('Сделайте ставку','Place your bet')}</h3></div><span class="rr-one-bet">${this.text('Одна ставка за раунд','One bet per round')}</span></div>
-      <div class="rr-outside-heading"><span>${this.text('Цвет и чётность','Colour and parity')}</span><span>${this.text('Выплата','Return')} <b>×2</b></span></div><div class="rr-outside" role="group" aria-label="${this.text('Ставки с выплатой ×2','Bets paying ×2')}">${(['red','black','even','odd'] as const).map(bet=>`<button type="button" data-rr-bet="${bet}" class="rr-${bet}" aria-label="${this.label({bet})}"><i class="rr-bet-symbol" aria-hidden="true">${bet==='red'||bet==='black'?'◆':bet==='even'?'2 / 4':'1 / 3'}</i><span>${this.label({bet})}</span><small>×2</small></button>`).join('')}</div>
-      <div class="rr-number-heading"><span>${this.text('Или выберите одно число','Or choose a single number')}</span><span>${this.text('Выплата','Return')} <b>×36</b></span></div><div class="rr-numbers" role="group" aria-label="${this.text('Ставка на число','Straight number bet')}">${Array.from({length:37},(_,n)=>`<button type="button" data-rr-bet="number" data-rr-value="${n}" class="rr-${color(n)}" style="--rr-col:${n===0?1:Math.ceil(n/3)+1};--rr-row:${n===0?1:3-(n-1)%3};--rr-mobile-col:${n===0?1:(n-1)%6+2};--rr-mobile-row:${n===0?1:Math.floor((n-1)/6)+1}" aria-label="${this.label({bet:'number',number:n})}"><span>${n}</span></button>`).join('')}</div>
-      <details class="rr-rules"><summary><span>${this.text('Правила и выплаты','Rules and payouts')}</span><span class="rr-rtp">RTP ${this.text('97,30%','97.30%')}</span></summary><p>${this.text('Выберите одну ставку. Красное, чёрное, чётное и нечётное возвращают ×2; одно число возвращает ×36. Выплата включает ставку. Ноль проигрывает всем ставкам на цвет и чётность, но выигрывает ставку на число 0.','Choose one bet. Red, black, even and odd return ×2; a straight number returns ×36. Returns include the stake. Zero loses all colour and parity bets and wins a straight bet on 0.')}</p><p>${this.text('Точный теоретический RTP: 36/37, примерно 97,30%. Результаты независимы. Предыдущие числа и увеличение ставки не предсказывают следующий исход.','Exact theoretical RTP: 36/37, approximately 97.30%. Outcomes are independent. Previous numbers and increased stakes do not predict the next outcome.')}</p><p>${this.text('Бесплатные виртуальные USDT из общего кошелька клуба. Вывод недоступен.','Free virtual USDT from the shared club wallet. Withdrawals are unavailable.')}</p>${stakeRulesHtml()}</details></div></div>
-      <footer class="rr-footer"><div class="rr-selection"><span class="rr-selection-mark" aria-hidden="true">◆</span><div><small>${this.text('Ваша ставка','Your bet')}</small><strong data-rr-selection></strong></div></div><div class="rr-stake-picker"><span>${this.text('Сумма ставки, USDT','Stake, USDT')}</span><div class="rr-chips" role="group" aria-label="${this.text('Сумма ставки','Stake amount')}">${DEMO_BETS.map(amount=>`<button type="button" data-rr-amount="${amount}" aria-label="${amount} USDT"><span>${amount}</span></button>`).join('')}</div></div><button type="button" class="rr-spin" data-rr-spin><span class="rr-spin-glyph" aria-hidden="true">↻</span><span data-rr-spin-copy></span><span class="rr-spin-arrow" aria-hidden="true">›</span></button><div class="rr-status" role="status" aria-live="polite"></div><div class="rr-return"><span>${this.text('Выплата','Return')} <strong data-rr-payout>0</strong><small>USDT</small></span><span>${this.text('Итог раунда','Round net')} <strong data-rr-net>0</strong><small>USDT</small></span></div></footer>`;
+      <div class="rr-content">
+        <div class="rr-wheel-area">
+          <div class="rr-wheel"><canvas class="rr-wheel-canvas" aria-hidden="true"></canvas>
+            <div class="rr-marquee" aria-hidden="true"><b data-rr-marquee-number></b><span data-rr-marquee-color></span><em class="rr-payout-burst" data-rr-burst></em></div>
+          </div>
+          <div class="rr-center"><div class="rr-result-orb"><strong data-rr-number>?</strong></div><div class="rr-result-copy"><span>${this.text('ПОСЛЕДНИЙ РЕЗУЛЬТАТ','LAST RESULT')}</span><small data-rr-color>${this.text('Сделайте ставку','Place your bet')}</small></div></div>
+          <div class="rr-history" data-empty="${this.text('Здесь появятся последние числа','Recent numbers appear here')}" aria-label="${this.text('Последние результаты','Recent results')}"></div>
+        </div>
+        <div class="rr-table-area">
+          <div class="rr-table-heading"><div><span class="rr-eyebrow">${this.text('ИГРОВОЙ СТОЛ','BETTING TABLE')}</span><h3>${this.text('Сделайте ставку','Place your bet')}</h3></div><span class="rr-one-bet">${this.text('Одна ставка за раунд','One bet per round')}</span></div>
+          <div class="rr-felt">
+            <div class="rr-number-heading"><span>${this.text('Число','Straight number')}</span><span>${this.text('Выплата','Return')} <b>×36</b></span></div>
+            <div class="rr-numbers" role="group" aria-label="${this.text('Ставка на число','Straight number bet')}">${numbers}</div>
+            <div class="rr-outside-heading"><span>${this.text('Цвет и чётность','Colour and parity')}</span><span>${this.text('Выплата','Return')} <b>×2</b></span></div>
+            <div class="rr-outside" role="group" aria-label="${this.text('Ставки с выплатой ×2','Bets paying ×2')}">${outside}</div>
+          </div>
+          <details class="rr-rules"><summary><span>${this.text('Правила и выплаты','Rules and payouts')}</span><span class="rr-rtp">RTP ${this.text('97,30%','97.30%')}</span></summary><p>${this.text('Выберите одну ставку. Красное, чёрное, чётное и нечётное возвращают ×2; одно число возвращает ×36. Выплата включает ставку. Ноль проигрывает всем ставкам на цвет и чётность, но выигрывает ставку на число 0.','Choose one bet. Red, black, even and odd return ×2; a straight number returns ×36. Returns include the stake. Zero loses all colour and parity bets and wins a straight bet on 0.')}</p><p>${this.text('Точный теоретический RTP: 36/37, примерно 97,30%. Результаты независимы. Предыдущие числа и увеличение ставки не предсказывают следующий исход. Число выбирает сервер; колесо и шарик показывают уже подтверждённый результат.','Exact theoretical RTP: 36/37, approximately 97.30%. Outcomes are independent. Previous numbers and increased stakes do not predict the next outcome. The server draws the number; the wheel and ball present the confirmed result.')}</p><p>${this.text('Бесплатные виртуальные USDT из общего кошелька клуба. Вывод недоступен.','Free virtual USDT from the shared club wallet. Withdrawals are unavailable.')}</p>${stakeRulesHtml()}</details>
+        </div>
+      </div>
+      <footer class="rr-footer"><div class="rr-selection"><span class="rr-selection-mark" aria-hidden="true"></span><div><small>${this.text('Ваша ставка','Your bet')}</small><strong data-rr-selection></strong></div></div><div class="rr-stake-picker"><span>${this.text('Сумма ставки, USDT','Stake, USDT')}</span><div class="rr-chips" role="group" aria-label="${this.text('Сумма ставки','Stake amount')}">${DEMO_BETS.map((amount,i)=>`<button type="button" data-rr-amount="${amount}" aria-label="${amount} USDT" style="--rr-chip:${CHIP_TONES[i%CHIP_TONES.length]}"><span>${amount}</span></button>`).join('')}</div></div><button type="button" class="rr-spin" data-rr-spin><span class="rr-spin-glyph" aria-hidden="true"></span><span data-rr-spin-copy></span></button><div class="rr-status" role="status" aria-live="polite"></div><div class="rr-return"><span>${this.text('Выплата','Return')} <strong data-rr-payout>0</strong><small>USDT</small></span><span>${this.text('Итог раунда','Round net')} <strong data-rr-net>0</strong><small>USDT</small></span></div></footer>`;
 
     container.replaceChildren(this.root);
     const trigger=document.createElement('button');trigger.type='button';trigger.dataset.options='';trigger.className='rr-choose-bet';trigger.textContent=this.text('Выбрать ставку','Choose bet');
@@ -62,20 +80,21 @@ export class RoyalRoulette {
     label.append(this.stakeSelect);this.el('.rr-footer').append(label);
     this.stakeSelect.onchange=()=>{if(!this.locked()){this.amount=Number(this.stakeSelect.value);this.render();}};
     this.priorities=new ActionGameLayout(container,this.root,trigger,['.rr-table-area','.rr-history'].map(selector=>this.el(selector)),this.text('Выбор ставки и правила','Bet selection and rules'),this.text('Закрыть','Close'));
+    this.chip.className='rr-bet-chip';this.chip.setAttribute('aria-hidden','true');
 
     this.sound = new RouletteSound(this.host.gameAudio);
-    this.motion = new RouletteMotion(this.root,this.sound);
+    this.motion = new RouletteMotion(this.root,this.el<HTMLCanvasElement>('.rr-wheel-canvas'),wheel,color,this.sound);
     for (const button of Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-rr-bet]'))) {
       button.addEventListener('click',()=>{
         if (this.locked()) return;
         this.input = button.dataset.rrBet === 'number' ? {bet:'number',number:Number(button.dataset.rrValue)} : {bet:button.dataset.rrBet as 'red'|'black'|'even'|'odd'};
-        this.render();this.motion.select(button);
+        this.render();this.motion.select(button);this.motion.place(this.chip,this.root.querySelector('[data-rr-amount][aria-pressed="true"]'));
       },{signal:this.lifetime.signal});
     }
     this.root.querySelectorAll<HTMLButtonElement>('[data-rr-amount]').forEach(button => {
       button.addEventListener('click', () => {
         if (this.locked()) return;
-        this.amount = Number(button.dataset.rrAmount); this.render();this.motion.select(button);
+        this.amount = Number(button.dataset.rrAmount); this.render();this.motion.select(button);this.motion.place(this.chip,button);
       }, {signal:this.lifetime.signal});
     });
     this.el('[data-rr-spin]').onclick=()=>{void this.spin();};
@@ -90,33 +109,43 @@ export class RoyalRoulette {
   }
   private pending() { const p=this.wallet.pending;return p?.kind==='play'&&p.gameId==='royal-roulette'?p:undefined; }
   private locked() { return this.busy||this.wallet.busy||this.wallet.externalBusy||!!this.wallet.pending; }
+  private clearResult() {
+    this.last=undefined;delete this.el('.rr-center').dataset.color;delete this.root.dataset.marquee;
+    this.root.querySelectorAll('.rr-landed').forEach(cell=>cell.classList.remove('rr-landed'));
+    this.el('[data-rr-number]').textContent='?';this.el('[data-rr-color]').textContent=this.text('Сделайте ставку','Place your bet');
+  }
   private render() {
     if(!this.alive)return;
     if(this.account!==this.wallet.accountId){
-      this.account=this.wallet.accountId;this.motion.reset();this.busy=false;this.last=undefined;this.history=[];this.shown.clear();this.status='';
-      delete this.el('.rr-center').dataset.color;
-      this.root.querySelectorAll('.rr-landed').forEach(cell=>cell.classList.remove('rr-landed'));
-      this.el('[data-rr-number]').textContent='?';this.el('[data-rr-color]').textContent=this.text('Сделайте ставку','Place your bet');this.el('.rr-history').replaceChildren();
+      this.account=this.wallet.accountId;this.motion.reset();this.busy=false;this.history=[];this.shown.clear();this.status='';
+      this.clearResult();this.el('.rr-history').replaceChildren();
     }
     const pending=this.pending();
     if(pending){this.input=structuredClone(pending.input) as RouletteInput;this.amount=pending.amount;}
     else if(!this.busy&&!validGameBet(this.amount))this.amount=0.1;
     this.root.dataset.busy=String(this.busy);
     this.el('[data-rr-balance]').textContent=this.wallet.wallet?`${this.host.walletCoins(this.wallet.wallet.balance)} USDT`:'…';
+    let tone='#ece4cf';
     this.root.querySelectorAll<HTMLButtonElement>('[data-rr-amount]').forEach(button => {
+      const pressed=Number(button.dataset.rrAmount) === this.amount;
       button.disabled = this.locked();
-      button.setAttribute('aria-pressed', String(Number(button.dataset.rrAmount) === this.amount));
+      button.setAttribute('aria-pressed', String(pressed));
+      if(pressed)tone=button.style.getPropertyValue('--rr-chip')||tone;
     });
     for(const b of Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-rr-bet]'))){
-      b.disabled=this.locked();b.setAttribute('aria-pressed',String(b.dataset.rrBet===this.input.bet&&(this.input.bet!=='number'||Number(b.dataset.rrValue)===this.input.number)));
+      const pressed=b.dataset.rrBet===this.input.bet&&(this.input.bet!=='number'||Number(b.dataset.rrValue)===this.input.number);
+      b.disabled=this.locked();b.setAttribute('aria-pressed',String(pressed));
+      if(pressed&&this.chip.parentElement!==b)b.append(this.chip);
     }
     this.amount=Number(syncStakeSelect(this.stakeSelect,String(this.amount),DEMO_BETS,this.locked(),1));
+    this.chip.textContent=String(this.amount);this.chip.style.setProperty('--rr-chip',tone);
     this.el('[data-rr-selection]').textContent=`${this.label()} · ×${this.input.bet==='number'?36:2}`;
+    this.el('.rr-selection-mark').dataset.bet=this.input.bet==='number'?color(this.input.number):this.input.bet;
     const button=this.el<HTMLButtonElement>('[data-rr-spin]');
     const action=this.busy?this.text('Вращение…','Spinning…'):pending?this.text('Проверить результат','Check result'):this.text('Крутить колесо','Spin wheel');
     this.el('[data-rr-spin-copy]').textContent=action;button.setAttribute('aria-label',action);
     button.disabled=this.busy||this.wallet.busy||this.wallet.externalBusy||!this.wallet.accountId||!!this.wallet.pending&&!pending||(!pending&&(!this.wallet.wallet||this.wallet.wallet.balance<this.amount));
-    let message=this.status||this.text('Выберите поле и запустите колесо.','Choose a bet and spin the wheel.');
+    let message=this.status||this.text('Выберите поле на сукне и запустите колесо.','Choose a field on the felt and spin the wheel.');
     if(!this.busy){
       if(pending)message=this.wallet.error||this.text('Ставка сохранена. Проверьте результат перед новой игрой.','Your bet is saved. Check its result before a new round.');
       else if(this.wallet.pending||this.wallet.externalBusy)message=this.text('Сначала завершите операцию в другой игре.','Finish the operation in the other game first.');
@@ -145,7 +174,7 @@ export class RoyalRoulette {
     if(this.busy||this.wallet.busy||this.wallet.externalBusy||!this.wallet.accountId||this.wallet.pending&&!pending)return;
     if(!pending&&(!this.wallet.wallet||this.wallet.wallet.balance<this.amount))return;
     const account=this.wallet.accountId,input=structuredClone(pending?.input??this.input) as RouletteInput,amount=pending?.amount??this.amount;
-    this.busy=true;this.status=this.text('Подтверждаем ставку…','Confirming your bet…');this.render();this.motion.begin();
+    this.busy=true;this.status=this.text('Подтверждаем ставку…','Confirming your bet…');delete this.root.dataset.marquee;this.render();this.motion.begin();
     try{
       const operation=pending?this.wallet.retry():this.wallet.play('royal-roulette',input,amount);
       const id=this.wallet.pending?.id;
@@ -157,18 +186,21 @@ export class RoyalRoulette {
   }
   private async present(result: WalletResult,account: string,id: string,animate: boolean,input: RouletteInput,amount: number) {
     if(!this.alive||this.wallet.accountId!==account||this.shown.has(id))return;
-    const round=this.checked(result,input,amount),n=round.outcome.number;
+    const round=this.checked(result,input,amount),n=round.outcome.number,pocket=wheel.indexOf(n);
     this.shown.add(id);
     let observed=false;
     if(animate){
       this.status=this.text('Шарик в движении…','The ball is rolling…');this.render();
-      observed=await this.motion.land(wheel.indexOf(n));
-    }else this.motion.snap(wheel.indexOf(n));
+      observed=await this.motion.land(pocket);
+    }else this.motion.snap(pocket);
     if(!this.alive||account!==this.wallet.accountId)return;
-    this.motion.snap(wheel.indexOf(n));
+    this.motion.rest(pocket);this.motion.mark(pocket);
     this.last=round;this.history.unshift(n);this.history=this.history.slice(0,10);
     this.el('[data-rr-number]').textContent=String(n);this.el('.rr-center').dataset.color=color(n);
-    this.el('[data-rr-color]').textContent=n===0?this.text('Зеро','Zero'):reds.has(n)?this.text('Красное','Red'):this.text('Чёрное','Black');
+    this.el('[data-rr-color]').textContent=this.colorName(n);
+    this.el('[data-rr-marquee-number]').textContent=String(n);this.el('[data-rr-marquee-color]').textContent=this.colorName(n);
+    this.el('[data-rr-burst]').textContent=round.multiplier>0?`+${this.money(round.payoutUnits)} USDT`:'';
+    this.root.dataset.marquee=color(n);
     for(const b of Array.from(this.root.querySelectorAll<HTMLElement>('[data-rr-value]')))b.classList.toggle('rr-landed',Number(b.dataset.rrValue)===n);
     this.motion.history(n,color(n),observed);
     this.status=round.multiplier>0?`${this.text('Выпало','Result')} ${n}. ${this.text('Выплата','Return')}: ${this.money(round.payoutUnits)} USDT.`:`${this.text('Выпало','Result')} ${n}. ${this.text('Ставка проиграла.','Your bet lost.')}`;
