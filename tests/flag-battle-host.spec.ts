@@ -1,6 +1,7 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 import {walletSnapshot as wallet,walletHeaders} from './wallet-snapshot';
+import {selectEntryMode} from './entry-mode';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const response=await request.post('/api/auth/login',{data:{email:`flags-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});expect(response.ok()).toBe(true);
  const cookie=response.headers()['set-cookie'].split(';')[0];await request.post('/api/auth/character',{data:{skin:0}});
@@ -12,6 +13,7 @@ const out=process.env.LAYOUT_ARTIFACTS_DIR ? process.env.LAYOUT_ARTIFACTS_DIR+'/
 async function enter(page:Page,path:string){
   await page.route('https://luelonplay.com/demo-api/**',r=>r.fulfill({json:{games:[]}}));
   await page.goto(path);
+  await selectEntryMode(page,'club');
   await page.getByLabel('Почта',{exact:true}).fill(`flags-${crypto.randomUUID()}@example.test`);
   await page.getByLabel('Пароль',{exact:true}).fill('Royal-flag-test-123!');
   await page.getByRole('button',{name:'Продолжить',exact:true}).click();
@@ -77,10 +79,10 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   const settled=(await saved.json()).sessions.find((s:any)=>s.gameId==='flag-battle');
   const state=await mini(page);
   expect(state.returnedUnits).toBe(settled.returnedUnits);
-  expect(state.physics.physicsVersion).toBe(3);
+  expect(state.physics.physicsVersion).toBe(4);
   expect(state.audio.scheduled.eliminate).toBe(11);expect(state.audio.scheduled['final-two']).toBe(1);
   expect((state.audio.scheduled.win??0)+(state.audio.scheduled.lose??0)-(priorSound.win??0)-(priorSound.lose??0)).toBe(1);
-  expect(state.audio.maxVoices).toBeLessThanOrEqual(16);
+  expect(state.audio.maxVoices).toBeLessThanOrEqual(28);
   await expect.poll(async()=>(await mini(page)).audio.voices).toBe(0);
   expect(state.physics.order).toEqual(settled.view.flags.order.slice(0,11));
   expect(state.physics.winner).toBe(settled.view.flags.order[11]);

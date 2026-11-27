@@ -12,3 +12,4 @@ export const mount: GameModuleV1['mount'] = host => {
 
 import '../../src/ui/active-game-viewport.css';
 import './priorities.css';
+import './redesign.css';

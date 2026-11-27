@@ -1,7 +1,7 @@
 import type {GameHostV1} from '../../src/modules/GameHostContract';
 import {roulettePcm,type RouletteCue,type RouletteSample} from './RouletteAudioBank';
 import {rouletteAudioTime,rouletteClock,rouletteContacts} from './RouletteSoundTimeline';
-import type {LandingPlan,SpinPose} from './SpinTimeline';
+import {LAUNCH_SPEED,type LandingPlan,type SpinPose} from './SpinTimeline';
 type HostAudio=Pick<GameHostV1['gameAudio'],'context'|'output'|'unlock'|'getPreferences'|'onPreferences'>;
 type Voice={source:AudioBufferSourceNode;gain:GainNode;pan:StereoPannerNode;cue:RouletteCue;at:number;loop:boolean;stopped:boolean;cleaned:boolean};
 
@@ -72,8 +72,8 @@ export class RouletteSound {
   }
   frame(pose:SpinPose){
     if(!this.armed||!this.enabled()||!this.context)return;
-    const at=this.context.currentTime,w=Math.min(1,Math.max(0,pose.wheelVelocity/450)),relative=Math.min(1,Math.abs(pose.ballVelocity-pose.wheelVelocity)/1450);
-    const falling=pose.phase==='drop'?Math.max(0,Math.min(1,(pose.radius-148)/39)):pose.phase==='pocket'||pose.phase==='idle'?0:1;
+    const at=this.context.currentTime,w=Math.min(1,Math.max(0,pose.wheelVelocity/LAUNCH_SPEED.wheel)),relative=Math.min(1,Math.hypot(pose.ux,pose.uy)/2600);
+    const falling=pose.surface==='air'?0:pose.surface==='pocket'?.55:1;
     for(const v of this.loops){
       if(v.stopped)continue;const ball=v.cue==='roll';v.gain.gain.setTargetAtTime(ball?.23*Math.sqrt(relative)*falling:.14*w,at,.035);
       v.source.playbackRate.setTargetAtTime(ball?.6+.6*relative:.55+.5*w,at,.045);

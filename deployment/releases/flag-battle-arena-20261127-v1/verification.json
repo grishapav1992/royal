@@ -1,0 +1,140 @@
+{
+  "published": true,
+  "release": "flag-battle-arena-20261127-v1",
+  "sourceCommit": "0303f3c902e626206116fa9a90e65a45bbe34d12",
+  "baseCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/flag-battle-arena-20261127-v1/source.tgz",
+    "sha256": "efa7f981a0fb8059a36293bcbe5fc473bc6a316ec2e54945dba06540eb1715aa",
+    "bytes": 14472,
+    "oldVersion": "2.1.2-d394fd4b64a0",
+    "imageTag": "royal-game:before-flag-battle-arena-20261127-v1",
+    "image": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/flag-battle/FlagBattleCues.ts",
+      "games/flag-battle/FlagBattleSound.ts",
+      "games/flag-battle/FlagRollPhysics.ts",
+      "games/flag-battle/FlagStage.ts",
+      "games/flag-battle/redesign.css"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "flag-battle",
+    "version": "2.2.0-13cfbd2e9417",
+    "bytes": 366306,
+    "files": 50,
+    "beforeSha256": "a969d79f42969943a43ed04e80b1f07e3121d113a80dee11a439ef50ccf8b470",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "945083c7a6c9110714e10096b1ba29681b7d638f2ac42b71a75a0c6a64773e3a",
+    "history": "/opt/royal-game-modules-state/history/20261127T071951-c13171dbcd0044e689e664307e01e711.json"
+  },
+  "freeBefore": 10958979072,
+  "freeAfter": 10958315520,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8845,
+  "servicesPreserved": 11,
+  "verifiedAt": "2026-11-27T07:22:55.341Z",
+  "previousVersion": "2.1.2-d394fd4b64a0",
+  "contracts": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 1
+  },
+  "wrapperSourceCommit": "0303f3c902e626206116fa9a90e65a45bbe34d12",
+  "pointerSha256": "945083c7a6c9110714e10096b1ba29681b7d638f2ac42b71a75a0c6a64773e3a",
+  "priorPointerSha256": "a969d79f42969943a43ed04e80b1f07e3121d113a80dee11a439ef50ccf8b470",
+  "releaseManifestSha256": "eee31e6b413c2e227bdb331770ea33179e03a0dc8cde5debb659c4814c68c202",
+  "receiptSha256": "73fca2eddffb5773f970a220bba5f88dd09559eda6e61651af683a25c4cd0fd9",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "installedSourceFiles": 11,
+  "changedExistingSources": [
+    "games/flag-battle/FlagBattleUI.ts",
+    "games/flag-battle/entry.ts",
+    "games/flag-battle/package.json"
+  ],
+  "newPackageAssets": [],
+  "unchangedForOtherConsumers": [
+    "games/flag-battle/FlagArena.ts",
+    "games/flag-battle/FlagAudio.ts",
+    "games/flag-battle/FlagPhysics.ts",
+    "games/flag-battle/FlagSoundTimeline.ts",
+    "src/ui/FlagBattlePreview.ts"
+  ],
+  "publicChecks": {
+    "health": 200,
+    "home": 200,
+    "version": "2.2.0-13cfbd2e9417",
+    "previous": "2.1.2-d394fd4b64a0",
+    "files": 50,
+    "filesMatchedOverHttps": 51,
+    "manifestSha256": "7c6ad9302cb871018382145277399df9cd69c8bdc1a91ff7d5de877afc83c183",
+    "pointerSha256": "945083c7a6c9110714e10096b1ba29681b7d638f2ac42b71a75a0c6a64773e3a",
+    "previousManifestServed": 200,
+    "postMaintenanceHealth": 200,
+    "productionAccountsUsed": false,
+    "realWagers": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 77.61,
+    "removedEntries": 11,
+    "freeAfter": 10959331328,
+    "timerEnabled": true,
+    "timerActive": true,
+    "healthOk": true
+  },
+  "tests": {
+    "rtp": "39 profiles, 21 stake policies",
+    "typecheck": "passed",
+    "wallet": "19/19 game-wallet, wallet-account, round-precision",
+    "physicsAndScore": "8/8 server-tests/flag-roll-physics.test.ts",
+    "legacyFlagTests": "server-tests/flag-physics.test.ts and flag-audio.test.ts passed",
+    "releaseVerify": "githubVerified true"
+  },
+  "browserReport": {
+    "version": "2.2.0-13cfbd2e9417",
+    "moduleManifestSha256": "7c6ad9302cb871018382145277399df9cd69c8bdc1a91ff7d5de877afc83c183",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "sourceCommit": "0303f3c902e626206116fa9a90e65a45bbe34d12",
+    "command": "node node_modules/@playwright/test/cli.js test --config=playwright.flags.config.ts (host: scripts/flag-battle-preview.ts serving module-dist)",
+    "uniqueBrowserScenariosPassed": [
+      "real host with connected chat: 12 countries, paid round, skip, close and reopen without a second debit or replayed celebration, mobile chat and reduced motion",
+      "lost response survives close and reopen and retries the same operation UUID with one debit",
+      "24 and 48 flags: quotes, search, saved mode, natural 48-flag round in server order, physics v4, one result cue, mobile chat",
+      "every Flag Battle cue renders offline with signal, clean tails, no clicks and headroom",
+      "legacy Flag Audio cues still render for the unchanged shared files"
+    ],
+    "viewports": [
+      [
+        1440,
+        1000
+      ],
+      [
+        669,
+        804
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "host": "Current main host on a temporary database with the prepared package bytes; not the exact production shell",
+    "servedPointerSha256": "945083c7a6c9110714e10096b1ba29681b7d638f2ac42b71a75a0c6a64773e3a",
+    "notCovered": [
+      "physical phones",
+      "Safari",
+      "listening on speakers or headphones"
+    ]
+  }
+}

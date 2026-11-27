@@ -20,6 +20,10 @@ export class StarSpinLayout {
     const board=this.root.querySelector<HTMLElement>('.gn-board')!;
     const size=Math.max(1,Math.floor(Math.min(stage.clientWidth-16,(stage.clientHeight-16)*5/3,1000)));
     board.style.width=size+'px';board.style.height=size*3/5+'px';board.style.setProperty('--cell',size/5+'px');
+    // The reactor frame and the banners follow the measured field; neither takes part in layout.
+    const machine=stage.parentElement??stage;machine.style.setProperty('--bw',size+'px');machine.style.setProperty('--bh',size*3/5+'px');this.root.style.setProperty('--cell',size/5+'px');
+    // When the field is limited by width, the plates move to the frame instead of staying at the row edges.
+    machine.style.setProperty('--gap',Math.max(0,(stage.clientHeight-size*3/5)/2)+'px');
   }
   destroy(){this.dead=true;cancelAnimationFrame(this.frame);this.observer.disconnect();}
 }

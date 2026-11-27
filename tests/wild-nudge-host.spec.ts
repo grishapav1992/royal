@@ -1,6 +1,7 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 import {writeFile} from 'node:fs/promises';
+import {selectEntryMode} from './entry-mode';
 const game='studio-wild-nudge',output=process.env.NUDGE_ARTIFACT_DIR||'artifacts/work/wild-nudge-v1-20261030';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const login=await request.post('/api/auth/login',{data:{email:`gn-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});expect(login.ok()).toBe(true);const cookie=login.headers()['set-cookie'].split(';')[0];await request.post('/api/auth/character',{data:{skin:0}});
@@ -13,7 +14,7 @@ const browserErrors=new WeakMap<Page,string[]>();
 test.beforeEach(({page})=>{const errors:string[]=[];browserErrors.set(page,errors);page.on('pageerror',error=>errors.push(error.message));});
 test.afterEach(({page})=>{expect(browserErrors.get(page)).toEqual([]);});
 async function enter(page:Page,path:string){
- await page.route('https://luelonplay.com/demo-api/**',route=>route.fulfill({json:{games:[]}}));await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);
+ await page.route('https://luelonplay.com/demo-api/**',route=>route.fulfill({json:{games:[]}}));await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);await selectEntryMode(page);
  await page.getByLabel('Почта',{exact:true}).fill(`gn-player-${crypto.randomUUID()}@example.test`);await page.getByLabel('Пароль',{exact:true}).fill('Royal-gn-check-123!');await page.getByRole('button',{name:'Продолжить',exact:true}).click();
  await expect.poll(async()=>await page.locator('#character-step').isVisible()||!(await page.locator('#join-dialog').isVisible())).toBe(true);if(await page.locator('#character-step').isVisible())await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().online)).toBe(true);
@@ -26,7 +27,8 @@ async function open(page:Page){
  await page.locator(`[data-platform-game="${game}"]`).click();await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:30000});await expect(page.locator('.gn')).toBeVisible();await expect.poll(()=>page.locator('[data-gn=board]').evaluate(el=>el.clientWidth)).toBeGreaterThan(200);await chat(page);
 }
 async function chat(page:Page,closeOverlay=true){
- if(!await page.locator('#chat-input').isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+ // After a resize the host may still be switching the chat between docked and overlay modes; retry the toggle until it settles open.
+ await expect.poll(async()=>{if(await page.locator('#mini-dialog #club-chat-dock').isVisible()&&await page.locator('#chat-input').isVisible())return true;if(await page.locator('#mini-dialog .game-chat-toggle').getAttribute('aria-expanded')!=='true')await page.locator('#mini-dialog .game-chat-toggle').click();return false;},{timeout:15000,intervals:[250,500,1000]}).toBe(true);
  await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();await expect(page.locator('#chat-input')).toBeInViewport();
  if(closeOverlay&&await page.locator('#mini-dialog').getAttribute('data-game-chat')==='overlay')await page.locator('#club-chat-dock .game-chat-close').click();
 }
@@ -110,7 +112,7 @@ test('ordinary paid spin and all eight free continuations use the real host and 
 });
 test('all twenty lines cost ten cents and the displayed payout matches the committed fractional receipt',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await open(page);await fast(page);
- await expect(page.locator('[data-gn=stake]')).toHaveValue('10');expect(await page.locator('[data-gn=stake] option').evaluateAll(options=>options.map(o=>(o as HTMLOptionElement).value))).toEqual(['10','20','50','100','200','500','1000','2000','5000']);
+ await expect(page.locator('[data-gn=stake]')).toHaveValue('10');expect(await page.locator('[data-gn=stake] option').evaluateAll(options=>options.map(o=>(o as HTMLOptionElement).value))).toEqual(['10','20','50','100','200','500','1000','2000','5000','10000']);
  const before=await page.evaluate(()=>(globalThis as any)[Symbol.for('royal.game-host.v1')].demoWallet.wallet.balance);
  await scenario(page,'fraction');await spin(page);const saved=await session(page);expect(saved.rulesVersion).toBe(2);expect(saved.spentUnits).toBe('10');expect(saved.returnedUnits).toBe('34');expect(saved.view.wildNudge.totalPayoutUnits).toBe('33');
  await expect(page.locator('[data-gn=payout]')).toContainText(/0[.,]34/);await expect(page.locator('[data-gn=net]')).toContainText(/0[.,]24/);
@@ -153,10 +155,10 @@ test('priority layout gives reels readable space, full touch controls and connec
   await page.setViewportSize({width,height});await chat(page);await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
   const geometry=await page.locator('.gn').evaluate(root=>{
    const rect=(el:Element)=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};},failures:string[]=[];
-   for(const selector of ['[data-gn=board]','[data-gn=spin]','[data-gn=stake]','[data-gn=auto]','[data-gn=settings]','[data-gn=crew]','[data-gn=balance]','[data-gn=payout]','[data-gn=net]','[data-gn=status]']){
+   for(const selector of ['[data-gn=board]','[data-gn=spin]','[data-stake-field]','[data-gn=auto]','[data-gn=settings]','[data-gn=crew]','[data-gn=balance]','[data-gn=payout]','[data-gn=net]','[data-gn=status]']){
     const el=root.querySelector<HTMLElement>(selector)!,box=rect(el);if(!box.width||!box.height){failures.push(selector+': empty');continue;}
     for(let parent=el.parentElement;parent;parent=parent.parentElement){if(!/(hidden|auto|scroll|clip)/.test(getComputedStyle(parent).overflow))continue;const p=rect(parent);if(box.x<p.x-2||box.y<p.y-2||box.right>p.right+2||box.bottom>p.bottom+2)failures.push(selector+': clipped by '+parent.className);}
-    if(el.matches('button,select')){if(box.width<44||box.height<44)failures.push(selector+': touch target below 44px');const hit=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);if(!hit||!el.contains(hit))failures.push(selector+': blocked');}
+    if(el.matches('button,select,[data-stake-field]')){if(box.width<44||box.height<44)failures.push(selector+': touch target below 44px');const hit=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);if(!hit||!el.contains(hit))failures.push(selector+': blocked');}
    }
    const stage=root.closest('.mini-stage')!;if(stage.scrollHeight>stage.clientHeight+2||stage.scrollWidth>stage.clientWidth+2)failures.push('host scroll');
    return{profile:(root as HTMLElement).dataset.layout,root:rect(root),board:rect(root.querySelector('.gn-board')!),stage:rect(root.querySelector('.gn-stage')!),failures};
