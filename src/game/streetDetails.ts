@@ -24,6 +24,14 @@ export const STREET_RESIDENTS=[
     lines:['Я Золотик. Фишка большая, карманы маленькие.','Для фото у меня три позы. Четвёртая называется «перерыв».','Под костюмом жарко. Снаружи зима. Почти идеальный климат.']},
 ] as const;
 export type StreetResidentId=typeof STREET_RESIDENTS[number]['id'];
+/** One short line when a snowball lands next to a resident; purely local decoration. */
+export const STREET_SNOW_REACTIONS:Record<StreetResidentId,readonly string[]>={
+  doorman:['Аккуратнее, это форменное пальто!','У входа в казино снежками не встречают.'],
+  janitor:['Я этот снег только что убрал!','Бросай лучше в сугроб, он мой.'],
+  'taxi-driver':['Только не в машину!','Кофе цел. Остальное неважно.'],
+  tourist:['Отличный кадр! Ещё раз, я не успел.','Это было в фокусе!'],
+  mascot:['Фишка увернулась!','Мимо! Фишки не тают.'],
+};
 export type StreetVisitor={x:number;y:number;stairStep?:number};
 export type StreetResidentPosition=StreetVisitor&{id:StreetResidentId};
 export const canTalkToStreetResidents=(visitor:StreetVisitor)=>(visitor.stairStep??0)===0;

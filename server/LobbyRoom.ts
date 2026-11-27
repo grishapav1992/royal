@@ -36,6 +36,8 @@ import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
 import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
 import { STREET } from '../src/shared/street';
+import { atStreetKiosk, KIOSK_DRINK_IDS } from '../src/shared/streetPlay';
+import { StreetSnow } from './streetSnow';
 
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; chatVersion?: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -56,6 +58,10 @@ const CABINET_REACTION_INTERVAL_MS = 450;
 const CABINET_PLAY_DISTANCE = 90;
 export class LobbyRoom extends Room<{ state: LobbyState }> {
   state = new LobbyState();
+  private snow = new StreetSnow(this.state, event => this.sendToHall(event.hall, 'snowball', event), event => this.sendToHall('roof', 'firework', event));
+  private sendToHall(hall: string, type: string, value: unknown) {
+    for (const client of this.clients) { const p = this.state.players.get(client.sessionId); if (p?.connected && p.hall === hall) client.send(type, value); }
+  }
   maxClients = ROOM_CAPACITY;
   maxMessagesPerSecond = 80;
   private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:new CommonCombatWallet(accounts.combat,id=>accounts.financeAdmin.assertAllowed(id)),account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'},id=>!this.state.players.get(id)?.security&&this.wagerPresent(id));
@@ -293,10 +299,10 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.setSimulationInterval(delta => {
       this.state.serverNow = Date.now();
       const dt=Math.min(delta,100)/1000;
-      this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);this.cat.tick(dt);hallElapsed+=dt;
+      this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);this.cat.tick(dt);this.snow.tick();hallElapsed+=dt;
       while(hallElapsed>=.05){this.tick(.05);hallElapsed-=.05;}
     }, 1000/60);
-    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator','stair-window']);
+    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator','stair-window','snow-pick','snow-roll','snow-drop','firework']);
     const hugBlockedActions = new Set([...movementActions,'inputs','cabinet-reaction']);
     const listen = (type: string, handler: (client: Client, value: any) => void | Promise<void>) => this.onMessage(type, (client, value) => {
       const apply = () => {
@@ -438,6 +444,13 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       p.gameReaction = reaction; p.gameReactionUntil = now + CABINET_REACTION_MS;
     });
     listen('stand', client => this.stand(client.sessionId));
+    const snowNotice = (client: Client, message: string | void) => { if (message) client.send('notice', message); };
+    listen('snow-fight', (client, value: unknown) => { const p = this.state.players.get(client.sessionId); if (p) this.snow.fight(p, value); });
+    listen('snow-pick', client => { const p = this.state.players.get(client.sessionId); if (p) snowNotice(client, this.snow.pick(client.sessionId, p)); });
+    listen('snow-throw', (client, value: unknown) => { const p = this.state.players.get(client.sessionId); if (p) this.snow.throw(client.sessionId, p, value); });
+    listen('snow-roll', client => { const p = this.state.players.get(client.sessionId); if (p) { this.stop(client.sessionId); snowNotice(client, this.snow.roll(client.sessionId, p)); } });
+    listen('firework', client => { const p = this.state.players.get(client.sessionId); if (!p) return; const result = this.snow.firework(client.sessionId, p); if (typeof result === 'string') client.send('notice', result); });
+    listen('snow-drop', client => { const p = this.state.players.get(client.sessionId); if (p) { this.stop(client.sessionId); snowNotice(client, this.snow.drop(client.sessionId, p)); } });
     listen('sit', (client, id: unknown) => {
       const p = this.state.players.get(client.sessionId), seat = SEATS.find(s => s.id === id);
       if (!p || !seat || p.hall!==(seat.hall??'arcade') || p.playing || p.action === 'drink') return;
@@ -734,7 +747,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.roomChat.leave(client.sessionId);
     this.releaseCabinet(client.sessionId);
     const p = this.state.players.get(client.sessionId);
-    this.state.players.delete(client.sessionId); this.controls.delete(client.sessionId); this.access.delete(client.sessionId);this.activityProtocols.delete(client.sessionId);
+    this.snow.leave(client.sessionId); this.state.players.delete(client.sessionId); this.controls.delete(client.sessionId); this.access.delete(client.sessionId);this.activityProtocols.delete(client.sessionId);
     if (p) this.system(p.hall, p.name+' покидает зал');
   }
   private cancelChat(client: Client) {
@@ -749,7 +762,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       && control.chatRevision === chatRevision && player.hallRevision === hallRevision && player.connected && !player.security && this.accessAllowed(client);
   }
   private canDrink(player: Player, id: unknown) {
-    return player.hall === 'arcade' && atBar(player) && !player.playing && player.action !== 'drink' && DRINKS.some(drink => drink.id === id);
+    if (player.playing || player.action === 'drink' || player.snowRoll > 0) return false;
+    if (player.hall === 'street') return atStreetKiosk(player) && !player.stairStep && (KIOSK_DRINK_IDS as readonly unknown[]).includes(id);
+    return player.hall === 'arcade' && atBar(player) && DRINKS.some(drink => drink.id === id);
   }
   private async recordClubViolation(client: Client, player: Player, visit: ChatVisit | undefined, reason: ClubViolation, id: string) {
     const { account } = client.auth as RoomAuth;

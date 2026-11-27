@@ -9,7 +9,7 @@ function route(points: readonly Point[]): Route {
 }
 const perimeter=[...STREET.loop,STREET.loop[0]];
 const walkers=[
-  {id:'street-amber',skin:7,speed:52,offset:8000,rest:4000,route:route([{x:360,y:1070},{x:2400,y:1070},{x:360,y:1070}])},
+  {id:'street-amber',skin:7,speed:52,offset:8000,rest:4000,route:route([{x:360,y:1070},{x:2040,y:1070},{x:360,y:1070}])},
   {id:'street-teal',skin:10,speed:58,offset:19000,rest:5000,route:route([{x:2440,y:990},{x:380,y:990},{x:2440,y:990}])},
   {id:'street-pink',skin:5,speed:48,offset:41000,rest:3000,route:route(perimeter)},
   {id:'street-blue',skin:3,speed:50,offset:94000,rest:4000,route:route([...perimeter].reverse())},

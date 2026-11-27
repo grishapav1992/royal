@@ -1,6 +1,6 @@
 import type { PostgresDatabase } from './database';
 import { addDrink, getIntoxication } from '../src/shared/intoxication';
-import { DRINKS } from '../src/shared/world';
+import { ALL_DRINKS } from '../src/shared/world';
 
 export type DrinkingState = { soberAt: number; lastDrink: string; lastDrinkAt: number };
 
@@ -23,7 +23,7 @@ export class IntoxicationStore {
   }
   async consume(accountId: string, drinkId: string, now = Date.now()): Promise<DrinkingState> {
     await this.ready;
-    const drink = DRINKS.find(item => item.id === drinkId);
+    const drink = ALL_DRINKS.find(item => item.id === drinkId);
     if (!drink) throw new Error('Unknown drink');
     const state = await this.db.transaction(async () => {
     const soberAt = addDrink((await this.read(accountId, now)).soberAt, drink.strength, now);

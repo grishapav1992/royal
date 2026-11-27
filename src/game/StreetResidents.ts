@@ -2,7 +2,7 @@ import type { StreetView } from './streetView';
 import type Phaser from 'phaser';
 import { t } from '../i18n';
 import { CHARACTER_SCALE, characterTexture } from './characters';
-import { STREET_RESIDENTS, StreetConversations,canTalkToStreetResidents, type StreetResidentId, type StreetVisitor } from './streetDetails';
+import { STREET_RESIDENTS, STREET_SNOW_REACTIONS, StreetConversations,canTalkToStreetResidents, type StreetResidentId, type StreetVisitor } from './streetDetails';
 import './street-residents.css';
 import { streetResidentPose, type StreetResidentPose } from './StreetResidentActions';
 import { createStreetMascotTexture, drawMascotArms, drawResidentShovel, drawTaxiHabit } from './streetResidentArt';
@@ -28,14 +28,18 @@ export class StreetResidents {
   private talkButton=document.createElement('button');
   private nextButton=document.createElement('button');
   private closeButton=document.createElement('button');
+  private photoButton=document.createElement('button');
   private renderKey='';
   private dismissed:StreetResidentId|null=null;
   private returnFocus:()=>void;
   private poses=new Map<StreetResidentId,StreetResidentPose>();
+  private reactions=new Map<StreetResidentId,{text:Phaser.GameObjects.Text;until:number;count:number}>();
+  private scene:Phaser.Scene;
   private escape=(event:KeyboardEvent)=>{
     if(event.key==='Escape'&&this.conversations.snapshot().conversation){this.dismiss();event.preventDefault();}
   };
-  constructor(scene:Phaser.Scene,approach:(id:StreetResidentId)=>void){
+  constructor(scene:Phaser.Scene,approach:(id:StreetResidentId)=>void,photo:()=>void=()=>{}){
+    this.scene=scene;
     this.returnFocus=()=>scene.game.canvas.focus({preventScroll:true});
     this.snow=scene.add.graphics().setDepth(.02);
     for(const person of STREET_RESIDENTS){
@@ -55,12 +59,14 @@ export class StreetResidents {
     this.line.setAttribute('aria-live','polite');
     const heading=document.createElement('div');heading.className='street-conversation-heading';heading.append(this.name,this.role);
     const actions=document.createElement('div');actions.className='street-conversation-actions';
-    for(const button of [this.talkButton,this.nextButton,this.closeButton])button.type='button';
+    for(const button of [this.talkButton,this.nextButton,this.photoButton,this.closeButton])button.type='button';
+    this.photoButton.id='street-photo-request';this.photoButton.textContent=t('Сфотографируй меня');this.photoButton.hidden=true;
+    this.photoButton.onclick=()=>{this.conversations.close();this.render();photo();};
     this.talkButton.textContent=t('Поговорить');this.nextButton.textContent=t('Ещё');this.closeButton.textContent=t('Закрыть');
     this.talkButton.onclick=()=>{const id=this.conversations.snapshot().nearby;if(id)approach(id);};
     this.nextButton.onclick=()=>{this.conversations.next();this.render();};
     this.closeButton.onclick=()=>this.dismiss();
-    actions.append(this.talkButton,this.nextButton,this.closeButton);this.root.append(heading,this.line,actions);
+    actions.append(this.talkButton,this.nextButton,this.photoButton,this.closeButton);this.root.append(heading,this.line,actions);
     document.querySelector('.room-panel')!.append(this.root);
     document.addEventListener('keydown',this.escape);
     scene.events.once('shutdown',()=>{document.removeEventListener('keydown',this.escape);this.root.remove();});
@@ -94,6 +100,8 @@ export class StreetResidents {
       actor.zone.setPosition(p.x,p.y-(mascot?53:40)).setDepth(depth+3).setVisible(exposed);
       if(actor.zone.input)actor.zone.input.enabled=exposed&&canTalk;
       actor.label.setPosition(p.x,p.y-(mascot?113:91)).setDepth(depth+2).setVisible(exposed&&!overview&&Math.hypot(player.x-position.x,player.y-position.y)<195);
+      const reaction=this.reactions.get(person.id);
+      if(reaction){const show=exposed&&!overview&&reaction.until>performance.now();reaction.text.setPosition(p.x,p.y-(mascot?131:109)).setDepth(depth+4).setVisible(show);}
       actor.greeting?.setPosition(p.x,p.y-131).setDepth(depth+3).setVisible(exposed&&!overview&&position.greeting&&Math.hypot(player.x-position.x,player.y-position.y)<500);
       pose={...pose,facing};
       actor.x=position.x;actor.y=position.y;
@@ -117,6 +125,18 @@ export class StreetResidents {
       this.snow.fillStyle(0xf8fbff).fillEllipse(p.x,p.y,48-cleared*36,15-cleared*7).fillEllipse(p.x-10,p.y-4,22-cleared*16,10-cleared*5);
     });
     this.render();
+  }
+  /** A snowball that lands within reach of a resident gets one short spoken reaction. */
+  snowLanded(point:Point){
+    const index=this.locations.findIndex(p=>Math.hypot(p.x-point.x,p.y-36-point.y)<70);
+    if(index<0)return;
+    const id=this.locations[index].id,lines=STREET_SNOW_REACTIONS[id];
+    let reaction=this.reactions.get(id);
+    if(!reaction){
+      reaction={text:this.scene.add.text(0,0,'',{fontFamily:'Arial',fontSize:'11px',color:'#5c3b25',backgroundColor:'#fff0c9',padding:{x:6,y:4}}).setOrigin(.5,1).setDepth(3001).setVisible(false),until:0,count:0};
+      this.reactions.set(id,reaction);
+    }
+    reaction.text.setText(t(lines[reaction.count++%lines.length]));reaction.until=performance.now()+2600;
   }
   prepareApproach(id:StreetResidentId,player:StreetVisitor){
     if(!canTalkToStreetResidents(player)){
@@ -144,6 +164,7 @@ export class StreetResidents {
     this.name.textContent=t(person.name);this.role.textContent=t(person.role);
     this.line.hidden=!state.conversation;this.line.textContent=state.conversation?t(person.lines[state.line]):'';
     this.talkButton.hidden=Boolean(state.conversation);this.nextButton.hidden=!state.conversation;
+    this.photoButton.hidden=!(state.conversation==='tourist');
   }
   get count(){return STREET_RESIDENTS.length;}
   get characterBounds(){return this.actors.map(({sprite})=>{const b=sprite.getBounds();return {x:sprite.x,y:sprite.y,depth:sprite.depth,visible:sprite.visible,left:b.left,right:b.right,top:b.top,bottom:b.bottom};});}
