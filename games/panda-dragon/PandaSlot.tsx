@@ -26,6 +26,7 @@ import {
   pandaScatterCount,
   pandaStrikePan,
   pandaStrikes,
+  pandaWinLineCount,
   pandaWinTier,
   SCATTER_SYMBOL,
   SCATTER_TARGET,
@@ -40,7 +41,7 @@ const heroLines: Record<Mood, string> = {
   return: "Возврат ставки",
   win: "Отличный удар!",
   bigwin: "Крупный выигрыш!",
-  bonus: "Бонус!",
+  bonus: "Бонус ×3!",
   recover: "Связь прервалась",
 };
 
@@ -48,7 +49,7 @@ const heroLines: Record<Mood, string> = {
 const strikeCries = ["Замах!", "Разрез!", "Точно в цель!"];
 
 /** Действие героя: от спокойного ожидания до победы. */
-type HeroAction = "idle" | "spin" | "charge" | "strike" | "win";
+type HeroAction = "idle" | "spin" | "charge" | "strike" | "reach" | "cheer";
 
 const serviceNotices: Partial<Record<SlotStatus, string>> = {
   blocked: 'Дождитесь завершения другой операции.',
@@ -61,6 +62,8 @@ const COLUMNS = PANDA_LAYOUT.columns;
 /** Замах героя перед первой линией и шаг между линиями (мс). */
 const STRIKE_LEAD_MS = 470;
 const LINE_STEP_MS = 640;
+/** Пауза после последнего удара, чтобы выигрыш фриспина успел прочитаться (мс). */
+const TALISMAN_DELAY_MS = 320;
 const ROWS = PANDA_LAYOUT.rows;
 /** Декоративная лента на время вращения – исход раунда на неё не влияет. */
 const BLUR_STRIP = (column: number) =>
@@ -114,11 +117,12 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
     });
   }, [commands, state, paused]);
 
-  async function run(action: () => Promise<void>, animate = true) {
+  async function run(action: () => Promise<void>, animate = true, keepAudio = false) {
     if (sending.current || !canPlay()) return false;
     const startedBy = account();
     sending.current = true;
-    audio.cancel();
+    // Звук текущего показа не гасим: выбор талисмана не должен прерывать удары посоха.
+    if (!keepAudio) audio.cancel();
     setFeedback(null);
     setBeltNotice('');
     setFailure(null);
@@ -147,7 +151,9 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
     ? feedback : null;
   const [celebrate, setCelebrate] = useState(false);
   useEffect(() => {
-    if (reducedMotion || confirmed?.type !== "bigwin") return;
+    // Крупный итог и завершённый бонус отмечаются одной анимацией поля.
+    const bonusWin = confirmed?.round.revision === 3 && (confirmed.type === "win" || confirmed.type === "bigwin");
+    if (reducedMotion || (confirmed?.type !== "bigwin" && !bonusWin)) return;
     setCelebrate(true);
     const timer = setTimeout(() => setCelebrate(false), 3200);
     return () => {
@@ -156,12 +162,17 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
     };
   }, [confirmed, reducedMotion]);
 
+  // Ритуал выбора талисмана: сначала удары по выигрышным линиям, потом выбор, потом итог.
+  const [choiceOpen, setChoiceOpen] = useState(false);
+  const [chosenTalisnan, setChosenTalisnan] = useState<number | null>(null);
+
   // Порядок ударов посоха по подтверждённому полю: линии, затем вертикали.
   const strikes = useMemo(() => pandaStrikes(confirmed?.round.view, settled), [confirmed, settled]);
   const [strikeIndex, setStrikeIndex] = useState(-1);
   const [impact, setImpact] = useState(0);
   useEffect(() => {
-    if (!strikes.length || !confirmed || reducedMotion || !motion) {
+    // Итог бонуса показывается сразу: повторять удары после выбора талисмана не нужно.
+    if (!strikes.length || !confirmed || reducedMotion || !motion || confirmed.round.revision === 3) {
       setStrikeIndex(-1);
       return;
     }
@@ -179,7 +190,7 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
   }, [strikes, confirmed, reducedMotion, motion]);
   const striking = strikeIndex >= 0;
   // Без анимации ударов серия не растягивается: пауза между ходами остаётся короткой.
-  const strikeCount = reducedMotion ? 0 : strikes.length;
+  const strikeCount = reducedMotion || confirmed?.round.revision === 3 ? 0 : strikes.length;
 
   // Звук сопровождает события: старт вращения, остановку каждого барабана, удары посохом и итог.
   const prevSpinning = useRef<boolean[]>(spinning);
@@ -221,7 +232,10 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
     if (!confirmed) return;
     const delay = strikeCount ? STRIKE_LEAD_MS + strikeCount * LINE_STEP_MS - 300 : 0;
     const type = confirmed.type;
-    const sfx = type === "bet" || type === "free" ? (status === "continue" ? "bonus" : null) : type;
+    // Завершение бонуса звучит отдельной фразой, а не обычной выплатой.
+    const sfx = type === "bet" || type === "free"
+      ? (status === "continue" ? "bonus" : null)
+      : confirmed.round.revision === 3 && (type === "win" || type === "bigwin") ? "triumph" : type;
     if (sfx) return audio.schedule(sfx, delay);
   }, [audio, confirmed, status, strikeCount]);
 
@@ -247,6 +261,9 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
   }
 
   const action = freeActions[0];
+  // Талисманы раунда доступны, пока сервер ждёт выбора награды.
+  const rewardOptions = settled && action?.choices.length ? action.choices : null;
+  const choiceKey = rewardOptions ? rewardOptions.map(choice => choice.value).join('-') : '';
   const [dismissedBonus, setDismissedBonus] = useState<string>();
   const auto = usePandaAutoplay({
     state, commands, account, canPlay, run, status, paused, failure,
@@ -306,20 +323,25 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
 
   function chooseReward(value: number) {
     if (paused || document.hidden || !settled || busy || status !== "continue" || !round || !action || !validFreePicks(action, [value])) return;
+    if (chosenTalisnan !== null) return;
     audio.unlock();
-    void run(() => commands.playFree(round, action.id, [value]), false);
+    setChosenTalisnan(value);
+    void run(() => commands.playFree(round, action.id, [value]), false, true);
   }
 
   let mood: Mood = "idle";
   if (!settled) mood = "spin";
   else if (status === "recover") mood = "recover";
   else if (status === "continue") mood = "bonus";
+  else if (confirmed?.type === "free") mood = "bonus";
   else if (confirmed && confirmed.type in heroLines) mood = confirmed.type as Mood;
 
   const winCents = settled && round ? round.returnedCents : "0";
   const multiplier = settled && round ? pandaMultiplier(round.spentCents, round.returnedCents) : 0;
   const tier = pandaWinTier(multiplier);
   const scatterCount = pandaScatterCount(settled ? round?.view : undefined);
+  // Выигрышные линии подтверждённого поля: их видно игроку и до выбора талисмана.
+  const freeWinLines = pandaWinLineCount(confirmed?.round.view);
   const currentStrike = striking ? strikes[strikeIndex] : undefined;
   const strikeText = currentStrike
     ? currentStrike.kind === "line"
@@ -328,12 +350,20 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
     : "";
   const heroAction: HeroAction = striking ? "strike"
     : !settled ? (anticipating ? "charge" : "spin")
-    : mood === "win" || mood === "bigwin" ? "win" : "idle";
+    : chosenTalisnan !== null ? (confirmed?.round.revision === 3 ? "cheer" : "reach")
+    : rewardOptions ? "reach"
+    : mood === "win" || mood === "bigwin" || mood === "bonus" ? "cheer"
+    : "idle";
+  const chosenLabel = rewardOptions?.find(choice => choice.value === chosenTalisnan)?.label ?? '';
   const line = striking
     ? t(strikeCries[Math.min(strikeIndex, strikeCries.length - 1)] ?? strikeCries[0])
-    : mood === "win" || mood === "bigwin" || mood === "partial" || mood === "return"
-      ? `${t(heroLines[mood])} +${formatCents(winCents)}`
-      : t(heroLines[mood]);
+    : chosenTalisnan !== null
+      ? `${t(chosenLabel)}: беру!`
+      : choiceOpen
+        ? t('Выбери талисман раунда')
+        : mood === "win" || mood === "bigwin" || mood === "partial" || mood === "return"
+          ? `${t(heroLines[mood])} +${formatCents(winCents)}`
+          : t(heroLines[mood]);
   const notice = serviceNotices[status];
   const errorText = t(failure ?? error ?? notice ?? '');
   const statusText = busy ? t(running ? (motion ? 'Проверяем ход…' : 'Подтверждаем результат…') : 'Обновляем состояние…')
@@ -352,11 +382,33 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
     }
   }
 
-  const rewardOptions = settled && action?.choices.length ? action.choices : null;
+  // Талисманы появляются после ударов посоха: игрок сначала видит выигрыш фриспина.
+  useEffect(() => {
+    if (!choiceKey) {
+      setChoiceOpen(false);
+      setChosenTalisnan(null);
+      return;
+    }
+    // Ждём первый удар посоха, дальше выбор не задерживается: линии дорисовываются на фоне.
+    const delay = reducedMotion || !motion ? 0
+      : STRIKE_LEAD_MS + Math.min(strikeCount, 1) * LINE_STEP_MS + TALISMAN_DELAY_MS;
+    const timer = setTimeout(() => setChoiceOpen(true), delay);
+    return () => clearTimeout(timer);
+  }, [choiceKey, strikeCount, reducedMotion, motion]);
+  // Появление талисманов слышно: воздух и два колокольчика.
+  useEffect(() => {
+    if (!choiceOpen) return;
+    audio.play("summon");
+  }, [choiceOpen, audio]);
+  // Взятый талисман отмечен коротким ударом лапы.
+  useEffect(() => {
+    if (chosenTalisnan === null) return;
+    audio.play("grab");
+  }, [chosenTalisnan, audio]);
   const firstReward = useRef<HTMLButtonElement>(null);
   useLayoutEffect(() => {
-    if (rewardOptions && canPlay() && !document.activeElement?.closest('.game-chat-dock')) firstReward.current?.focus({ preventScroll: true });
-  }, [!!rewardOptions, canPlay, paused]);
+    if (choiceOpen && canPlay() && !document.activeElement?.closest('.game-chat-dock')) firstReward.current?.focus({ preventScroll: true });
+  }, [choiceOpen, canPlay, paused]);
 
   return (
     <div className="panda-game" data-hero={heroOn ? undefined : "off"}>
@@ -412,29 +464,35 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
             </span>
             <span className="panda-scroll-text">{t('Свитки')}</span>
           </div>
-          {rewardOptions ? (
-            <div className="panda-reward-overlay">
+          {choiceOpen && rewardOptions ? (
+            <div className="panda-reward-overlay" data-state={chosenTalisnan !== null ? "taken" : "open"}>
               <div className="panda-reward-panel">
-                <fieldset className="panda-choices">
-                  <legend className="panda-reward-title">{t('Выберите награду')}</legend>
+                <p className="panda-reward-title">{t('Выбери талисман раунда')}</p>
+                <p className="panda-reward-note">
+                  {tr`Фриспин ×${DRAGON_PATH_FREE_MULTIPLIER}: выигрышных линий ${freeWinLines}`}
+                </p>
+                <div className="panda-choices">
                   {rewardOptions.map((choice, index) => (
                     <button type="button" key={choice.value} ref={index === 0 ? firstReward : undefined}
-                      className="panda-choice" disabled={paused || busy} onClick={() => chooseReward(choice.value)}>
+                      className="panda-choice" data-talisnan={choice.value}
+                      data-taken={chosenTalisnan === choice.value || undefined}
+                      data-dimmed={chosenTalisnan !== null && chosenTalisnan !== choice.value || undefined}
+                      disabled={paused || busy || chosenTalisnan !== null} onClick={() => chooseReward(choice.value)}>
                       <img src={symbolImages[choice.value]} alt="" className="panda-choice-image" />
                       <span className="panda-choice-text">
                         <span className="panda-choice-name">{t(choice.label)}</span>
-                        <span className="panda-choice-note">{t('Не меняет выплату')}</span>
+                        <span className="panda-choice-note">{t('Печать мастера на раунд')}</span>
                       </span>
                     </button>
                   ))}
-                </fieldset>
+                </div>
               </div>
             </div>
           ) : null}
         </Reels>
 
         {heroOn ? <HeroPanel mood={mood} line={line} belt={belt.current.id} action={heroAction}
-          moving={spinning.some(Boolean)} impact={impact} reducedMotion={reducedMotion} /> : null}
+          impact={impact} reducedMotion={reducedMotion} /> : null}
 
         <div className="panda-bar">
           <div className="panda-console">
@@ -501,7 +559,6 @@ function HeroPanel({
   line,
   belt,
   action,
-  moving,
   impact,
   reducedMotion,
 }: {
@@ -509,7 +566,6 @@ function HeroPanel({
   line: string;
   belt: DragonPathBelt;
   action: HeroAction;
-  moving: boolean;
   impact: number;
   reducedMotion: boolean;
 }) {
@@ -523,27 +579,12 @@ function HeroPanel({
         className="panda-hero-stage"
         data-action={action}
       >
-        {moving && <img
-          src={images.run}
-          alt=""
-          aria-hidden="true"
-          className="panda-hero panda-hero-tiptoe"
-          width={336}
-          height={440}
-        />}
         <img
-          src={images.idle}
+          key={`${action}-${impact}`}
+          src={images[action]}
           alt={t('Мастер-панда с посохом')}
           data-mood={mood}
           className="panda-hero"
-          width={336}
-          height={440}
-        />
-        <img
-          src={images.strike}
-          alt=""
-          aria-hidden="true"
-          className="panda-hero panda-hero-strike"
           width={336}
           height={440}
         />

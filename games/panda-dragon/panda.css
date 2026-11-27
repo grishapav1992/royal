@@ -140,14 +140,14 @@
   --panda-column-gap: 0px;
 }
 
-/* Доска: шапка, поле с героем, пульт и строка состояния. */
+/* Доска: шапка, герой слева, поле, пульт и строка состояния. */
 .panda-board {
   container: panda-board / inline-size;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--panda-hero-width);
+  grid-template-columns: var(--panda-hero-width) minmax(0, 1fr);
   grid-template-areas:
     "topbar topbar"
-    "field   hero"
+    "hero   field"
     "console console"
     "status  status";
   align-items: start;
@@ -462,6 +462,8 @@
   position: relative;
   width: 100%;
   aspect-ratio: 336 / 440;
+  /* Сцена не сжимается и не растягивается: ноги мастера стоят на нижней линии кадра. */
+  flex: none;
 }
 .panda-hero {
   width: 100%;
@@ -472,43 +474,24 @@
   transform-origin: bottom center;
   transition: opacity 0.08s;
 }
-.panda-hero-strike {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  opacity: 0;
-}
-/* Вращение: панда крадётся на цыпочках – шаг, подъём на носки, лёгкий наклон корпуса. */
-.panda-hero-tiptoe {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  opacity: 0;
-}
-.panda-hero-stage[data-action="spin"] .panda-hero:not(.panda-hero-tiptoe) { opacity: 0; }
-.panda-hero-stage[data-action="spin"] .panda-hero-tiptoe {
-  opacity: 1;
+/* Каждая поза оживает своей анимацией: шаг, замах, удар, протянутая лапа, прыжок. */
+.panda-hero-stage[data-action="spin"] .panda-hero {
   animation: panda-tiptoe 0.92s ease-in-out infinite;
 }
-/* Заминка перед последним барабаном: панда собирается с силой. */
-.panda-hero-stage[data-action="charge"] .panda-hero:not(.panda-hero-tiptoe) { opacity: 0; }
-.panda-hero-stage[data-action="charge"] .panda-hero-tiptoe {
-  opacity: 1;
-  animation: panda-charge 0.26s ease-in-out infinite alternate;
+.panda-hero-stage[data-action="charge"] .panda-hero {
+  animation: panda-windup 0.32s ease-in-out infinite alternate;
 }
-.panda-hero-stage[data-action="strike"] .panda-hero:not(.panda-hero-strike) { opacity: 0; }
-.panda-hero-stage[data-action="strike"] .panda-hero-strike {
-  opacity: 1;
+.panda-hero-stage[data-action="strike"] .panda-hero {
   animation: panda-lunge 0.42s ease-out both;
 }
-.panda-hero[data-mood="spin"] {
-  animation: panda-bob 0.5s ease-in-out infinite;
+.panda-hero-stage[data-action="reach"] .panda-hero {
+  animation: panda-reach 1.15s ease-in-out infinite;
 }
-.panda-hero:is([data-mood="win"], [data-mood="bigwin"], [data-mood="bonus"]) {
-  animation: panda-jump 0.7s ease-out 1;
+.panda-hero-stage[data-action="cheer"] .panda-hero {
+  animation: panda-cheer 0.9s ease-in-out infinite;
 }
 /* Победа: мягкое свечение вокруг мастера. */
-.panda-hero-wrap[data-action="win"] .panda-hero-stage::after {
+.panda-hero-wrap[data-action="cheer"] .panda-hero-stage::after {
   content: '';
   position: absolute;
   inset: -8% -14% 0;
@@ -567,6 +550,43 @@
 .panda-choice-note {
   font: 0.72rem/1.2 system-ui, sans-serif;
   color: var(--muted-foreground);
+}
+
+.panda-bonus-total {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: var(--radius-xl);
+  background: color-mix(in oklch, var(--gold) 14%, transparent);
+  border: 1px solid color-mix(in oklch, var(--gold) 40%, transparent);
+}
+.panda-bonus-total-label {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+}
+.panda-bonus-total-value {
+  font: 800 clamp(1.5rem, 6cqw, 2.3rem)/1 var(--font-display);
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 0 var(--gold-deep), 0 0 22px oklch(0.85 0.16 85 / 55%);
+}
+.panda-bonus-total-mult {
+  color: var(--gold);
+  font-weight: 700;
+}
+.panda-bonus-talisnan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-weight: 650;
+}
+.panda-bonus-talisnan-image {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: var(--radius-md);
 }
 
 /* Нижняя панель */
@@ -865,22 +885,33 @@
     transform: translateX(-22px) translateY(0) rotate(-3deg) scale(1, 1);
   }
 }
-@keyframes panda-charge {
+/* Замах: мастер отводит посох назад и собирается с силой. */
+@keyframes panda-windup {
   from {
-    transform: translateY(0) scale(1, 1);
+    transform: translateX(0) rotate(0deg);
   }
   to {
-    transform: translateY(-5px) scale(1.03, 0.97);
+    transform: translateX(-7px) rotate(-3deg);
   }
 }
-@keyframes panda-bob {
-  50% {
-    transform: translateY(-5px) rotate(-1deg);
+/* Протянутая лапа: мастер тянется к талисману и почти достаёт его. */
+@keyframes panda-reach {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  45% {
+    transform: translateX(8px) rotate(-1.5deg);
   }
 }
-@keyframes panda-jump {
-  40% {
-    transform: translateY(-14px) scale(1.03);
+/* Победа: прыжок с поднятыми лапами. */
+@keyframes panda-cheer {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  45% {
+    transform: translateY(-14px) scale(1.03, 0.99);
   }
 }
 
@@ -905,7 +936,7 @@
   gap: 0.5rem;
 }
 
-/* Обязательная награда поверх поля, без сдвига нижней панели. */
+/* Дуэль талисманов: поле остаётся видно сквозь затемнение, линии выигрыша читаются. */
 .panda-reward-overlay {
   position: absolute;
   inset: 0;
@@ -914,24 +945,58 @@
   place-items: center;
   padding: 1rem;
   border-radius: inherit;
-  background: color-mix(in oklch, var(--lacquer-deep) 88%, transparent);
+  background: linear-gradient(180deg, oklch(0.12 0.03 205 / 26%), oklch(0.1 0.02 205 / 74%));
+  animation: panda-fade-in 0.26s ease-out both;
 }
 .panda-reward-panel {
-  width: min(100%, 24rem);
+  width: min(100%, 26rem);
   display: grid;
-  gap: 1rem;
+  gap: 0.55rem;
+  justify-items: center;
 }
 .panda-reward-title {
-  width: 100%;
-  margin-bottom: 1rem;
+  margin: 0;
   text-align: center;
   color: var(--gold);
-  font-size: 1.5rem;
+  font-size: clamp(1.15rem, 4.4cqw, 1.5rem);
+  text-shadow: 0 2px 0 var(--gold-deep);
+}
+.panda-reward-note {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.85rem;
+  opacity: 0.85;
 }
 .panda-reward-panel .panda-choice {
-  min-height: 4.25rem;
+  min-height: 5.5rem;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.7rem 0.5rem;
+  text-align: center;
   box-shadow: var(--shadow-glow);
   animation: panda-reward-glow 1.6s ease-in-out infinite;
+}
+.panda-reward-panel .panda-choice-image {
+  width: 3.2rem;
+  height: 3.2rem;
+}
+.panda-reward-panel .panda-choice[data-taken] {
+  border-color: var(--gold);
+  animation: panda-talisnan-take 0.5s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+.panda-reward-panel .panda-choice[data-dimmed] {
+  opacity: 0.32;
+  filter: saturate(0.35);
+}
+@keyframes panda-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes panda-talisnan-take {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.14); }
+  100% { transform: scale(1.06); }
 }
 @keyframes panda-reward-glow {
   50% {

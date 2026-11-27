@@ -69,6 +69,12 @@ export function pandaWinTier(multiplier: number): PandaWinTier {
   return 'epic';
 }
 
+/** Сколько выигрышных линий и вертикалей показано на подтверждённом поле. */
+export function pandaWinLineCount(view: PandaView | undefined): number {
+  if (!view) return 0;
+  return (view.wins?.length ?? 0) + (view.columnWins?.length ?? 0);
+}
+
 /**
  * Горизонтальное положение удара: звук приходит из места, где коснулся посох.
  * Вертикаль звучит из своей колонки, горизонтальная линия – из середины поля.

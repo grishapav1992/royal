@@ -17,7 +17,7 @@ const RENDER_SECONDS = 7;
 let bundle: string;
 
 type Action = 'click' | 'spin' | 'stop' | 'strike' | 'whoosh' | 'clink' | 'spark' | 'charge'
-  | 'win' | 'bigwin' | 'bonus' | 'loss' | 'partial' | 'return';
+  | 'win' | 'bigwin' | 'bonus' | 'loss' | 'partial' | 'return' | 'summon' | 'grab' | 'triumph';
 
 test.beforeAll(async () => {
   const result = await build({
@@ -105,7 +105,7 @@ async function render(page: Page, actions: { name: Action; pan?: number; variant
 
 test('каждое действие даёт сигнал без перегрузки и без щелчков', async ({ page }) => {
   const actions: Action[] = ['click', 'spin', 'stop', 'strike', 'whoosh', 'clink', 'spark', 'charge',
-    'win', 'bigwin', 'bonus', 'loss', 'partial', 'return'];
+    'win', 'bigwin', 'bonus', 'loss', 'partial', 'return', 'summon', 'grab', 'triumph'];
   const results: Record<string, Render> = {};
   for (const name of actions) {
     const result = await render(page, [{ name }]);
@@ -121,6 +121,10 @@ test('каждое действие даёт сигнал без перегру�
   expect(results.return.rms).toBeLessThan(results.win.rms);
   expect(results.partial.rms).toBeLessThan(results.win.rms);
   expect(results.win.rms).toBeLessThan(results.bigwin.rms);
+  // Завершение бонуса звучит как отдельная большая фраза, взятие талисмана – короткий удар.
+  expect(results.triumph.rms).toBeGreaterThan(results.win.rms);
+  expect(results.grab.rms).toBeLessThan(results.triumph.rms);
+  expect(results.summon.rms).toBeLessThan(results.triumph.rms);
 });
 
 test('частичный возврат и возврат ставки не звучат как выигрыш', async ({ page }) => {

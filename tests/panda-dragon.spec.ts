@@ -140,7 +140,7 @@ for (const width of [390, 320]) {
     await expect(mini.getByRole('textbox', { name: 'Ставка' })).toHaveValue('0.20');
     await mini.getByRole('button', { name: 'Вращать' }).click();
     await expect(mini.getByRole('button', { name: 'Вращать' }).or(mini.getByRole('button', { name: 'Фриспин', exact: true }))).toBeEnabled();
-    await expect(mini.locator('.panda-reel[data-spinning], .panda-hero-tiptoe')).toHaveCount(0);
+    await expect(mini.locator('.panda-reel[data-spinning], .panda-hero-stage[data-action="spin"]')).toHaveCount(0);
     expect(await mini.locator('.panda-page').evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
     if (process.env.PANDA_CAPTURE === '1') await page.screenshot({ path: info.outputPath('компоновка.png') });
     await mini.locator('.game-chat-toggle').click();
@@ -261,10 +261,10 @@ test('пояс меняется после результата и пережи�
   await expect(label).toContainText('До следующего пояса: 1');
   await expect(hero).toHaveAttribute('data-belt', 'green');
   await mini.getByRole('button', { name: 'Вращать' }).click();
-  const running = hero.locator('.panda-hero-tiptoe');
-  await expect(running).toHaveAttribute('src', /panda-tiptoe-fast\.webp$/);
+  // Во время вращения мастер идёт или замахивается посохом.
+  await expect(hero.locator('.panda-hero-stage')).toHaveAttribute('data-action', /spin|charge/);
   await expect(label).toHaveAttribute('data-belt', 'blue');
-  await expect(hero.locator('img:not([aria-hidden])')).toHaveAttribute('src', /panda-hero-blue\.webp$/);
+  await expect(hero.locator('.panda-hero')).toHaveAttribute('src', /panda-blue-(idle|cheer)\.webp$/);
   await expect(mini.locator('.panda-belt-notice')).toHaveText('Новый пояс: Синий пояс');
   await mini.locator('.mini-top [data-close]').click();
   await openDragonPath(page);
@@ -324,6 +324,71 @@ test('путь пояса, счётчик свитков и удар посох�
   const hero = await mini.locator('.panda-hero-stage').boundingBox();
   const frame = await mini.locator('.panda-frame').boundingBox();
   expect(Math.abs(hero!.y + hero!.height - (frame!.y + frame!.height))).toBeLessThanOrEqual(2);
+});
+
+test('ритуал бонуса: выигрыш виден до выбора, талисман и итог со счётчиком', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await enterRoyal(page);
+  await page.route('**/api/dragon-path-progress', route => route.fulfill({ json: { completedRounds: 0 } }));
+  // Базовый спин даёт три Свитка и две выигрышные линии, фриспин — одну линию из трёх персиков.
+  const tickets = [
+    0, 13, 13, 18, 18,
+    13, 13, 13, 18, 37,
+    13, 18, 0, 37, 37,
+    18, 18, 37, 13, 13,
+    37, 37, 13, 13, 0,
+    5, 13, 13, 18, 18,
+    13, 5, 13, 18, 18,
+    13, 13, 5, 37, 37,
+    18, 18, 37, 13, 13,
+    37, 37, 13, 13, 13,
+  ];
+  let saved: unknown = null;
+  let drawn = 0;
+  await page.route('**/api/demo-wallet/expansion', async route => {
+    if (route.request().method() !== 'POST') return route.continue();
+    const op = route.request().postDataJSON();
+    if (op.gameId !== gameId) return route.continue();
+    const draw = () => tickets[drawn++ % tickets.length];
+    const result = op.action === 'start'
+      ? startDragonPath(op.stakeUnits, draw)
+      : moveDragonPath(saved, op.revision, op.move, op.picks, draw);
+    saved = result.round;
+    const precision = result.ended
+      ? makeRoundPrecision(dragonPathFinalAward(result.round), result.baseCreditUnits, () => 0)
+      : undefined;
+    const returnedUnits = precision?.creditedUnits ?? result.baseCreditUnits;
+    const session = { id: op.action === 'start' ? op.id : op.sessionId, gameId, rulesVersion: 1,
+      state: result.ended ? 'settled' : 'active', stakeUnits: result.round.stakeUnits, spentUnits: result.round.stakeUnits,
+      returnedUnits, view: dragonPathExpansionView(result), ...(precision ? { precision } : {}) };
+    const wallet = { balance: (4990 + Number(returnedUnits)) / 100, entries: [] };
+    await route.fulfill({ json: { wallet, session, sessions: [session], replayed: false } });
+  });
+  const mini = await openDragonPath(page);
+  // Мастер стоит слева от поля.
+  const heroBox = await mini.locator('.panda-hero-stage').boundingBox();
+  const frameBox = await mini.locator('.panda-frame').boundingBox();
+  expect(heroBox!.x + heroBox!.width).toBeLessThanOrEqual(frameBox!.x + 1);
+  await mini.getByRole('button', { name: 'Вращать' }).click();
+  // Три Свитка открывают бонус: мастер ликует и зовёт на бесплатное вращение.
+  const free = mini.getByRole('button', { name: 'Фриспин', exact: true });
+  await expect(free).toBeEnabled({ timeout: 20_000 });
+  await expect(mini.locator('.panda-bonus-ribbon')).toContainText('бесплатный спин');
+  await free.click();
+  // Сначала удар посоха по выигрышной линии, потом талисманы.
+  await expect(mini.locator('.panda-bonus-ribbon')).toContainText('×3', { timeout: 20_000 });
+  await expect(mini.locator('.panda-reward-overlay')).toBeVisible({ timeout: 20_000 });
+  await expect(mini.locator('.panda-reward-note')).toContainText('Фриспин ×3');
+  await expect(mini.locator('.panda-reward-note')).toContainText('выигрышных линий 1');
+  await expect(mini.locator('.panda-hero-stage')).toHaveAttribute('data-action', 'reach', { timeout: 20_000 });
+  const peach = mini.getByRole('button', { name: 'Персик Мудрости' });
+  await expect(peach).toBeVisible();
+  await peach.click();
+  // Итог: сумма считается счётчиком, выбранный талисман назван.
+  const receipt = mini.getByRole('dialog', { name: 'Итог бонуса' });
+  await expect(receipt).toContainText('Персик Мудрости');
+  await expect(receipt.locator('.panda-bonus-total-value')).toHaveText(/^1\.2\d$/, { timeout: 10_000 });
+  await expect(mini.locator('.panda-hero-stage')).toHaveAttribute('data-action', 'cheer', { timeout: 20_000 });
 });
 
 test('отказ по балансу остаётся видим после обновления кошелька', async ({ page }) => {

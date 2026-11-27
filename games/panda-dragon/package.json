@@ -2,13 +2,15 @@
   "name": "@royal/panda-dragon-preview",
   "private": true,
   "type": "module",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "gameId": "panda-dragon-preview",
   "apiVersion": 1,
   "rulesVersion": 1,
   "progressVersion": 2,
   "entry": "entry.ts",
-  "assetRoots": ["panda-dragon"],
+  "assetRoots": [
+    "panda-dragon"
+  ],
   "scripts": {
     "build": "node ../../scripts/build-game-module.mjs --game panda-dragon",
     "check": "tsc -p tsconfig.json"

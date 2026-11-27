@@ -1,7 +1,7 @@
 import type { GameHostV1 } from '../../src/modules/GameHostContract';
 
 type Sfx = "click" | "spin" | "stop" | "strike" | "win" | "bigwin" | "bonus" | "loss" | "partial" | "return"
-  | "whoosh" | "clink" | "spark" | "charge";
+  | "whoosh" | "clink" | "spark" | "charge" | "summon" | "grab" | "triumph";
 
 export interface PandaSfxOptions {
   /** Положение в стерео: -1 слева, 1 справа. */
@@ -482,6 +482,34 @@ export function createPandaAudio(host: GameHostV1['gameAudio']) {
         const v = voice(pan, 0.3);
         noiseBurst(t, 0.05, 0.09, 3900, 2400, 'bandpass', v, 3);
         metal(2200, t, 0.05, 0.35, v, [1, 2.76]);
+        break;
+      }
+      case "summon": {
+        // Появление талисманов: воздух, шелест ткани и два тихих колокольчика.
+        const v = voice(pan, 0.4);
+        noiseBurst(t, 0.34, 0.1, 700, 2800, 'bandpass', v, 1.5, 'swell');
+        metal(1568, t + 0.06, 0.04, 0.55, v, [1, 2.4]);
+        metal(2093, t + 0.2, 0.04, 0.5, v, [1, 2.4]);
+        duckBed(0.25, 0.9);
+        break;
+      }
+      case "grab": {
+        // Захват талисмана: глухой хлопок лапы, дерево и короткий подъём тона.
+        const v = voice(pan, 0.3);
+        tone(t, 250, 130, 0.12, 0.22, 'sine', v);
+        noiseBurst(t, 0.1, 0.16, 1100, 520, 'bandpass', v, 1.3);
+        metal(1319, t + 0.05, 0.05, 0.9, v, [1, 2.76]);
+        duckBed(0.2, 0.5);
+        break;
+      }
+      case "triumph": {
+        // Итог бонуса: гонг, длинная восходящая фраза и светлый хвост.
+        const v = voice(pan, 0.6);
+        tone(t, 88, 54, 1, 0.32, 'sine', v);
+        metal(165, t, 0.1, 3, v, [1, 1.52, 2.1, 2.9]);
+        [0, 5, 7, 12, 17, 19, 24].forEach((step, index) => pluck(hz(step + 7), t + 0.2 + index * 0.1, 0.26, v, 3200));
+        metal(3136, t + 0.92, 0.035, 2.4, v, [1, 2.76]);
+        duckBed(0, 3);
         break;
       }
       case "win": {
