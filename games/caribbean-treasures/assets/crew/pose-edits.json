@@ -1,0 +1,83 @@
+{
+ "generator": "A6API gpt-image-2.6-flare, images/edits, 1024x1536, quality high, transparent background",
+ "input": "the character idle frame from the previous export, upscaled to 1024x1536",
+ "exporter": "compose into the master sheet cell (528x784, 8 px inset), then scripts/export-caribbean-crew.mjs",
+ "keptFromOriginalSheet": [
+  "idle",
+  "blink",
+  "focus"
+ ],
+ "basePrompt": "Edit the provided character image. Keep EXACTLY the same woman: same face, skin, hair, makeup, jewelry, costume, colors, painterly semi-realistic 3D illustration style and lighting. Keep the same camera, same framing and same scale: head top at the same height, head the same size, figure cropped head to mid-thigh, centered, three-quarter stance facing slightly left. Change only her body pose, arms, hands, head angle and facial expression as described below; the change must be clearly visible, a real new pose, not a subtle variation. Everything must stay fully inside the canvas with a transparent margin on the left, right and top. Fully transparent alpha background, no scenery, no floor, no shadow, no text, no extra objects or people. Tasteful, fully clothed.\nNew pose:",
+ "characters": {
+  "amara": {
+   "win": "Regal triumph: she raises the brass sextant to her eye with one hand and sights through it toward the left, a satisfied knowing smile, other hand on her hip, chin lifted.",
+   "surprise": "Startled by a cannon blast: she steps back, the sextant pulled in close, her free hand raised flat to her chest, eyes wide, eyebrows high, lips parted.",
+   "bonus": "Welcoming command: she holds the brass sextant out toward the left at arm's length like presenting it, other hand open in invitation, proud warm smile, body turned to the left.",
+   "soft": "Calm and composed: she holds the sextant against her chest with both hands, head tilted slightly down, eyes softly lowered, gentle sympathetic closed-mouth smile.",
+   "laugh": "Rich laughter: her head tilted back laughing, eyes closed, the hand with the sextant raised high, other hand on her stomach, shoulders shaking."
+  },
+  "mei": {
+   "win": "Bright triumph: she unrolls the nautical chart open with both hands in front of her chest, showing it off, confident bright smile, ponytail swinging behind.",
+   "surprise": "Startled: she clutches the rolled chart to her chest with both hands, shoulders raised, head pulled back, eyes wide, small open mouth.",
+   "bonus": "Eager and precise: she points the rolled chart forward toward the left like a baton, arm extended, leaning in, eager focused smile, ponytail swinging.",
+   "soft": "Unbothered: she rests the rolled chart on her shoulder, other hand on her hip, head tilted, wry small closed-mouth smile, one eyebrow raised.",
+   "laugh": "Laughing: eyes closed in laughter, the back of her free hand near her chin, chart hand on her hip, head tilted, ponytail swinging."
+  },
+  "priya": {
+   "win": "Delight: she holds the open brass compass up beside her face, the lid shining, delighted wide smile, long braid swinging over her shoulder, other hand on her waist.",
+   "surprise": "Startled: both hands raised near her shoulders, the compass in one hand, eyebrows high, eyes wide, mouth open, braid swinging.",
+   "bonus": "Warm invitation: she offers the open compass forward toward the left on her flat palm, leaning slightly forward, warm inviting smile.",
+   "soft": "Gentle sympathy: her free hand on her heart, the compass held low at her waist, head tilted, gentle sympathetic closed-mouth smile.",
+   "laugh": "Joyful laughter: head tilted back laughing, eyes closed, the hand with the compass raised, other hand on her waist, braid swinging."
+  },
+  "yasmin": {
+   "win": "Proud victory: she raises the brass astrolabe high beside her shoulder in one hand, chin lifted, proud sultry smile, other hand on her hip.",
+   "surprise": "Startled: she draws back, astrolabe pulled to her chest, other hand raised palm out, eyes wide, lips parted.",
+   "bonus": "Knowing invitation: she holds the astrolabe out toward the left on her open palm, leaning slightly, knowing smile, one eyebrow raised.",
+   "soft": "Calm: arms folded under her chest with the astrolabe resting in one hand, head tilted, calm half smile, eyes half lidded.",
+   "laugh": "Laughing: her fingertips at her collarbone, head tilted back, eyes closed, open laughing smile, astrolabe hand lowered."
+  },
+  "zahara": {
+   "win": "She draws her cutlass and raises it in a proud fencer's salute: the hilt held at her chin, the blade straight up beside her face (blade tip stays well inside the canvas, below the top edge), other fist on her hip, chest out, fierce triumphant grin showing teeth, eyes bright.",
+   "surprise": "Startled by a cannon blast: she flinches back, shoulders raised, head pulled back, one forearm raised in front of her chest in a guarding reflex, the other hand gripping the cutlass hilt half drawn, eyes wide, eyebrows high, lips parted.",
+   "bonus": "Impatient and eager: she leans forward toward the left, pointing her drawn cutlass forward and slightly down toward the left as if ordering a charge, other hand beckoning, bold confident grin, eyebrows raised in challenge.",
+   "soft": "Wry and unbothered: arms crossed under her chest, head tilted to one side, a sympathetic lopsided closed-mouth half smile, one eyebrow raised, weight on one hip; the cutlass stays sheathed at her belt.",
+   "laugh": "She throws her head back laughing out loud, eyes squeezed, mouth wide open, one hand slapping her thigh, the other hand resting on the sheathed cutlass hilt, shoulders shaking, weight shifted onto one leg."
+  },
+  "catalina": {
+   "win": "Flirtatious triumph: she lifts one hand to her lips and kisses a single large lustrous white pearl held between her thumb and index finger, eyes half closed, head tilted coquettishly, other hand on her hip, shoulders turned slightly.",
+   "surprise": "Delighted surprise: both hands pressed to her cheeks, elbows in, eyes wide, mouth in a small round O, eyebrows high, shoulders raised.",
+   "bonus": "She raises her slim brass spyglass to one eye with both hands and looks through it toward the left, the other eye closed, playful smile, body leaning slightly left.",
+   "soft": "Playful pout: one index finger touching her chin, head tilted, lips pushed into a small sympathetic pout, eyebrows lifted sweetly, other arm hanging relaxed.",
+   "laugh": "Giggling playfully: she covers her mouth with the back of her fingers while laughing, eyes crinkled, head tilted down and to the side, shoulders lifted, other hand resting on her waist."
+  },
+  "moana": {
+   "win": "Triumph: she lifts the coiled rope high overhead in one raised fist, other arm flung wide, joyful shouting smile, long hair swinging.",
+   "surprise": "Bracing: feet apart, she grips the rope with both hands across her waist, shoulders squared, eyes wide, mouth open.",
+   "bonus": "Big welcome: she throws one arm wide in welcome toward the left, the coiled rope hanging over her other shoulder, big warm open smile.",
+   "soft": "Easygoing sympathy: the rope hanging from one hand, other hand rubbing the back of her neck, crooked sympathetic smile, head tilted.",
+   "laugh": "Belly laugh: head back laughing with eyes closed, both hands on her hips, rope over her shoulder, long hair swinging."
+  },
+  "freya": {
+   "win": "Cool salute: she tips the brim of her tricorn hat with two fingers, slight confident smirk, chin lifted, other hand on her hip.",
+   "surprise": "Startled by a gust: she holds her tricorn hat on her head with one hand, braid flying sideways, eyes wide, lips parted.",
+   "bonus": "Gallant sweep: she takes off the tricorn hat and sweeps it forward toward the left at arm's length, confident smile, braid over shoulder; her platinum hair visible on top.",
+   "soft": "Reserved: she pulls the hat brim down slightly with one hand, head tilted, small knowing closed-mouth smile.",
+   "laugh": "Open laugh: head tilted back laughing, eyes closed, one hand holding her hat, braid swinging."
+  },
+  "rowan": {
+   "win": "Mischievous wink: one hand raised at shoulder height in front of her, palm up, thumb just flicked as if she tossed a coin upward (no coin in the image), she winks one eye with a cheeky grin, head tilted, other hand on the leather pouch at her hip.",
+   "surprise": "Jumps back startled: both hands up at shoulder height with fingers spread, shoulders hunched, head pulled back, eyes very wide, mouth open, eyebrows high, curls flying.",
+   "bonus": "Sly reveal: she holds her open leather pouch up in front of her waist with both hands, tilting it toward the viewer to show inside, leaning forward with a conspiratorial grin and raised eyebrows.",
+   "soft": "Easy shrug: both shoulders raised, palms turned up at her sides, head tilted, crooked half smile, one eyebrow raised.",
+   "laugh": "Bursting with laughter: she bends forward slightly, one hand on her knee or thigh, the other hand on her stomach, head down to the side, eyes closed in laughter, wide open grin, red curls bouncing forward."
+  },
+  "ines": {
+   "win": "Discovery: she holds the unfolded sea map up beside her face with one hand and points at a spot on it with the other, triumphant smile, eyebrows raised.",
+   "surprise": "Startled: the map pressed to her chest, fingertips of the other hand at her lips, eyes wide, eyebrows high.",
+   "bonus": "Theatrical invitation: she offers the half-open map forward toward the left with a flourish, leaning, inviting smile.",
+   "soft": "Gentle: she holds the folded map lowered, her other hand touching the gold comb in her bun, head tilted, sympathetic smile.",
+   "laugh": "Elegant laughter: head back laughing, eyes closed, fanning herself with the folded map, other hand at her waist."
+  }
+ }
+}

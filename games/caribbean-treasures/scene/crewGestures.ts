@@ -11,21 +11,62 @@ interface Style {
   signature: Flourish;
   answer: Flourish;
   tempo: number;
+  /** Temperament while waiting: weight shift size and pace, head tilt, small heel bounce. */
+  mood?: Mood;
+  /** Body accent of a win and of a big win. */
+  flair?: Flair;
+  /** A drawn prop that answers wins with its own light. */
+  prop?: Prop;
 }
+export interface Mood {sway:number; pace:number; tilt:number; bounce:number}
+export type Flair = 'thrust' | 'lean' | 'hop' | 'rise' | 'bow';
+/** gleam: light runs along a line; shine: a point shimmers; coin: a coin is flicked; spray: drops fly off. */
+export type PropKind = 'gleam' | 'shine' | 'coin' | 'spray';
+type Point = readonly [number, number];
+/** Where a prop is in the portraits, in portrait coordinates, and when it answers in a phrase. */
+export interface Prop {
+  kind: PropKind;
+  at: Partial<Record<CaptainPose, readonly [Point, Point?]>>;
+  when: number;
+  /** Light colour as r,g,b. */
+  tint?: string;
+  idle?: readonly [Point, Point?];
+}
+export const CALM: Mood = {sway:1, pace:1, tilt:0, bounce:0};
 
 // Wrist locations in the original portraits. The left and right refer to the screen.
 export const CREW_STYLE: Record<CrewId, Style> = {
   isabella: {hands: [[.24,.49],[.77,.59]], lead:'left',  signature:'salute', answer:'rally',  tempo:1.00},
-  amara:    {hands: [[.24,.51],[.74,.67]], lead:'left',  signature:'toast',  answer:'offer',  tempo:1.13},
-  mei:      {hands: [[.23,.55],[.72,.73]], lead:'left',  signature:'unfurl', answer:'sweep',  tempo:1.06},
-  priya:    {hands: [[.23,.52],[.74,.67]], lead:'right', signature:'beckon', answer:'toast',  tempo:.94},
-  yasmin:   {hands: [[.28,.69],[.79,.52]], lead:'right', signature:'salute', answer:'offer',  tempo:1.11},
-  zahara:   {hands: [[.28,.66],[.72,.66]], lead:'left',  signature:'rally',  answer:'sweep',  tempo:.89},
-  catalina: {hands: [[.27,.78],[.77,.64]], lead:'left',  signature:'sweep',  answer:'beckon', tempo:.93},
-  moana:    {hands: [[.20,.68],[.73,.65]], lead:'right', signature:'offer',  answer:'unfurl', tempo:1.12},
-  freya:    {hands: [[.32,.64],[.79,.70]], lead:'right', signature:'open',   answer:'salute', tempo:1.03},
-  rowan:    {hands: [[.21,.76],[.71,.65]], lead:'left',  signature:'open',   answer:'rally',  tempo:.88},
-  ines:     {hands: [[.30,.53],[.74,.69]], lead:'left',  signature:'unfurl', answer:'beckon', tempo:1.18},
+  amara:    {hands: [[.24,.51],[.74,.67]], lead:'left',  signature:'toast',  answer:'offer',  tempo:1.13,
+    mood:{sway:.8, pace:.8, tilt:.35, bounce:0}, flair:'rise',
+    prop:{kind:'shine', tint:'255,222,140', when:.26, at:{win:[[.22,.07],[.36,.10]], bonus:[[.18,.28]]}, idle:[[.13,.40]]}},
+  mei:      {hands: [[.23,.55],[.72,.73]], lead:'left',  signature:'unfurl', answer:'sweep',  tempo:1.06,
+    mood:{sway:.6, pace:1.1, tilt:.2, bounce:0}, flair:'bow',
+    prop:{kind:'gleam', when:.20, at:{win:[[.12,.38],[.86,.55]], bonus:[[.27,.37],[.05,.25]]}, idle:[[.22,.71],[.06,.41]]}},
+  priya:    {hands: [[.23,.52],[.74,.67]], lead:'right', signature:'beckon', answer:'toast',  tempo:.94,
+    mood:{sway:1.2, pace:.9, tilt:.8, bounce:0}, flair:'lean',
+    prop:{kind:'shine', tint:'205,238,255', when:.28, at:{win:[[.22,.18]], bonus:[[.18,.47]]}, idle:[[.10,.59]]}},
+  yasmin:   {hands: [[.28,.69],[.79,.52]], lead:'right', signature:'salute', answer:'offer',  tempo:1.11,
+    mood:{sway:1.1, pace:.7, tilt:.6, bounce:0}, flair:'rise',
+    prop:{kind:'shine', tint:'255,198,120', when:.32, at:{win:[[.18,.17],[.18,.08]], bonus:[[.20,.29],[.20,.20]]}, idle:[[.88,.50]]}},
+  zahara:   {hands: [[.28,.66],[.72,.66]], lead:'left',  signature:'rally',  answer:'sweep',  tempo:.89,
+    mood:{sway:1.7, pace:1.55, tilt:.15, bounce:.55}, flair:'thrust',
+    prop:{kind:'gleam', when:.22, at:{win:[[.25,.36],[.32,.03]], bonus:[[.18,.70],[.03,.85]]}, idle:[[.19,.80],[.07,.97]]}},
+  catalina: {hands: [[.27,.78],[.77,.64]], lead:'left',  signature:'sweep',  answer:'beckon', tempo:.93,
+    mood:{sway:1.25, pace:.78, tilt:1, bounce:0}, flair:'lean',
+    prop:{kind:'shine', tint:'255,236,244', when:.30, at:{win:[[.34,.18]]}, idle:[[.64,.17],[.36,.235]]}},
+  moana:    {hands: [[.20,.68],[.73,.65]], lead:'right', signature:'offer',  answer:'unfurl', tempo:1.12,
+    mood:{sway:1.4, pace:1, tilt:.3, bounce:.35}, flair:'hop',
+    prop:{kind:'spray', when:.15, at:{win:[[.17,.08],[.07,.35]], bonus:[[.80,.30],[.93,.62]]}, idle:[[.03,.90],[.18,.96]]}},
+  freya:    {hands: [[.32,.64],[.79,.70]], lead:'right', signature:'open',   answer:'salute', tempo:1.03,
+    mood:{sway:.7, pace:.75, tilt:.2, bounce:0}, flair:'thrust',
+    prop:{kind:'gleam', when:.24, at:{win:[[.27,.16],[.82,.14]], bonus:[[.05,.22],[.38,.37]]}, idle:[[.30,.13],[.78,.10]]}},
+  rowan:    {hands: [[.21,.76],[.71,.65]], lead:'left',  signature:'open',   answer:'rally',  tempo:.88,
+    mood:{sway:1.15, pace:1.3, tilt:.45, bounce:.3}, flair:'hop',
+    prop:{kind:'coin', when:.12, at:{win:[[.07,.32]], bonus:[[.54,.69]]}}},
+  ines:     {hands: [[.30,.53],[.74,.69]], lead:'left',  signature:'unfurl', answer:'beckon', tempo:1.18,
+    mood:{sway:1, pace:.85, tilt:.7, bounce:0}, flair:'bow',
+    prop:{kind:'shine', tint:'255,170,110', when:.30, at:{win:[[.33,.34],[.65,.03]], bonus:[[.17,.53]]}, idle:[[.60,.04]]}},
 };
 
 interface Cue {
