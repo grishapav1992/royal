@@ -74,13 +74,17 @@ app.innerHTML = tr`
   <header class="header">
     <a class="brand" href="/" aria-label="Рояль, игровой зал"><span class="brand-mark">${icon('crown')}</span><span>РОЯЛЬ<small>ARCADE SOCIAL CLUB</small></span></a>
     <div class="header-center">${icon('game')}<span>Игровой зал</span></div>
-    <div class="room-heading"><div><h1>Казино и бар <span>01</span></h1></div><div class="room-tools"><nav id="floor-links" class="floor-links" aria-label="Лестницы между этажами"></nav><span class="local-label"><i></i>${translateText(offline ? 'Локальная игра' : 'Вход в зал')}</span><button class="icon-button" id="help" aria-label="Как играть" title="Как играть">${icon('help')}</button><button class="icon-button" id="fullscreen" aria-label="Полный экран" title="Полный экран">${icon('expand')}</button></div></div>
-    <button type="button" class="profile-toggle icon-button" popovertarget="profile-menu" aria-label="Профиль и настройки" title="Профиль и настройки">${icon('person')}</button>
-    <div class="profile" id="profile-menu" popover><span class="demo-badge">ДЕМО</span><span class="avatar">${icon('person')}</span><span class="profile-name">Гость<small>Приятно познакомиться</small></span></div>
+    <div class="header-actions">
+      <div class="header-wallets"></div>
+      <div class="room-tools"><span class="local-label"><i></i>${translateText(offline ? 'Локальная игра' : 'Вход в зал')}</span><button class="icon-button" id="help" aria-label="Как играть" title="Как играть">${icon('help')}</button><button class="icon-button" id="fullscreen" aria-label="Полный экран" title="Полный экран">${icon('expand')}</button></div>
+      <button type="button" class="profile-toggle" popovertarget="profile-menu" aria-label="Профиль и настройки" title="Профиль и настройки"><span class="avatar">${icon('person')}</span><span class="profile-toggle-name" aria-hidden="true">Гость</span><svg class="profile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+    </div>
+    <div class="profile" id="profile-menu" popover><div class="profile-summary"><span class="avatar">${icon('person')}</span><span class="profile-name">Гость<small>Приятно познакомиться</small></span></div><div class="profile-header-items"></div><span class="demo-badge">ДЕМО</span></div>
   </header>
   <main>
     <div class="workspace">
       <section class="room-panel" aria-label="Игровой зал">
+        <div class="room-toolbar"><h1>Казино и бар <span>01</span></h1><nav id="floor-links" class="floor-links" aria-label="Лестницы между этажами"></nav></div>
         <div class="room-overlay"><span class="room-intoxication" id="room-intoxication" role="status" hidden></span><span class="npc-count"></span></div>
         <div id="game" tabindex="0" role="application" aria-label="Игровой зал. Передвижение стрелками или WASD, Shift для ускорения. Подойдите к столу или автомату и нажмите E."><div class="loading" id="loading">Открываем клуб<span></span></div></div>
         <div id="interaction" class="interaction" hidden><div><span class="eyebrow" id="machine-kind">ИГРОВОЙ АВТОМАТ</span><strong id="machine-name"></strong></div><button id="interact" class="primary-button"><kbd>E</kbd><span id="interact-label">Играть</span>${icon('arrow')}</button></div>
@@ -104,10 +108,23 @@ app.innerHTML = tr`
 `;
 installLanguageSwitcher(document.querySelector<HTMLElement>('.profile')!);
 const profileMenu = document.querySelector<HTMLElement>('#profile-menu')!;
-const compactHeader = window.matchMedia('(max-width:1400px)');
-compactHeader.addEventListener('change', () => {
-  if (!compactHeader.matches && profileMenu.matches(':popover-open')) profileMenu.hidePopover();
-});
+// The header button repeats the player name that account code writes into the menu.
+const profileName = profileMenu.querySelector<HTMLElement>('.profile-name')!;
+const toggleName = document.querySelector<HTMLElement>('.profile-toggle-name')!;
+const syncToggleName = () => { toggleName.textContent = profileName.firstChild?.textContent?.trim() || ''; };
+new MutationObserver(syncToggleName).observe(profileName, { childList: true, characterData: true, subtree: true });
+syncToggleName();
+// Phones keep one header row: wallets and room tools move into the player menu and back.
+const phoneHeader = window.matchMedia('(max-width:600px)');
+const headerActions = document.querySelector<HTMLElement>('.header-actions')!;
+const headerWallets = document.querySelector<HTMLElement>('.header-wallets')!;
+const roomTools = document.querySelector<HTMLElement>('.room-tools')!;
+const placeHeaderItems = () => {
+  if (phoneHeader.matches) profileMenu.querySelector('.profile-header-items')!.append(headerWallets, roomTools);
+  else headerActions.prepend(headerWallets, roomTools);
+};
+phoneHeader.addEventListener('change', placeHeaderItems);
+placeHeaderItems();
 profileMenu.addEventListener('click', event => {
   if ((event.target as Element).closest('button') && profileMenu.matches(':popover-open')) profileMenu.hidePopover();
 });
@@ -465,7 +482,8 @@ casinoChat.textContent = translateText('Чат');
 casinoChat.setAttribute('aria-label', translateText('Общий чат'));
 casinoChat.setAttribute('aria-controls', 'club-chat-dock');
 casinoChat.setAttribute('aria-expanded', 'false');
-$('.room-tools').prepend(casinoChat);
+// The chat toggle stays in the header row on every width, next to the player button.
+$('.profile-toggle').before(casinoChat);
 const setCasinoChat = (open: boolean) => {
   document.body.dataset.casinoChat = open ? 'open' : 'closed'; casinoChat.setAttribute('aria-expanded', String(open));
   if (open) $('#chat-input')?.focus(); else casinoChat.focus();

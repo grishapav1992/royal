@@ -12,7 +12,6 @@ body[data-entry-mode=casino] {
 
 body[data-entry-mode=casino] #app > .header {
   min-height: 64px;
-  grid-template-columns: auto auto minmax(0, 1fr) auto;
   gap: 16px;
   padding: 8px clamp(12px, 3vw, 48px);
   border: 0;
@@ -30,12 +29,14 @@ body[data-entry-mode=casino] .header .brand {
 body[data-entry-mode=casino] .header .brand-mark {
   width: 36px;
   height: 36px;
+  border: 0;
   border-radius: 9px;
   background: var(--casino-green);
   color: #f0d8ad;
+  transform: none;
 }
 
-body[data-entry-mode=casino] :is(.header .brand small, .header-center, .room-heading > div:first-child, .room-dock, #floor-links, #help) {
+body[data-entry-mode=casino] :is(.header .brand small, .header-center, .room-toolbar, .room-dock, #floor-links, #help) {
   display: none;
 }
 
@@ -57,17 +58,12 @@ body[data-entry-mode=casino] .entry-mode-switcher button[aria-pressed=true] {
   color: #fff8e9;
 }
 
-body[data-entry-mode=casino] .header .room-tools {
-  justify-self: end;
-  flex-wrap: nowrap;
-}
-
 body[data-entry-mode=casino] .header .local-label {
   color: var(--casino-muted);
 }
 
-body[data-entry-mode=casino] .header :is(.icon-button, #invite, .casino-chat-toggle) {
-  min-height: 36px;
+body[data-entry-mode=casino] .header-actions :is(.icon-button, #invite, .casino-chat-toggle) {
+  min-height: 38px;
   border: 1px solid var(--casino-line);
   border-radius: 8px;
   background: #f8f2e6;
@@ -75,36 +71,47 @@ body[data-entry-mode=casino] .header :is(.icon-button, #invite, .casino-chat-tog
   box-shadow: none;
 }
 
-body[data-entry-mode=casino] .header .icon-button {
-  width: 36px;
-  height: 36px;
+body[data-entry-mode=casino] .header-actions .icon-button {
+  width: 38px;
+  height: 38px;
 }
 
-body[data-entry-mode=casino] .header :is(.icon-button, #invite, .casino-chat-toggle):hover {
+body[data-entry-mode=casino] .header-actions :is(.icon-button, #invite, .casino-chat-toggle):hover {
   background: #eae1cf;
   color: #233b30;
 }
 
+body[data-entry-mode=casino] .header .header-wallets .wallet-button {
+  border-color: #cdb98f;
+  border-radius: 8px;
+  background: #f6eedd;
+  color: var(--casino-green);
+}
+
 body[data-entry-mode=casino] .header .profile-toggle {
-  display: grid;
+  border: 1px solid var(--casino-line);
+  border-radius: 10px;
+  background: #f8f2e6;
+  color: var(--casino-ink);
+  font: 600 13px/1.1 system-ui, sans-serif;
 }
 
-body[data-entry-mode=casino] .header .profile:not(:popover-open) {
-  display: none;
+body[data-entry-mode=casino] .header .profile-toggle:hover {
+  background: #eae1cf;
 }
 
-body[data-entry-mode=casino] .header .profile:popover-open {
-  position: fixed;
-  inset: 68px clamp(12px, 3vw, 48px) auto auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 8px;
-  width: min(360px, calc(100vw - 24px));
-  max-height: calc(100dvh - 80px);
-  margin: 0;
-  overflow-y: auto;
-  padding: 14px;
+body[data-entry-mode=casino] .header .profile-toggle:focus-visible {
+  outline-color: var(--casino-green);
+}
+
+body[data-entry-mode=casino] .header .profile-toggle .avatar,
+body[data-entry-mode=casino] #profile-menu .profile-summary .avatar {
+  background: var(--casino-green);
+  color: #f0d8ad;
+}
+
+body[data-entry-mode=casino] #profile-menu:popover-open {
+  inset: 72px clamp(12px, 3vw, 48px) auto auto;
   border: 1px solid var(--casino-line);
   border-radius: 12px;
   background: var(--casino-surface);
@@ -112,12 +119,65 @@ body[data-entry-mode=casino] .header .profile:popover-open {
   box-shadow: 0 12px 32px #3c30202b;
 }
 
-body[data-entry-mode=casino] .header .profile:popover-open .profile-name {
-  display: block;
-  order: -1;
-  flex-basis: 100%;
-  max-width: 100%;
+body[data-entry-mode=casino] #profile-menu .profile-summary,
+body[data-entry-mode=casino] #profile-menu .profile-header-items .room-tools {
+  border-bottom: 1px solid #e6dccb;
+}
+
+body[data-entry-mode=casino] #profile-menu .profile-name {
   color: var(--casino-ink);
+  font: 400 18px/1.2 Georgia, serif;
+}
+
+body[data-entry-mode=casino] #profile-menu .progression-button {
+  border-color: #cdb98f;
+  color: #7a5a2f;
+  font-family: system-ui, sans-serif;
+}
+
+body[data-entry-mode=casino] #profile-menu > button,
+body[data-entry-mode=casino] #profile-menu .profile-header-items button,
+body[data-entry-mode=casino] #profile-menu .language-switcher {
+  border-radius: 8px;
+  color: var(--casino-ink);
+  font: 500 14px system-ui, sans-serif;
+}
+
+body[data-entry-mode=casino] #profile-menu .profile-header-items .icon-button {
+  width: 100%;
+  height: auto;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+}
+
+body[data-entry-mode=casino] #profile-menu > button:hover,
+body[data-entry-mode=casino] #profile-menu .profile-header-items button:hover {
+  background: #f0e8d8;
+  color: var(--casino-ink);
+}
+
+body[data-entry-mode=casino] #profile-menu > button:focus-visible,
+body[data-entry-mode=casino] #profile-menu .profile-header-items button:focus-visible {
+  outline-color: var(--casino-green);
+}
+
+body[data-entry-mode=casino] #profile-menu #logout-button {
+  border-top: 1px solid #e6dccb;
+  border-radius: 0;
+  color: #a12e2e;
+}
+
+body[data-entry-mode=casino] #profile-menu::backdrop {
+  background: #302b2a73;
+}
+
+@media (max-width: 600px) {
+  body[data-entry-mode=casino] #profile-menu:popover-open {
+    inset: auto 0 0 0;
+    border-width: 1px 0 0;
+    border-radius: 16px 16px 0 0;
+  }
 }
 
 body[data-entry-mode=casino] #app > main {
@@ -454,13 +514,13 @@ body[data-entry-mode=casino] .workspace > .chat-dock #send-chat {
     padding-inline: 6px;
   }
 
-  body[data-entry-mode=casino] .header :is(.brand-mark, .icon-button, #invite) {
+  body[data-entry-mode=casino] :is(.header .brand-mark, .header-actions .icon-button, .header-actions #invite) {
     width: 30px;
     height: 32px;
     min-height: 32px;
   }
 
-  body[data-entry-mode=casino] .header .room-tools {
+  body[data-entry-mode=casino] .header-actions .room-tools {
     gap: 4px;
   }
 

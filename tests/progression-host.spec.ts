@@ -1,3 +1,4 @@
+import { openPlayerMenu } from './entry-mode';
 import { selectEntryMode } from './entry-mode';
 import { test, expect, type Page } from '@playwright/test';
 import { ROYAL_PLATFORM_GAMES } from '../src/shared/arcadeCatalog';
@@ -308,7 +309,7 @@ test('a level reward opens the real atelier, recovers a lost accepted request an
   await page.route('**/api/skin-studio/generations',async route=>{accepted=route.request().postDataJSON();const response=await route.fetch();expect(response.ok()).toBe(true);await route.abort('failed');},{times:1});
   await page.locator('#skin-prompt').fill('Космонавт в красном костюме');await page.locator('.skin-generate-slot button').click();
   await expect.poll(()=>accepted?.rewardGrantId).toBe(before.skinGrants[0].id);await page.reload(); await selectEntryMode(page);await expect(page.locator('#join-dialog')).toBeHidden({timeout:25000});
-  await page.getByRole('button',{name:'Образы',exact:true}).click();
+  await openPlayerMenu(page);await page.getByRole('button',{name:'Образы',exact:true}).click();
   await expect(page.locator('#skin-studio-dialog .skin-results')).toBeVisible({timeout:25000});
   await expect(page.locator('[data-select-skin]')).toHaveCount(2);
   const state=await page.evaluate(async()=>{const {account}=await(await fetch('/api/auth/me')).json();const headers={'X-Royal-Account-Id':account.id};return {progression:await(await fetch('/api/progression',{headers})).json(),wallet:await(await fetch('/api/demo-wallet',{headers})).json(),atelier:await(await fetch('/api/skin-studio',{headers})).json()};});

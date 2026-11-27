@@ -1,3 +1,4 @@
+import { openPlayerMenu } from './entry-mode';
 import {worldPoint,showChat} from './room-ui';
 import { test, expect, type Page } from '@playwright/test';
 import { Client } from '@colyseus/sdk';
@@ -195,7 +196,7 @@ test('account login, saved character, wrong password, logout and expired invitat
   await page.reload({waitUntil:'domcontentloaded'});
   await expect.poll(async () => (await net(page)).status).toBe('connected');
   await expect(page.locator('#join-dialog')).not.toBeVisible();
-  await page.getByRole('button', {name:'Выйти',exact:true}).click();
+  await openPlayerMenu(page);await page.getByRole('button', {name:'Выйти',exact:true}).click();
   await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
   expect((await context.request.get('/api/auth/me').then(r=>r.json())).account).toBeNull();
   await page.getByLabel('Почта',{exact:true}).fill(address.toUpperCase());
@@ -212,7 +213,7 @@ test('account login, saved character, wrong password, logout and expired invitat
   await expect(page.locator('#character-step')).not.toBeVisible();
   await page.getByRole('button',{name:'Войти в другой зал',exact:true}).click();
   await expect(page.locator('#join-dialog')).not.toBeVisible();
-  await page.getByRole('button',{name:'Выйти',exact:true}).click();
+  await openPlayerMenu(page);await page.getByRole('button',{name:'Выйти',exact:true}).click();
   await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
   await expect.poll(async()=> (await net(page)).status).toBe('disconnected');
 });
