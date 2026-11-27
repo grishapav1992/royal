@@ -31,7 +31,7 @@ async function enter(page:Page,path:string,email=`ct-player-${crypto.randomUUID(
  await page.route('https://luelonplay.com/demo-api/**',route=>route.fulfill({json:{games:[]}}));
  await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);await selectEntryMode(page);
  await page.getByLabel('Почта',{exact:true}).fill(email);await page.getByLabel('Пароль',{exact:true}).fill('Royal-ct-check-123!');
- await page.getByRole('button',{name:'Продолжить',exact:true}).click();
+ await page.locator('#login-button').click();
  await expect.poll(async()=>await page.locator('#character-step').isVisible()||(await state(page)).online,{timeout:30000}).toBe(true);
  if(await page.locator('#character-step').isVisible())await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});

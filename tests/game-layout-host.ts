@@ -9,7 +9,7 @@ export async function enterGameHall(page:Page,path:string){
  if(await club.isVisible())await selectEntryMode(page);
  await expect(page.getByLabel('Почта',{exact:true})).toBeVisible({timeout:30000});
  await page.getByLabel('Почта',{exact:true}).fill(`layout-${crypto.randomUUID()}@example.test`);
- await page.getByLabel('Пароль',{exact:true}).fill('Royal-layout-check-123!');await page.getByRole('button',{name:'Продолжить',exact:true}).click();
+ await page.getByLabel('Пароль',{exact:true}).fill('Royal-layout-check-123!');await page.locator('#login-button').click();
  // The live host may still use the previous sign-in order.
  await expect(club.or(page.locator('#character-step'))).toBeVisible();if(await club.isVisible())await club.click();
  await expect(page.locator('#character-step')).toBeVisible();await page.getByRole('button',{name:'Войти в зал',exact:true}).click();

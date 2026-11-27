@@ -20,7 +20,7 @@ async function login(page: Page) {
   await expect(page.locator('#login-form')).toBeVisible({ timeout: 30000 });
   await page.getByLabel('Почта', { exact: true }).fill(email());
   await page.getByLabel('Пароль', { exact: true }).fill(password);
-  await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
+  await page.locator('#login-button').click();
   await expect(page.locator('#character-step')).toBeVisible();
 }
 

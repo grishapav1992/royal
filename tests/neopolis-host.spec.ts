@@ -42,7 +42,7 @@ test('Neopolis fits the real host, prioritizes the field over chat, and restores
     if (await club.isVisible()) await selectEntryMode(page);
     await page.getByLabel('Почта', { exact: true }).fill('np-player-' + crypto.randomUUID() + '@example.test');
     await page.getByLabel('Пароль', { exact: true }).fill('Neopolis-test-123!');
-    await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
+    await page.locator('#login-button').click();
     await expect(page.locator('#character-step')).toBeVisible();
     await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
     await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});

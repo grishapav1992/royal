@@ -10,7 +10,7 @@ async function enter(page: Page, waitForProgression = true) {
   await selectEntryMode(page);
   await page.getByLabel('Почта', { exact: true }).fill('progression-player-' + crypto.randomUUID() + '@example.test');
   await page.getByLabel('Пароль', { exact: true }).fill('Progression-host-test-42!');
-  await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
+  await page.locator('#login-button').click();
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 25000 });
