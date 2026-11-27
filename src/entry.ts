@@ -8,7 +8,10 @@ async function boot() {
   let mode: EntryMode = 'club';
   if (url.searchParams.get('offline') !== '1') {
     mode = await chooseEntryMode();
-    while (!(await requireEntryAccount())) mode = await chooseEntryMode(mode);
+    let signedIn: EntryMode | null;
+    // The login card can change the mode, so the session check reports the mode to open.
+    while (!(signedIn = await requireEntryAccount(mode))) mode = await chooseEntryMode(mode);
+    mode = signedIn;
     if (url.searchParams.has('mode') && url.searchParams.get('mode') !== mode) {
       url.searchParams.set('mode', mode);
       history.replaceState(history.state, '', url);

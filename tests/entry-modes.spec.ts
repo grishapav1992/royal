@@ -200,10 +200,14 @@ test('phone chooses before login even with a mode link and a saved preference fr
   await expect(page.locator('#login-form')).toHaveCount(0);
   await selectEntryMode(page, 'club');
   await expect(page.locator('#login-form')).toBeVisible();
-  await page.getByRole('button', { name: 'К выбору режима' }).click();
-  await expect(page.locator('.entry-club')).toBeFocused();
-  await selectEntryMode(page, 'casino');
-  await expect(page.locator('#login-form')).toBeVisible();
+  await expect(page.getByRole('radio', { name: 'В клуб с персонажем' })).toBeChecked();
+  await expect(page.locator('#login-button')).toHaveText('Войти в клуб');
+  await expect(page.getByRole('button', { name: 'К выбору режима' })).toHaveCount(0);
+  await page.getByRole('radio', { name: 'Сразу к играм' }).check();
+  await expect(page.locator('#login-button')).toHaveText('Войти и открыть игры');
+  await expect(page.locator('.entry-login-thumb img').first()).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: proof + '/login-mobile.png' });
   await expect(page.locator('#casino-catalog')).toHaveCount(0);
   await page.locator('#email').fill(`new-entry-${crypto.randomUUID()}@example.test`);
   await page.locator('#password').fill('EntryLocal2026!'); await page.locator('#login-button').click();
@@ -227,6 +231,47 @@ test('phone chooses before login even with a mode link and a saved preference fr
   await page.getByRole('button', { name: 'Club', exact: true }).click();
   await expect(page.locator('body')).toHaveAttribute('data-entry-mode', 'club', { timeout: 40000 });
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+});
+
+test('desktop login card keeps the mode choice and checks the password rules as you type', async ({ page }) => {
+  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await selectEntryMode(page, 'casino');
+  const card = page.locator('.entry-login-card');
+  await expect(card).toHaveAttribute('data-mode', 'casino');
+  await expect(page.getByRole('heading', { name: 'Вход в Рояль' })).toBeVisible();
+  await expect(page.getByRole('radio', { name: 'Сразу к играм' })).toBeChecked();
+  await expect(page.locator('.entry-login-art-casino')).toBeVisible();
+  await expect(page.locator('#login-button')).toHaveText('Войти и открыть игры');
+  await expect(page.locator('#email')).toBeFocused();
+  await expect(page.locator('.login-recovery-link')).toBeHidden();
+
+  const rules = page.locator('.login-password-rules li');
+  await expect(rules).toHaveText(['8 символов и больше', 'Прописная и строчная', 'Цифра', 'Спецсимвол']);
+  await page.locator('#password').fill('klub2026');
+  await expect.poll(() => rules.evaluateAll(items => items.map(item => (item as HTMLElement).dataset.met))).toEqual(['true', 'false', 'true', 'false']);
+  await page.locator('#password').fill('Klub2026!');
+  await expect.poll(() => rules.evaluateAll(items => items.every(item => (item as HTMLElement).dataset.met === 'true'))).toBe(true);
+  const reveal = page.getByRole('button', { name: 'Показать пароль' });
+  await reveal.click();
+  await expect(page.locator('#password')).toHaveAttribute('type', 'text');
+  await expect(page.getByRole('button', { name: 'Скрыть пароль' })).toHaveAttribute('aria-pressed', 'true');
+  await page.screenshot({ path: proof + '/login-desktop-casino.png' });
+
+  await page.getByText('В клуб с персонажем', { exact: true }).click();
+  await expect(card).toHaveAttribute('data-mode', 'club');
+  await expect(page.locator('.entry-login-art-club')).toBeVisible();
+  await expect(page.locator('.entry-login-art-casino')).toBeHidden();
+  await expect(page.locator('#login-button')).toHaveText('Войти в клуб');
+  await page.screenshot({ path: proof + '/login-desktop-club.png' });
+
+  await page.locator('#email').fill(`entry-card-${crypto.randomUUID()}@example.test`);
+  await page.locator('#password').fill('Wrong2026');
+  await page.locator('#login-button').click();
+  await expect(page.locator('#join-error')).toBeVisible();
+  await expect(page.locator('#login-button')).toHaveText('Войти в клуб');
+  await expect(page.getByRole('radio', { name: 'В клуб с персонажем' })).toBeEnabled();
+  expect(errors).toEqual([]);
 });
 
 test('a failed session check offers retry before asking for credentials', async ({ page }) => {
