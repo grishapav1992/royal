@@ -67,3 +67,13 @@ export function coin(g:CanvasRenderingContext2D,x:number,y:number,s:number,r:num
   if(w>s*.45){g.fillStyle='rgba(120,66,10,.8)';g.beginPath();g.ellipse(0,-s*.1,w*.3,s*.28,0,0,TAU);g.fill();g.fillRect(-w*.16,s*.1,w*.32,s*.2);g.fillStyle='#e9b24a';for(const k of [-1,1]){g.beginPath();g.ellipse(k*w*.12,-s*.1,w*.08,s*.08,0,0,TAU);g.fill();}}
   g.restore();
 }
+/** A pirate's prop answers in light: a glint runs along a line, a point shimmers, a coin is flicked and caught, drops fly off. */
+export function propLight(fx:Effects,cue:{kind:'gleam'|'shine'|'coin'|'spray';pose:string;tint?:string;a:readonly [number,number];b?:readonly [number,number]},box:{x:number;y:number;w:number;h:number}){
+  const at=(p:readonly [number,number])=>({x:box.x+p[0]*box.w,y:box.y+p[1]*box.h}),a=at(cue.a),b=cue.b?at(cue.b):a,h=box.h,tint=cue.tint??'255,240,200';
+  const glint=(x:number,y:number,s:number,delay:number)=>fx.add({k:'glint',x,y,d:.45,s,r:0,vr:1.2,t:-delay});
+  if(cue.kind==='gleam'){for(let i=0;i<5;i++){const u=i/4;glint(a.x+(b.x-a.x)*u,a.y+(b.y-a.y)*u,h*(.035+.02*u),i*.07);}glint(b.x,b.y,h*.075,.33);}
+  else if(cue.kind==='shine'){fx.add({k:'flash',x:a.x,y:a.y,d:.8,s:h*.05,c:tint});glint(a.x,a.y,h*.05,.08);if(cue.b){fx.add({k:'flash',x:b.x,y:b.y,d:.7,s:h*.04,c:tint,t:-.3});glint(b.x,b.y,h*.04,.36);}}
+  else if(cue.kind==='spray'){for(let i=0;i<18;i++){const k=Math.random(),x=a.x+(b.x-a.x)*k,y=a.y+(b.y-a.y)*k,an=-Math.PI/2+(Math.random()-.5)*2.2,v=h*(.5+Math.random()*.8);fx.add({k:'drop',x,y,vx:Math.cos(an)*v,vy:Math.sin(an)*v,g:h*2.2,d:.55+Math.random()*.35,s:1+Math.random()*1.8,c:i%3?'#8fe6ea':'#e9fdff',a:.9,t:-Math.random()*.15});}glint(a.x,a.y,h*.04,.05);}
+  else if(cue.pose==='bonus'){for(let i=0;i<6;i++){const v=h*(1.1+Math.random()*.7);fx.add({k:'coin',x:a.x+(Math.random()-.5)*h*.06,y:a.y,vx:(Math.random()-.5)*h*.9,vy:-v,g:h*2.6,d:.9+Math.random()*.3,s:h*.018,vr:10+Math.random()*8,t:-i*.06});}glint(a.x,a.y-h*.05,h*.05,.1);}
+  else{const T=.8,g=h*2.6;fx.add({k:'coin',x:a.x,y:a.y,vx:h*.02,vy:-g*T/2,g,d:T,s:h*.02,vr:16});glint(a.x+h*.008,a.y-g*T*T/8,h*.045,T/2-.08);}
+}

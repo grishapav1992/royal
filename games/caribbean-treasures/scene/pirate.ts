@@ -1,12 +1,15 @@
 /** One pirate: the existing eight drawn poses, gently deformed. A pose changes inside a short dip of the body, so two faces are never seen at once. */
 import {loadImage,program,texture} from './gl';
 import {crewPortrait,type CaptainPose,type CrewId} from '../CaribbeanCrew';
-import {articulate, CREW_STYLE, crewCue, type CrewEvent} from './crewGestures';
+import {articulate, CALM, CREW_STYLE, crewCue, type CrewEvent, type Flair, type PropKind} from './crewGestures';
+/** A prop cue in portrait coordinates: the stage turns it into light or a coin. */
+export type PropCue = {kind: PropKind; pose: CaptainPose; tint?: string; a: readonly [number, number]; b?: readonly [number, number]};
 export const POSES=['idle','win','blink','focus','surprise','bonus','soft','laugh'] as const;
 export type Pose=CaptainPose;
 const FRAG=`precision highp float;varying vec2 v;uniform sampler2D a;uniform float t,live,wind,light,flash;uniform vec3 tint;uniform vec4 body;
 uniform vec4 wrists, reach;
 uniform vec2 upper;
+uniform vec4 mood;
 vec2 handOffset(vec2 p, vec2 wrist, vec2 delta){
  // Inverse mapping keeps a hand and its prop together through the gesture.
  vec2 d=(p-wrist-delta)*vec2(4.7,4.3);
@@ -20,9 +23,11 @@ vec2 warp(vec2 p){
  float br=sin(t*1.7)*live;float chest=exp(-pow((p.y-.36)/.17,2.));
  p.y+=br*.0034*smoothstep(.8,.15,p.y);p.x+=(p.x-.5)*-br*.010*chest;
  // weight shifts from foot to foot
- p.x+=sin(t*.62)*.0065*live*(1.-p.y);
+ p.x+=sin(t*.62*mood.y)*.0065*mood.x*live*(1.-p.y);
+ // a restless character lifts onto her toes now and then
+ p.y+=mood.w*.0045*pow(max(0.,sin(t*2.4*mood.y)),3.)*live*smoothstep(.98,.2,p.y);
  // the head follows half a beat later
- float head=smoothstep(.30,.10,p.y);float ha=(sin(t*.62-.7)*.011+sin(t*.31)*.008+upper.x)*live*head;
+ float head=smoothstep(.30,.10,p.y);float ha=(sin(t*.62*mood.y-.7)*.011+sin(t*.31)*.008+mood.z*sin(t*.23+1.)*.016+upper.x)*live*head;
  vec2 h=p-vec2(.52,.27);p=vec2(.52,.27)+vec2(h.x-ha*h.y*1.5,h.y+ha*h.x*.66);
  // hair and scarf: outer part of the upper half
  float hair=smoothstep(.10,.30,e)*smoothstep(.62,.30,p.y)*smoothstep(.0,.08,p.y);
@@ -52,6 +57,9 @@ export class Pirate{
   private variation = new Map<CrewEvent, number>();
   private joints = articulate('look',0,0);
   private nextIdle = 7;
+  private propAt = -1;
+  private propEvent?: CrewEvent;
+  private cues: PropCue[] = [];
   constructor(public canvas:HTMLCanvasElement){
     try{this.gl=canvas.getContext('webgl',{alpha:true,premultipliedAlpha:true,antialias:false})!;this.sh=program(this.gl,FRAG);this.sh.unit('a',0);}catch{this.gl=undefined;this.failed=true;}
   }
@@ -85,8 +93,11 @@ export class Pirate{
     this.variation.set(event, variation + 1);
     const duration = cue.seconds * this.style.tempo;
     this.phrase = {event, cue, start:this.time, duration};
+    const prop = this.style.prop;
+    if (prop && (event === 'win' || event === 'big' || event === 'meet' || event === 'choice' || event === 'idle')) {this.propAt = this.time + duration * (event === 'big' ? .2 : prop.when); this.propEvent = event;}
     this.nextIdle = this.time + duration + 7 * this.style.tempo;
     if (event === 'watch') this.gesture('nod');
+    else if ((event === 'win' || event === 'big') && this.style.flair) this.flair(this.style.flair, event === 'big');
     else if (event === 'meet') this.gesture('enter');
     else if (event === 'cannon' || event === 'win' || event === 'big' || event === 'soft' || event === 'enter') this.gesture(event);
   }
@@ -102,6 +113,19 @@ export class Pirate{
     };
     this.gest={t:this.time,d:F[kind][0],f:F[kind][1]};
   }
+  /** A character's own body accent, used instead of the common win bounce. */
+  private flair(kind:Flair, big:boolean){
+    const F={
+      thrust:[big?1.5:.9,(u:number)=>{const k=big?2:1,w=(u*k)%1,o=w<.12?w/.12:Math.pow(1-(w-.12)/.88,1.6);return{y:-.024*o,r:-.012*Math.sin(Math.min(1,w*3)*Math.PI),s:.016*Math.exp(-7*w)*Math.sin(w*20)};}],
+      lean:[big?2.1:1.5,(u:number)=>{const k=big?Math.sin(u*Math.PI*2):Math.sin(u*Math.PI);return{x:-.012*k,r:.03*k*(1-.3*u),y:-.006*Math.abs(k)};}],
+      rise:[big?2.2:1.6,(u:number)=>{const k=Math.sin(Math.min(1,u*1.15)*Math.PI);return{y:-.02*k,s:-.012*k,r:big?.012*Math.sin(u*Math.PI*2):0};}],
+      bow:[big?1.9:1.3,(u:number)=>{const k=big?Math.abs(Math.sin(u*Math.PI*2)):Math.sin(u*Math.PI);return{y:.008*k,r:-.02*k,x:-.006*k};}],
+      hop:[big?1.6:1.1,(u:number)=>({y:-.03*Math.abs(Math.sin(u*Math.PI*(big?3:2)))*(1-u*.4),s:.02*Math.max(0,Math.cos(u*Math.PI*(big?6:4)))*(1-u)})],
+    } as const;
+    this.gest={t:this.time,d:F[kind][0],f:F[kind][1]};
+  }
+  /** Prop cues raised since the last call. */
+  takeProps(){const c=this.cues;this.cues=[];return c;}
   step(dt:number, allowIdle = true){
     this.time+=dt;this.swap=Math.min(1,this.swap+dt/.34);this.gust*=Math.exp(-3*dt);if(this.swap>=.28&&this.seen!==this.pose){this.seen=this.pose;this.gust=this.live?1.4:0;}
     if(this.holdUntil&&this.time>this.holdUntil){this.holdUntil=0;this.show('idle');}
@@ -117,6 +141,11 @@ export class Pirate{
     } else if (allowIdle && this.live && this.cur && this.pose === 'idle' && this.time >= this.nextIdle) {
       this.react('idle');
     }
+    if (this.propAt >= 0 && this.time >= this.propAt) {
+      this.propAt = -1;
+      const prop = this.style.prop, spot = prop && (this.propEvent === 'idle' && this.seen !== 'focus' ? prop.idle : prop.at[this.seen]);
+      if (prop && spot && this.live && this.cues.length < 4) this.cues.push({kind:prop.kind, pose:this.seen, tint:prop.tint, a:spot[0], b:spot[1]});
+    }
     this.nextBlink-=dt;
     if(this.nextBlink<0&&this.live>0){if(this.pose==='idle'&&!this.holdUntil&&!this.phrase){this.show('blink',.12);}this.nextBlink=2.8+Math.random()*3.4;}
     this.g={x:0,y:0,r:0,s:0};
@@ -125,7 +154,7 @@ export class Pirate{
   }
   get state(){return{character:this.id,ready:!!this.cur,failed:this.failed,pose:this.pose,seen:this.seen,reaction:this.phrase?.event,gesture:this.phrase?.cue.action};}
   get ready(){return !!this.cur;}
-  rest(){this.phrase=undefined;this.joints=articulate('look',0,0);this.nextIdle=this.time+7*this.style.tempo;this.nextBlink=3;this.gest=null;this.holdUntil=0;this.pose=this.seen='idle';this.swap=1;this.gust=0;this.flash=0;this.g={x:0,y:0,r:0,s:0};}
+  rest(){this.phrase=undefined;this.propAt=-1;this.cues=[];this.joints=articulate('look',0,0);this.nextIdle=this.time+7*this.style.tempo;this.nextBlink=3;this.gest=null;this.holdUntil=0;this.pose=this.seen='idle';this.swap=1;this.gust=0;this.flash=0;this.g={x:0,y:0,r:0,s:0};}
   destroy(){this.dead=true;this.ticket++;this.cur=undefined;this.sets.clear();this.sh?.free();}
   resize(w:number,h:number,dpr:number){const a=Math.max(1,Math.round(w*dpr)),b=Math.max(1,Math.round(h*dpr));if(this.canvas.width!==a||this.canvas.height!==b){this.canvas.width=a;this.canvas.height=b;}}
   draw(){
@@ -140,6 +169,7 @@ export class Pirate{
     s.set('reach',-(leftLeads ? j.leadOut : j.offOut),-(leftLeads ? j.leadUp : j.offUp),
                    leftLeads ? j.offOut : j.leadOut,-(leftLeads ? j.offUp : j.leadUp));
     s.set('upper',leftLeads ? -j.head : j.head,leftLeads ? -j.shoulder : j.shoulder);
+    const m=this.style.mood??CALM;s.set('mood',m.sway,m.pace,m.tilt,m.bounce);
     s.set('t',this.time);s.set('live',this.live);s.set('wind',this.wind+this.gust);s.set('tint',...this.tint);s.set('flash',this.flash);s.set('light',1);s.set('body',0,0,1,1);
     gl.drawArrays(gl.TRIANGLES,0,3);
     this.canvas.style.transform=`translate(${(this.g.x*100).toFixed(2)}%,${(this.g.y*100).toFixed(2)}%) rotate(${this.g.r.toFixed(4)}rad) scale(${(1-this.g.s*.6).toFixed(4)},${(1+this.g.s).toFixed(4)})`;
