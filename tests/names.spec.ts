@@ -1,3 +1,4 @@
+import { openPlayerMenu } from './entry-mode';
 import {showChat} from './room-ui';
 import {test,expect,type Page} from '@playwright/test';
 const net = (p: Page) => p.evaluate(() => (window as any).royalDemo.getNetworkState());
@@ -23,7 +24,7 @@ test('custom name persists and can be changed live for other players and chat', 
     await enter(b,'Наблюдатель','/?room='+(await net(a)).roomId);
     await expect(b.locator('#people-list')).toContainText('Лунный кот 🎮');
     const initial=await state(a), initialNet=await net(a);
-    await a.getByRole('button',{name:'Настройки игрока',exact:true}).click();
+    await openPlayerMenu(a);await a.getByRole('button',{name:'Настройки игрока',exact:true}).click();
     await a.getByLabel('Новое игровое имя',{exact:true}).fill('');
     await a.getByLabel('Новое игровое имя',{exact:true}).pressSequentially('wasd');
     expect((await state(a)).x).toBeCloseTo(initial.x,0);
@@ -62,14 +63,14 @@ test('mobile name editor fits and cancel keeps saved name',async({browser})=>{
   try {
     const page=await context.newPage();await enter(page,'Космический странник');
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-    await page.getByRole('button',{name:'Настройки игрока',exact:true}).tap();
+    await openPlayerMenu(page);await page.getByRole('button',{name:'Настройки игрока',exact:true}).tap();
     await page.getByLabel('Новое игровое имя',{exact:true}).fill('Другой ник');
     await page.locator('#settings-character-selection').getByRole('button',{name:'Гас',exact:true}).tap();
     await page.screenshot({path:'artifacts/name-editor-mobile.png'});
     await page.getByRole('button',{name:'Отмена',exact:true}).tap();
     await expect(page.locator('#people-list')).toContainText('Космический странник');
     expect((await state(page)).skin).toBe(0);
-    await page.getByRole('button',{name:'Настройки игрока',exact:true}).tap();
+    await openPlayerMenu(page);await page.getByRole('button',{name:'Настройки игрока',exact:true}).tap();
     await expect(page.locator('#settings-character-selection').getByRole('button',{name:'Эдди',exact:true})).toHaveAttribute('aria-pressed','true');
     await page.keyboard.press('Escape');
     await expect.poll(async()=>(await state(page)).locked).toBe(false);

@@ -1,3 +1,4 @@
+import { revealHeaderItem } from './entry-mode';
 import {test,expect,type Page,type Browser} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 import {mkdir,writeFile} from 'node:fs/promises';
@@ -117,7 +118,7 @@ test('ten-cent best-of-three match uses secret choices, synchronized reveal, two
     await mobileChat(a);const boxes=await a.locator('.td-choices button').evaluateAll(buttons=>buttons.map(button=>{const b=button.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height};}));expect(boxes).toHaveLength(3);for(const box of boxes){expect(box.width).toBeGreaterThanOrEqual(44);expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(390);expect(box.y+box.height).toBeLessThanOrEqual(844);}
     await a.screenshot({path:'artifacts/work/tsu-v3-mobile.png'});await expect(a.locator('.td-status')).not.toContainText('Ты победил');await winRound(a,b,2);
     await expect(a.locator('.td-status')).toContainText('Начислено 0,19 USDT');expect(await balance(a)).toBe(beforeA+9);expect(await balance(b)).toBe(beforeB-10);
-    await a.locator('#pvp-dialog [data-close]').click();if(!await a.locator('#pvp-button').isVisible())await a.locator('.profile-toggle').click();await a.locator('#pvp-button').click();await expect(a.locator('.td-score')).toHaveText('2 : 0');await expect(a.locator('[data-chant]')).toHaveText('');expect(await balance(a)).toBe(beforeA+9);expect(c.errors).toEqual([]);
+    await a.locator('#pvp-dialog [data-close]').click();if(!await a.locator('#pvp-button').isVisible())await a.locator('.profile-toggle').click();await revealHeaderItem(a,'#pvp-button');await a.locator('#pvp-button').click();await expect(a.locator('.td-score')).toHaveText('2 : 0');await expect(a.locator('[data-chant]')).toHaveText('');expect(await balance(a)).toBe(beforeA+9);expect(c.errors).toEqual([]);
   }finally{await c.close();}
 });
 
@@ -166,7 +167,7 @@ test('hand-duel sounds reach Royal output, follow the reveal and stay quiet afte
     await winRound(a,b,2);await expect(a.locator('.td-status')).toContainText('Начислено 0,19 USDT');
     expect((await owned()).length).toBe(before);
     await a.locator('[data-sound]').click();await a.waitForTimeout(200);expect((await owned()).length).toBe(before);
-    await a.locator('#pvp-dialog [data-close]').click();if(!await a.locator('#pvp-button').isVisible())await a.locator('.profile-toggle').click();await a.locator('#pvp-button').click();
+    await a.locator('#pvp-dialog [data-close]').click();if(!await a.locator('#pvp-button').isVisible())await a.locator('.profile-toggle').click();await revealHeaderItem(a,'#pvp-button');await a.locator('#pvp-button').click();
     await expect(a.locator('.td-score')).toHaveText('2 : 0');expect((await owned()).length).toBe(before);expect(c.errors).toEqual([]);
     await mkdir('artifacts/work/tsu-sound',{recursive:true});await writeFile('artifacts/work/tsu-sound/timing.json',JSON.stringify({beats:beats.length,reveals:reveals.length,estimatedRevealSkewMs:visual.at-reveals[0].audibleAt,masterOutputVerified:true,muteAndReopenQuiet:true,scope:'Browser output-clock estimate and rendered frame, not acoustic latency or subjective listening quality.'},null,2));
   }finally{await c.close();}

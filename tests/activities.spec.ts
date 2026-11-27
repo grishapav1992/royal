@@ -1,3 +1,4 @@
+import { openPlayerMenu } from './entry-mode';
 import {selectHall,worldPoint} from './room-ui';
 import {test,expect,type Page,type Browser,type APIRequestContext} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
@@ -61,7 +62,7 @@ test('piano is shared and listeners can close their ears independently',async({b
   const heard=(await activities(b)).audio.played,own=(await activities(a)).audio.played;await a.keyboard.down('a');await expect.poll(async()=>(await activities(b)).audio.played).toBeGreaterThan(heard);await expect.poll(async()=>(await activities(b)).notes).toContain(60);await a.keyboard.up('a');
   await expect.poll(async()=>(await activities(b)).notes).toEqual([]);
   expect((await activities(a)).audio.played).toBe(own+1);
-  await b.getByRole('button',{name:'Настройки игрока',exact:true}).click();await b.locator('#mute-piano').click();await expect(b.locator('#mute-piano')).toHaveAttribute('aria-pressed','true');await b.keyboard.press('Escape');const muted=(await activities(b)).audio.played;
+  await openPlayerMenu(b);await b.getByRole('button',{name:'Настройки игрока',exact:true}).click();await b.locator('#mute-piano').click();await expect(b.locator('#mute-piano')).toHaveAttribute('aria-pressed','true');await b.keyboard.press('Escape');const muted=(await activities(b)).audio.played;
   await a.keyboard.down('s');await expect.poll(async()=>(await activities(b)).notes).toContain(62);await a.keyboard.up('s');expect((await activities(b)).audio.played).toBe(muted);expect((await activities(a)).audio.muted).toBe(false);
   await expect(a.locator('#people-list')).toContainText('🙉');await open(b,'piano');await expect(b.locator('[data-note="60"]')).toBeDisabled();await expect(b.locator('#shared-join')).toHaveCount(0);
   expect(await a.locator('#piano-keys').innerText()).toBe('');await expect(a.locator('#shared-rules')).toBeHidden();await a.screenshot({path:'artifacts/shared-piano.png'});await close(a);await expect(b.locator('[data-note="60"]')).toBeEnabled();await expect.poll(async()=>(await activities(a)).pianist).toBe(bid);

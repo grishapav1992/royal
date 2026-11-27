@@ -19,7 +19,7 @@ const state=(page:Page)=>page.evaluate(()=>{try{return (window as any).royalDemo
 async function enter(page:Page,path:string){
  await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);await selectEntryMode(page);
  await page.getByLabel('Почта',{exact:true}).fill(`roulette-player-${crypto.randomUUID()}@example.test`);
- await page.getByLabel('Пароль',{exact:true}).fill('Roulette-player-123!');await page.getByRole('button',{name:'Продолжить',exact:true}).click();
+ await page.getByLabel('Пароль',{exact:true}).fill('Roulette-player-123!');await page.locator('#login-button').click();
  await expect.poll(async()=>await page.locator('#character-step').isVisible()||!(await page.locator('#join-dialog').isVisible())).toBe(true);
  if(await page.locator('#character-step').isVisible())await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden({timeout:25000});await expect.poll(async()=>(await state(page)).online).toBe(true);

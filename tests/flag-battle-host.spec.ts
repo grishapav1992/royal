@@ -16,7 +16,7 @@ async function enter(page:Page,path:string){
   await selectEntryMode(page,'club');
   await page.getByLabel('Почта',{exact:true}).fill(`flags-${crypto.randomUUID()}@example.test`);
   await page.getByLabel('Пароль',{exact:true}).fill('Royal-flag-test-123!');
-  await page.getByRole('button',{name:'Продолжить',exact:true}).click();
+  await page.locator('#login-button').click();
   await expect.poll(async()=>await page.locator('#character-step').isVisible()||!(await page.locator('#join-dialog').isVisible())).toBe(true);
   if(await page.locator('#character-step').isVisible())await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
   await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});

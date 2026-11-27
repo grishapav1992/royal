@@ -14,7 +14,7 @@ export class DemoWalletUI {
   constructor(private scene: Pick<RoomScene, 'setLocked'>) {
     this.button.type = 'button'; this.button.id = 'wallet-button'; this.button.className = 'wallet-button'; this.button.hidden = true;
     this.button.onclick = () => this.open();
-    document.querySelector('.profile')!.prepend(this.button);
+    (document.querySelector('.header-wallets') ?? document.querySelector('.profile')!).append(this.button);
     this.dialog.id = 'wallet-dialog'; this.dialog.className = 'wallet-dialog';
     this.dialog.setAttribute('aria-labelledby', 'wallet-title');
     this.dialog.innerHTML = translateText(`<div class="wallet-heading"><div><span class="eyebrow">NOWPAYMENTS SANDBOX</span><h2 id="wallet-title">Тестовый баланс</h2></div><button class="icon-button" id="wallet-close" aria-label="Закрыть кошелёк">×</button></div>

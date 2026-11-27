@@ -42,7 +42,7 @@ export class SkinStudioUI {
   private requestId = 0;
   constructor(private scene: PlayerControls, private account: () => Account | null, private accountChanged: () => Promise<void>) {
     this.fitting = new SkinFittingRoom(() => this.scene.getReducedMotion?.() ?? window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    this.button.type = 'button'; this.button.className = 'logout-button'; this.button.textContent = 'Образы'; this.button.hidden = true;
+    this.button.type = 'button'; this.button.id = 'skin-studio-button'; this.button.className = 'logout-button'; this.button.textContent = 'Образы'; this.button.hidden = true;
     this.button.onclick = () => { void this.open(); }; document.querySelector('.profile')!.append(this.button);
     this.scene.onAtelier = () => { void this.open('atelier'); };
     this.scene.onToiletMerchant=()=>{void this.open('janitor');};

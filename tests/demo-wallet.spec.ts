@@ -1,3 +1,4 @@
+import { revealHeaderItem } from './entry-mode';
 import { expect, type Page } from '@playwright/test';
 import { test } from './themed-room';
 
@@ -19,7 +20,7 @@ for (const width of [1440, 390]) test('cash and Sandbox wallets remain available
   await expect(page.locator('#crypto-wallet-button')).toHaveText('Денежный баланс');
   await expect(page.locator('#wallet-button')).toContainText('Sandbox');
   await expect(page.locator('#nile-wallet-button, #usdt-wallet-button')).toHaveCount(0);
-  await page.locator('#wallet-button').click();
+  await revealHeaderItem(page,'#wallet-button');await page.locator('#wallet-button').click();
   await expect(page.locator('#wallet-title')).toHaveText('Тестовый баланс');
   await expect(page.locator('#wallet-deposit, #wallet-amount')).toHaveCount(0);
   const box = (await page.locator('#wallet-dialog').boundingBox())!;
@@ -27,7 +28,7 @@ for (const width of [1440, 390]) test('cash and Sandbox wallets remain available
   await page.screenshot({ path: info.outputPath('sandbox-' + width + '.png') });
   await page.locator('#wallet-close').click();
   await page.screenshot({ path: info.outputPath('choices-' + width + '.png') });
-  await page.locator('#crypto-wallet-button').click();
+  await revealHeaderItem(page,'#crypto-wallet-button');await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#crypto-wallet-title')).toHaveText('Денежный баланс');
   await expect(page.locator('#crypto-wallet-dialog')).toContainText('отдельно от тестового');
   await page.screenshot({ path: info.outputPath('live-' + width + '.png') });
@@ -44,13 +45,13 @@ test('Sandbox recovers a lost create response after reload with one credit', asy
     if (requests === 1) { const response = await route.fetch(); expect(response.ok()).toBe(true); await route.abort('failed'); }
     else await route.continue();
   });
-  await page.locator('#wallet-button').click();
+  await revealHeaderItem(page,'#wallet-button');await page.locator('#wallet-button').click();
   await expect(page.locator('#nowpayments-sandbox')).toBeVisible();
   await page.locator('#sandbox-amount').fill('2375');
   await page.locator('#sandbox-deposit button').click();
   await expect(page.locator('#sandbox-retry')).toBeVisible();
   await page.reload(); await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 15000 });
-  await page.locator('#wallet-button').click(); await page.locator('#sandbox-retry').click();
+  await revealHeaderItem(page,'#wallet-button');await page.locator('#wallet-button').click(); await page.locator('#sandbox-retry').click();
   await expect(page.locator('#sandbox-retry')).toBeHidden();
   await expect(page.locator('#wallet-balance')).toHaveText(/2\s375/, { timeout: 30000 });
   await expect(page.locator('#wallet-history [data-kind="deposit"]')).toHaveCount(1);
@@ -79,7 +80,7 @@ test('both payment modes remain clear after switching to English', async ({ page
   await page.getByRole('combobox', { name: 'Язык', exact: true }).selectOption('en');
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 15000 });
   await expect(page.locator('#crypto-wallet-button')).toHaveText('Cash balance');
-  await page.locator('#wallet-button').click();
+  await revealHeaderItem(page,'#wallet-button');await page.locator('#wallet-button').click();
   await expect(page.locator('#wallet-title')).toHaveText('Test balance');
   await expect(page.locator('#nowpayments-sandbox')).toBeVisible();
   await expect(page.locator('#wallet-dialog')).not.toContainText(/[А-Яа-яЁё]/);
