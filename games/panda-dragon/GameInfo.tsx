@@ -6,6 +6,7 @@ import { paylineCells } from '../../templates/slot-primitive/src/paylines.ts';
 import { PANDA_LAYOUT, SYMBOLS } from './layout';
 import { symbolImages } from './assets';
 import { Icon } from './Icons';
+import { pandaMultiplier } from './roundStory';
 import type { PandaView } from './PandaView';
 
 interface GamePanelProps {
@@ -35,7 +36,10 @@ export function GameInfo({ disabled }: { disabled: boolean }) {
   return <GamePanel title={t('Об игре')} icon="info" disabled={disabled}>
     <p>{tr`Поле 5×5, ${PANDA_LAYOUT.paylines.length} линий слева направо. Вертикаль: пять одинаковых символов в столбце. Три Свитка Дракона открывают бонус.`}</p>
     <p>{t('Одна ставка покрывает весь раунд. Бонусные ходы бесплатны.')}</p>
-    <p>{t('Бесплатное вращение умножает выигрыш этого вращения на три. Выбор награды не влияет на выплату.')}</p>
+    <p>{t('Бесплатное вращение умножает выигрыш этого вращения на три. Талисман раунда не влияет на выплату: это печать мастера на раунд.')}</p>
+    <p>{t('Мастер отмечает выигрышные линии ударом посоха: сначала линии, затем вертикали. Счётчик свитков в углу показывает, сколько знаков не хватает до бонуса.')}</p>
+    <p>{t('После фриспина мастер протягивает лапу за талисманом, а выигрыш раунда считается счётчиком.')}</p>
+    <p>{t('Пояс мастера растёт вместе с сыгранными раундами: зелёный, синий, красный и чёрный. Новый пояс меняет облик мастера и открывает следующую ступень пути.')}</p>
     <details>
       <summary>{t('Таблица выплат')}</summary>
       <p>{t('Коэффициенты указаны от полной ставки. Вертикали оплачиваются отдельно, без подстановки.')}</p>
@@ -75,12 +79,16 @@ interface RoundDetailsProps {
 }
 
 export function RoundDetails({ round, disabled }: RoundDetailsProps) {
+  const multiplier = round ? pandaMultiplier(round.spentCents, round.returnedCents) : 0;
   return <GamePanel title={t('Текущий раунд')} icon="history" disabled={disabled}>
     {round ? <>
       <p>{t(round.state === 'active' ? 'Бонус не завершён' : 'Раунд завершён')}</p>
       <dl className="panda-round-totals">
         <dt>{t('Ставка за раунд')}</dt><dd>{formatCents(round.spentCents)}</dd>
         <dt>{t('Возврат')}</dt><dd>{round.state === 'settled' ? formatCents(round.returnedCents) : '–'}</dd>
+        {round.state === 'settled' && multiplier > 0
+          ? <><dt>{t('Множитель')}</dt><dd>×{multiplier.toFixed(2)}</dd></>
+          : null}
       </dl>
       {round.view.features?.length ? <ul>{round.view.features.map((feature, index) => <li key={index}>{t(feature)}</li>)}</ul> : null}
     </> : <p>{t('Нет подтверждённого раунда.')}</p>}
