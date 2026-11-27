@@ -69,6 +69,30 @@ export function pandaWinTier(multiplier: number): PandaWinTier {
   return 'epic';
 }
 
+/**
+ * Горизонтальное положение удара: звук приходит из места, где коснулся посох.
+ * Вертикаль звучит из своей колонки, горизонтальная линия – из середины поля.
+ */
+export function pandaStrikePan(strike: PandaStrike, columns: number): number {
+  const half = (columns - 1) / 2;
+  if (half <= 0) return 0;
+  if (strike.kind === 'column') return clampPan((strike.index - half) / half);
+  const total = strike.cells.reduce((sum, cell) => sum + (cell % columns), 0);
+  const center = strike.cells.length ? total / strike.cells.length : half;
+  return clampPan((center - half) / half);
+}
+
+/** Положение барабана в стерео: левый край поля звучит слева. */
+export function pandaReelPan(column: number, columns: number): number {
+  const half = (columns - 1) / 2;
+  if (half <= 0) return 0;
+  return clampPan((column - half) / half);
+}
+
+function clampPan(value: number): number {
+  return Math.max(-0.7, Math.min(0.7, value * 0.7));
+}
+
 /** Подпись удара посоха для игрока. */
 export function pandaStrikeLabel(strike: PandaStrike | undefined, position: number, total: number): string {
   if (!strike) return '';

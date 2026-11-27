@@ -22,7 +22,9 @@ import { AutoplayPanel, BonusResult } from "./PlayPanels";
 import type { PandaAudio } from "./sound";
 import {
   pandaMultiplier,
+  pandaReelPan,
   pandaScatterCount,
+  pandaStrikePan,
   pandaStrikes,
   pandaWinTier,
   SCATTER_SYMBOL,
@@ -188,9 +190,14 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
     if (spinning.some((v, i) => v && !before[i]) && spinning.every(Boolean)) audio.play("spin");
     else
       spinning.forEach((v, i) => {
-        if (!v && before[i]) audio.play("stop");
+        // Барабан звучит из своей колонки и на своей высоте: пять остановок складываются в фразу.
+        if (!v && before[i]) audio.play("stop", { pan: pandaReelPan(i, COLUMNS), variant: i });
       });
   }, [audio, motion, paused, reducedMotion, spinning, status]);
+  // Фоновый гул барабанов звучит только пока барабаны крутятся.
+  useEffect(() => {
+    audio.spinning(Boolean(motion && !paused && !reducedMotion && spinning.some(Boolean)));
+  }, [audio, motion, paused, reducedMotion, spinning]);
   // Заминка перед последним барабаном слышна как нарастание.
   useEffect(() => {
     if (!anticipating || !motion || paused || reducedMotion) return;
@@ -198,9 +205,15 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
   }, [anticipating, audio, motion, paused, reducedMotion]);
   useEffect(() => {
     if (!strikes.length || !confirmed || reducedMotion) return;
-    const cancels = strikes.flatMap((_, index) => {
+    const cancels = strikes.flatMap((strike, index) => {
       const at = STRIKE_LEAD_MS + index * LINE_STEP_MS;
-      return [audio.schedule("whoosh", at - 300), audio.schedule("strike", at - 150), audio.schedule("spark", at - 10)];
+      // Удар слышен из места, где посох коснулся линии или вертикали.
+      const pan = pandaStrikePan(strike, COLUMNS);
+      return [
+        audio.schedule("whoosh", at - 300, { pan: pan * 0.4 }),
+        audio.schedule("strike", at - 150, { pan }),
+        audio.schedule("spark", at - 10, { pan }),
+      ];
     });
     return () => cancels.forEach(cancel => cancel());
   }, [audio, strikes, confirmed, reducedMotion]);
@@ -260,9 +273,11 @@ export function PandaSlot({ title, state, commands, audio, account, canPlay, pau
     const next = dragonPathBeltProgress(beltProfile.rounds).current;
     if (beltRounds !== undefined && next.rounds > belt.current.rounds && confirmed?.round.id === beltProfile.roundId) {
       setBeltNotice(tr`Новый пояс: ${t(next.label)}`);
+      // Новый пояс отмечается коротким металлическим откликом.
+      audio.play("clink");
     }
     setBeltRounds(beltProfile.rounds);
-  }, [beltProfile, beltRounds, belt.current.rounds, mayChangeBelt, confirmed]);
+  }, [beltProfile, beltRounds, belt.current.rounds, mayChangeBelt, confirmed, audio]);
 
   function finishBonus(resume: boolean) {
     if (!bonusResult) return;
