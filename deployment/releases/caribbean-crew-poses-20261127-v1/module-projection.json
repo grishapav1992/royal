@@ -1,0 +1,427 @@
+{
+  "format": 1,
+  "productionCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "moduleGames": [
+    "caribbean-treasures"
+  ],
+  "moduleContracts": {
+    "studio-caribbean-treasures": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    }
+  },
+  "moduleAssets": {
+    "public/assets/caribbean-treasures/audio/cannon.m4a": "f1ed95873f33d4d5291f139118cf1904d8b7353e6c8c469a0e334d6fa8e938d0",
+    "public/assets/caribbean-treasures/audio/click.m4a": "7495a2a1bb1099e6e1b80d88a62320d5dfdefef44f301d009d390bcbdc0bce96",
+    "public/assets/caribbean-treasures/audio/coins-small.m4a": "da9e812276e0c922bc2dfc08bc794d44a93b856a3dcf9e60dee88a99fcf0fbe4",
+    "public/assets/caribbean-treasures/audio/coins.m4a": "cee0353b8ea7d685095f8a618d19d20cee03338038b021aa2d9d12682df6f286",
+    "public/assets/caribbean-treasures/audio/creak.m4a": "80fb1a9748a770ec3f50cd7d72bbb2202a54760d005393f85fe9597f73cb8ea2",
+    "public/assets/caribbean-treasures/audio/credits.json": "8f0370fda96ac17a8519e0e940b4a03f9a344ab72d5a2531ca0f2fce4aabcc0b",
+    "public/assets/caribbean-treasures/audio/latch.m4a": "9a0f85c35c3e898c421c564b7dc412174e76b3d3fcec0a3dde4315bcf4de5669",
+    "public/assets/caribbean-treasures/audio/manifest.json": "297b94b8bfa3f6acdee553f757c985cb98170999681b0dfe10c136af5e22ef8f",
+    "public/assets/caribbean-treasures/audio/metal.m4a": "a62f902b346c27467820440642d76a907d15282a637a75b6e3a1f6e1226bc9ec",
+    "public/assets/caribbean-treasures/audio/music.m4a": "3c69efd0fbb210cc3ab84fdb6d6ad35d7d43ce9db1e19daacdeca4f85151ecc2",
+    "public/assets/caribbean-treasures/audio/stop-a.m4a": "a927cfdaa9bd7ff12fbf53ca3f44bd8eda460e17c11da4b6d359a575da6d4523",
+    "public/assets/caribbean-treasures/audio/stop-b.m4a": "0e6cec6a7d808a101a5d267b5e6486a21e65a081314d4faadbfca94c558eaed1",
+    "public/assets/caribbean-treasures/audio/stop-c.m4a": "7ea48dce9ffad9bc54480618c6dfa141a60275974b81e69adb3ccb9ef6f96447",
+    "public/assets/caribbean-treasures/audio/thud.m4a": "0801b1d00d376ebabb4192ddab71d47ab3f6b420fcf4f43fe6c0fcaef82d0909",
+    "public/assets/caribbean-treasures/captain-blink.webp": "1688762ef10c6d06932be6da89e3c352cdeffd24875c51e8a069d6f0c64e3b87",
+    "public/assets/caribbean-treasures/captain-bonus.webp": "847dd08512a007d8c3ba5e24c2d174aa22bcef11623bddbb9b8c923fea5fba89",
+    "public/assets/caribbean-treasures/captain-focus.webp": "588177ae60432e067fd842414ddb6354160305b622ca0666ccecf063237357b5",
+    "public/assets/caribbean-treasures/captain-laugh.webp": "2df2cecce10a4f14c7b9847bc3aa9c8ebbf221b656763fcda024d168cc7496e1",
+    "public/assets/caribbean-treasures/captain-soft.webp": "3e21635aaa6167cc50ff466db77197e880df94149bbcafbbee0567d34a21f138",
+    "public/assets/caribbean-treasures/captain-surprise.webp": "589cf87d360288b7f6a696c087d3cb496fd025de55d5631fa6366c0e6a035a0d",
+    "public/assets/caribbean-treasures/captain-win.webp": "3be32bca24fe70ee5ee88a0671915db0b610e36bca1d8d06079cc4cfc0f2939d",
+    "public/assets/caribbean-treasures/captain.webp": "167a452ceb20c6892e7c7eb2177a19ce21884a649552d4e6044ec1998c805e93",
+    "public/assets/caribbean-treasures/crew/amara-blink.webp": "8b853a18cd434b62e40056eb6f42af2bc5187e11266bacd5ac1f992ea20b1995",
+    "public/assets/caribbean-treasures/crew/amara-bonus.webp": "3972b2227bd224afbee2ed7829fcca274914453f053bef7cb0c0aa61af362805",
+    "public/assets/caribbean-treasures/crew/amara-focus.webp": "4d28147e7ef7039079d4a0404732f34d91e19004052055aefd0feafb25acf727",
+    "public/assets/caribbean-treasures/crew/amara-idle.webp": "e279d1d499add6e7b4e6eb68e6733525dee4baa62be592b9b7f26a58b23bb0f8",
+    "public/assets/caribbean-treasures/crew/amara-laugh.webp": "d91b768af1441a0b925742d98d571902c880d4761045fb16f21fb94236d9de7b",
+    "public/assets/caribbean-treasures/crew/amara-soft.webp": "50bb57bdec29d7eec1d661235e7cc1499bde88545848ca6c30a7562ab031e9fd",
+    "public/assets/caribbean-treasures/crew/amara-surprise.webp": "f10631965d8d422098c00dd2507a0a18885d0ebad2b5b2521eb264ea57996711",
+    "public/assets/caribbean-treasures/crew/amara-thumb.webp": "b63519670a465b2711e72dd4581cd56ead85f548a52b5ef39e60ad0dca478519",
+    "public/assets/caribbean-treasures/crew/amara-win.webp": "c9db4c4e947f8254c6175d409a620d130ea1eda25c0d7e48eb25ad952ac807ce",
+    "public/assets/caribbean-treasures/crew/catalina-blink.webp": "650ec30902beb6350053f490424cccf15d842564b4e50ab90412f0aa7c0d929e",
+    "public/assets/caribbean-treasures/crew/catalina-bonus.webp": "551f732eae2c939efd487da0210e4ed51f1a5cbe6ec0cd8ef230ab946917ca0f",
+    "public/assets/caribbean-treasures/crew/catalina-focus.webp": "a8e6f2fb5093b9ea1dd62bdf812f40457185b30356363099ada21efabd4ba49c",
+    "public/assets/caribbean-treasures/crew/catalina-idle.webp": "07af9f82c34d8a97c4596908af557daf24ffc5074a0ba8ec96a31e37ad23abc0",
+    "public/assets/caribbean-treasures/crew/catalina-laugh.webp": "0bd2a0f4d0bb1f130e8c53498b8e430e9494b6985a9d7f390404ad3cba223d8c",
+    "public/assets/caribbean-treasures/crew/catalina-soft.webp": "43a6a4000a56dfadb5bcea6f50d75854aea490bddd5ec9629305277eae514106",
+    "public/assets/caribbean-treasures/crew/catalina-surprise.webp": "1695e939424ac73a2e8cfc1f76ee8626e4f7250a2750ca87e56fa6109c3f1f90",
+    "public/assets/caribbean-treasures/crew/catalina-thumb.webp": "0c1a3be5b5968d70360b67dbbbb87c6215c2b8abaf44da267159daef147233f3",
+    "public/assets/caribbean-treasures/crew/catalina-win.webp": "98d592a12a59efa251fdf9972ce6ecb46439ed98f4ac1cb9b4f0726eb82c8ab6",
+    "public/assets/caribbean-treasures/crew/freya-blink.webp": "2d35f4b101151096981b2fcb72b6a2b018801e7342934d9f3be5b02f3b299fc6",
+    "public/assets/caribbean-treasures/crew/freya-bonus.webp": "95458c63794e1dc223c5ad139dd1f1e22ed456d24bfef9cc257c6bf9cf6b2876",
+    "public/assets/caribbean-treasures/crew/freya-focus.webp": "4da637f9bef4a31e4cb687c240506e6cfaaf32f951a93f470037e8a8f6651f6b",
+    "public/assets/caribbean-treasures/crew/freya-idle.webp": "afad672e5ab71ccfd9d8fe36d4110044556fc2935a3b06ecbe6b0c448b2bfd44",
+    "public/assets/caribbean-treasures/crew/freya-laugh.webp": "bba2e4eeed834f9ca4bcadcc42e40823a5a8ae979a213999eac4874e65ccf77e",
+    "public/assets/caribbean-treasures/crew/freya-soft.webp": "c63fed52aa4973943cc29f5e8ad984e1dcdc70cdb9d6e374ac098dd7b84074c1",
+    "public/assets/caribbean-treasures/crew/freya-surprise.webp": "261e834b138f175fc5eb4cfb797ba560b386a8825a48249a6d147c6d92f0b8ad",
+    "public/assets/caribbean-treasures/crew/freya-thumb.webp": "8c2c801c034564d5dea8e1045f477ad2db67e15de67694067a8b98c0f5a51c95",
+    "public/assets/caribbean-treasures/crew/freya-win.webp": "e06edc3145208fc0b4f94eb2a9c05f8a4b33b5fb9ebd8f3b5b1f2d018058cdcc",
+    "public/assets/caribbean-treasures/crew/ines-blink.webp": "4236882cda48563f017cd495d42364d8109ec9fe6d561087d4406c28397d9795",
+    "public/assets/caribbean-treasures/crew/ines-bonus.webp": "b0cb51272036180c6fbd31f8775dc30ffc6eb23767e750b016d6d7e96e249690",
+    "public/assets/caribbean-treasures/crew/ines-focus.webp": "8d15b7e16880020abe087e23fb6242a2484f0319905e8975d202bd93dd61366c",
+    "public/assets/caribbean-treasures/crew/ines-idle.webp": "fbd803722c4392d3d2201725996cf5f4ed9dc4fea8422c691df623ed292635bf",
+    "public/assets/caribbean-treasures/crew/ines-laugh.webp": "2cdd4a4bab448200fe475989e05128522f44d45efc876205393cf767a1d9e829",
+    "public/assets/caribbean-treasures/crew/ines-soft.webp": "8cf528b36eb0f28e01e881b0fa06a41f4e5498be6d8f7e72ac77ed3f47f74d2f",
+    "public/assets/caribbean-treasures/crew/ines-surprise.webp": "a9596d0d1d37a486f2f1247523d927de8d0c549d95fda31d0af00e39aca9317e",
+    "public/assets/caribbean-treasures/crew/ines-thumb.webp": "cc4c75e75baa4d9b88d1fc0ff15e9c5ae7c6fa18ddb705bcaf6057a797ff58b6",
+    "public/assets/caribbean-treasures/crew/ines-win.webp": "ba59a66548884fc452e4504797b1c7295ecd1d20680c823a9cdf3405fb6dd4f6",
+    "public/assets/caribbean-treasures/crew/isabella-thumb.webp": "be1d665c362cfe544c1f3a0e997d92f362cb987384f9e57d027ced988df0e18e",
+    "public/assets/caribbean-treasures/crew/manifest.json": "7e94354e9cffa1d7c6b98c8410aa06061e25d22ec4adafd2e325d15a08f0b55b",
+    "public/assets/caribbean-treasures/crew/mei-blink.webp": "728fe03a8a8622c7feac5fa5cf283e14e2b4af31ac17a25f492f244c38b43683",
+    "public/assets/caribbean-treasures/crew/mei-bonus.webp": "ef1cacf4a71f22f33e417a1c5bb6865d2e4ba65425c31e38f87bcbfbbcffd62e",
+    "public/assets/caribbean-treasures/crew/mei-focus.webp": "0351483aeb3260e99f4e7aa80871c71bcdf2f26e07b73931a551a9a7374cbbc3",
+    "public/assets/caribbean-treasures/crew/mei-idle.webp": "50c40f86418c7f545b1a27d47ce80f74412ec0f397e2528dc0f7957333eb7d1a",
+    "public/assets/caribbean-treasures/crew/mei-laugh.webp": "d31065301028e57fee5c3f80b90f99ec29839e368c452aedba7271a4354bdb44",
+    "public/assets/caribbean-treasures/crew/mei-soft.webp": "222723308522bd9b1e3a91064e81fe4f19035f05055d6cb5737c8b6f1e68831a",
+    "public/assets/caribbean-treasures/crew/mei-surprise.webp": "e312cc6a8e4d546f12a84c09105bf0047368b7c5e0306a921d52a153f0743b23",
+    "public/assets/caribbean-treasures/crew/mei-thumb.webp": "db208a9e86d75bea0d217ad6595db9cdae115a3072df18d19a692446629976f9",
+    "public/assets/caribbean-treasures/crew/mei-win.webp": "16559efe2413dddd188d32c1cadd8ec7da1f55f1e11a9612052cc85708414ab0",
+    "public/assets/caribbean-treasures/crew/moana-blink.webp": "6c86f36f07e96b2a16dbdc5433975831a199f357546c89e39c56a5f1c85abcea",
+    "public/assets/caribbean-treasures/crew/moana-bonus.webp": "944913fc2f7825fe1bcc82ce11f48f9e6c7c0a5c526f3ca47d297987901ea5dc",
+    "public/assets/caribbean-treasures/crew/moana-focus.webp": "3cbe7f59caf3054fc6b4c97b97c16feb7df6e6105b799a300da4d9ce1c62cdfc",
+    "public/assets/caribbean-treasures/crew/moana-idle.webp": "c79df00af08c6b435382c9aaf154cd02f6c0fd0520016d5510a078966667b706",
+    "public/assets/caribbean-treasures/crew/moana-laugh.webp": "faa13682c6c7e3dc418041b0d351f9143c82790685ec87afab194a96769e0aba",
+    "public/assets/caribbean-treasures/crew/moana-soft.webp": "10803a87470f67130a13cb6e4a8131e44c98b780ece2f6aa06dbda8eda54ef08",
+    "public/assets/caribbean-treasures/crew/moana-surprise.webp": "c8eaf5e3428d1ebd36f00ebd479f058553a214352022f6fa578e69dfec01f164",
+    "public/assets/caribbean-treasures/crew/moana-thumb.webp": "4b729452980d496a6562b66c20933f1434853648968184daac9aeac56f7a4f85",
+    "public/assets/caribbean-treasures/crew/moana-win.webp": "98ca13ee8f46e042463c1b1a71e319488fa71e17ba392245a28953ff882265f8",
+    "public/assets/caribbean-treasures/crew/priya-blink.webp": "1e35f1fdf820274a8216b06fb923018758629f56b5cae822ca3769a0d030ee47",
+    "public/assets/caribbean-treasures/crew/priya-bonus.webp": "327c0b517f5a5933b203421c9951424b59729764e957a8d7c9e8dedb394dc6b6",
+    "public/assets/caribbean-treasures/crew/priya-focus.webp": "c2777e4d94b811cbe0f01f0bb812baea73f1adfd9d7458ccb571ce7defd9c308",
+    "public/assets/caribbean-treasures/crew/priya-idle.webp": "972f615af0e5e70f7e14fd0414d143bbda41adb4c687bed768b1eb41f1e3f370",
+    "public/assets/caribbean-treasures/crew/priya-laugh.webp": "b88fea14ca718a54a74be5edf68a1c9ed40807a5bae72208c3035288c487bf1a",
+    "public/assets/caribbean-treasures/crew/priya-soft.webp": "42b0cc2c3690e88d13716352f0c876e5f6107e2787faba3a3bafe254c1460040",
+    "public/assets/caribbean-treasures/crew/priya-surprise.webp": "cfd77eb05f23cc05b520a7a8f8f408fb089f64b36328f63ec05908dbfbd30850",
+    "public/assets/caribbean-treasures/crew/priya-thumb.webp": "0255b18492b81daf511dc9fc465e0fa1d8ba2442e7a3e949f830196d1bdc15cb",
+    "public/assets/caribbean-treasures/crew/priya-win.webp": "e9851afd598d4c7ca84d8afcb4c34ab1c08efa64b2072a425bf9369af442e53c",
+    "public/assets/caribbean-treasures/crew/rowan-blink.webp": "1993b22084f47d0863b05650007471c54c62e9c8afa00f4a534c5e86753583be",
+    "public/assets/caribbean-treasures/crew/rowan-bonus.webp": "1fd70a209e1fb075b7833fe33593e06297bde9ae6c5ce689f5716f9d41de0be3",
+    "public/assets/caribbean-treasures/crew/rowan-focus.webp": "97531f6abaf734231d907c1f23079dc7e00a78deffbe48fb369f3c2d9ef08d87",
+    "public/assets/caribbean-treasures/crew/rowan-idle.webp": "8757b73fc524f9317ce0d2361b70cde139d7fb84cfcc98bf78fd771881e24ede",
+    "public/assets/caribbean-treasures/crew/rowan-laugh.webp": "92d0491888d09332a8c4fe9c92cb5a602b1ac0f19e2b1bf992a5f76b96a99373",
+    "public/assets/caribbean-treasures/crew/rowan-soft.webp": "634892662994e7cbd76eef74a79b230ea2f7ca60d542a266f187fb50faf9d011",
+    "public/assets/caribbean-treasures/crew/rowan-surprise.webp": "76130e66822fb72d27c0708bc23e5f38553c633e31d307a086702e704ebc43ba",
+    "public/assets/caribbean-treasures/crew/rowan-thumb.webp": "18512635639a8569e490a890fddc5329d95a1a8e21b3e698c21487e2c6e9b541",
+    "public/assets/caribbean-treasures/crew/rowan-win.webp": "a151069047e27db77381e113f44246c96c70e9fcd101dfece6c6c7b20c53246b",
+    "public/assets/caribbean-treasures/crew/yasmin-blink.webp": "f572471a283fb1c1e84c3a65db82436c88dc672d7aca606223613aa7080b053b",
+    "public/assets/caribbean-treasures/crew/yasmin-bonus.webp": "94305c18b383b0516737272e548af551a21a34a674bec8a72662436b0e6e1ef3",
+    "public/assets/caribbean-treasures/crew/yasmin-focus.webp": "c4877c481bcae2a51d403d6373cf2a6ead047f0fc0b194b9083c70c265ff7391",
+    "public/assets/caribbean-treasures/crew/yasmin-idle.webp": "a10f810b01eae59efff3f6816da5e2c407599ab2fc5531f58262a22407b5ebe6",
+    "public/assets/caribbean-treasures/crew/yasmin-laugh.webp": "e2074bb409a72589380f9354b1b9e32d29d408aa7ee4b2f761bc5a253da50d35",
+    "public/assets/caribbean-treasures/crew/yasmin-soft.webp": "1b848433ab04feaed34d22868207a34ac97387dc7bf8ee5388adda36f3fe1181",
+    "public/assets/caribbean-treasures/crew/yasmin-surprise.webp": "6bfc5a2d2efdfdc83486408df7d8db82cd1264fb041a6061a05fb09258932d1c",
+    "public/assets/caribbean-treasures/crew/yasmin-thumb.webp": "40d2f8494fab2a500d30f1a37b6d3f60436efd770305f684193f9dd5aba5688f",
+    "public/assets/caribbean-treasures/crew/yasmin-win.webp": "fc299f0c77ce044b2ec2972c60c2db11cf72dba958023b05b6d826d7c261aa53",
+    "public/assets/caribbean-treasures/crew/zahara-blink.webp": "1eb71675836185aaac4f13681aa961ece001d0372a2fcabd594c0779a03e5305",
+    "public/assets/caribbean-treasures/crew/zahara-bonus.webp": "f7e23de49f2f01114cd8daad0d623b398e8710956abdae168616fca939dd4c71",
+    "public/assets/caribbean-treasures/crew/zahara-focus.webp": "d79959ed5f761e373d0daf5d538e1aa5bfb3dacafae2ce68f6722b2abcfb96bf",
+    "public/assets/caribbean-treasures/crew/zahara-idle.webp": "0a317ce56b615172633b655cda4f92908150da4a3b7dbd99569d895a62a4e550",
+    "public/assets/caribbean-treasures/crew/zahara-laugh.webp": "eb2db46c10885676004db84e5cbccf72296b1fb10415c79ddfe85c6cf19ea76f",
+    "public/assets/caribbean-treasures/crew/zahara-soft.webp": "933db5271a391f806cbe61ed73a6b438a93ed38a369490898c664473a9969ef1",
+    "public/assets/caribbean-treasures/crew/zahara-surprise.webp": "71efc8d5cbaaa0f4a8f221bafcdb718766dfe70e743ee7ea837b856c9396cb01",
+    "public/assets/caribbean-treasures/crew/zahara-thumb.webp": "a72c84796426cb5a6cd3192658f274e3ce5557fcf1fbc211bfe92444817d3fb0",
+    "public/assets/caribbean-treasures/crew/zahara-win.webp": "9ad058e36d4a7fb2b614269b1a39bb0645ed861e9bb9afdaafdacd71920507dd",
+    "public/assets/caribbean-treasures/frame.webp": "6c7890d59b382ddf03b92de3fb5f956b9fba9fb620c16dc2a4dfb106118ae56a",
+    "public/assets/caribbean-treasures/gun.webp": "73344d2f92deca136030c2e4d0d6aac028858bf148d3b85bb38c8fbf373bf63a",
+    "public/assets/caribbean-treasures/harbor-mask.webp": "aa435404b269e49bedaebe7638cc2791276d367d4d0612223adf019d1e767764",
+    "public/assets/caribbean-treasures/harbor.webp": "060364d666b8b0fd759f29de7d9350d5cc224ea233beb0f3afd16925ab69266e",
+    "public/assets/caribbean-treasures/symbol-compass.webp": "9e341ee6dcc1a301b7b42c4035bcf9f605a49f7a8be66bcc76951675053f027a",
+    "public/assets/caribbean-treasures/symbol-cutlass.webp": "17bb1cc8e9fb68c36d3a3ad2cf58826a91066e7611f6f19430c8778aa03d9a99",
+    "public/assets/caribbean-treasures/symbol-map.webp": "8583bbcaede2ce02053a2db0f68418946354c018615250dbec69374bff5b62b6",
+    "public/assets/caribbean-treasures/symbol-parrot.webp": "cf4558ecd9275dac81fc50088ce5845b0c12e3317219a55696de2ae0e1271fb8",
+    "public/assets/caribbean-treasures/symbol-pistol.webp": "807458550022af5946f82e74a81e7b76c62bb070b0c052a817f12efefddf8b21",
+    "public/assets/caribbean-treasures/symbol-ruby.webp": "823db51ed7a9a88c8b2a8183718055d1a47117fc50925d17d63def0ca8b13ad2"
+  },
+  "files": {
+    "games/caribbean-treasures/CaribbeanAudio.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/CaribbeanAudio.ts",
+      "baseSha256": "bcbd14841f6183a9f88f2b88a26fe0a45ee936140cb00514d5c950b47fc7207c",
+      "sha256": "bcbd14841f6183a9f88f2b88a26fe0a45ee936140cb00514d5c950b47fc7207c"
+    },
+    "games/caribbean-treasures/CaribbeanCrew.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/CaribbeanCrew.ts",
+      "baseSha256": "eb8b1b3c998fa3a28cb817987b10283078a486a54569d6eb79d0e6614ab1708c",
+      "sha256": "eb8b1b3c998fa3a28cb817987b10283078a486a54569d6eb79d0e6614ab1708c"
+    },
+    "games/caribbean-treasures/CaribbeanUI.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/CaribbeanUI.ts",
+      "baseSha256": "923e74ae108ece7faa2a4cf2cacecfc56eec4e916379ab75526799c769cd0855",
+      "sha256": "923e74ae108ece7faa2a4cf2cacecfc56eec4e916379ab75526799c769cd0855"
+    },
+    "games/caribbean-treasures/CaribbeanVoyageClient.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/CaribbeanVoyageClient.ts",
+      "baseSha256": "9dd4a1b02155b7a4252a98d1c9ec811dbdee64c2b5b20da90bd82408a7b2a441",
+      "sha256": "9dd4a1b02155b7a4252a98d1c9ec811dbdee64c2b5b20da90bd82408a7b2a441"
+    },
+    "games/caribbean-treasures/caribbean.css": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/caribbean.css",
+      "baseSha256": "d6ed9fa541d456485a25f3386f133c5ec607087683c1a6e5b3b4003d83b5af95",
+      "sha256": "d6ed9fa541d456485a25f3386f133c5ec607087683c1a6e5b3b4003d83b5af95"
+    },
+    "games/caribbean-treasures/entry.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/entry.ts",
+      "baseSha256": "a53ccbd3b0744a519090c81b1ba6fd2b3e89865721d4f77e6cad79c027b027ed",
+      "sha256": "a53ccbd3b0744a519090c81b1ba6fd2b3e89865721d4f77e6cad79c027b027ed"
+    },
+    "games/caribbean-treasures/package.json": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/package.json",
+      "baseSha256": "b99a536ff8bb199bf0dd733ee456c2fedef5c4fc3dcccd861a031f562e658f53",
+      "sha256": "b99a536ff8bb199bf0dd733ee456c2fedef5c4fc3dcccd861a031f562e658f53"
+    },
+    "games/caribbean-treasures/presentation.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/presentation.ts",
+      "baseSha256": "546b02ea01ab45ad7c6f5375202cbd3b8ea276e36137d5973222077cc238eedf",
+      "sha256": "546b02ea01ab45ad7c6f5375202cbd3b8ea276e36137d5973222077cc238eedf"
+    },
+    "games/caribbean-treasures/scene/clock.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/clock.ts",
+      "baseSha256": "1ade1bcb440473d3c9772382a7a278f8fe35fcd7ca70f68044ffb68dd0267a23",
+      "sha256": "1ade1bcb440473d3c9772382a7a278f8fe35fcd7ca70f68044ffb68dd0267a23"
+    },
+    "games/caribbean-treasures/scene/crewGestures.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/crewGestures.ts",
+      "baseSha256": "021e423a825f8e561144e0414f90781d6b0318863313e7625c080b070359bf28",
+      "sha256": "021e423a825f8e561144e0414f90781d6b0318863313e7625c080b070359bf28"
+    },
+    "games/caribbean-treasures/scene/effects.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/effects.ts",
+      "baseSha256": "d13241be672920bc7d704550754c4a71138a586cf8808301326276d7b96e5b22",
+      "sha256": "d13241be672920bc7d704550754c4a71138a586cf8808301326276d7b96e5b22"
+    },
+    "games/caribbean-treasures/scene/gl.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/gl.ts",
+      "baseSha256": "f1726fb6585f3be7e0d8cd84a4e7199360fbefba6f5630e50af7980aa46e44c6",
+      "sha256": "f1726fb6585f3be7e0d8cd84a4e7199360fbefba6f5630e50af7980aa46e44c6"
+    },
+    "games/caribbean-treasures/scene/harbor.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/harbor.ts",
+      "baseSha256": "44e85d53ca56543e27defd8d7f929e09132b1f9f13a3fe228e17fdd030fd232b",
+      "sha256": "44e85d53ca56543e27defd8d7f929e09132b1f9f13a3fe228e17fdd030fd232b"
+    },
+    "games/caribbean-treasures/scene/media.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/media.ts",
+      "baseSha256": "680e72ee74c44dfbfde28ba37e2bd892d8157f3e73a798223c4ef4451b95e1ee",
+      "sha256": "680e72ee74c44dfbfde28ba37e2bd892d8157f3e73a798223c4ef4451b95e1ee"
+    },
+    "games/caribbean-treasures/scene/pirate.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/pirate.ts",
+      "baseSha256": "c7e86b229364cb222c0d9b33d608072fb7c8e8627da9432b543ed9bdd31c5f98",
+      "sha256": "c7e86b229364cb222c0d9b33d608072fb7c8e8627da9432b543ed9bdd31c5f98"
+    },
+    "games/caribbean-treasures/scene/stage.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/stage.ts",
+      "baseSha256": "09a516dcad5380e58bebb6a0458204ae1e4b69f0ff4a3e1aee24e68a4428946e",
+      "sha256": "09a516dcad5380e58bebb6a0458204ae1e4b69f0ff4a3e1aee24e68a4428946e"
+    },
+    "games/caribbean-treasures/scene/symbols.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/symbols.ts",
+      "baseSha256": "f96f3848e2289d365b6d8ab474f94366bf698d0fc889c97512f4c0616e7a6e12",
+      "sha256": "f96f3848e2289d365b6d8ab474f94366bf698d0fc889c97512f4c0616e7a6e12"
+    },
+    "games/caribbean-treasures/scene/text.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/text.ts",
+      "baseSha256": "94021fe92eab09456e05b50be03508dd458ea390b955e91b656e429db0a68773",
+      "sha256": "94021fe92eab09456e05b50be03508dd458ea390b955e91b656e429db0a68773"
+    },
+    "games/caribbean-treasures/scene/voyage.ts": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/scene/voyage.ts",
+      "baseSha256": "d94bd9e7576736f94ab37c72a4a33a839da57493fc7c2cfdbdb03b628b7232fb",
+      "sha256": "d94bd9e7576736f94ab37c72a4a33a839da57493fc7c2cfdbdb03b628b7232fb"
+    },
+    "games/caribbean-treasures/tsconfig.json": {
+      "commit": "b6d7bed7587849c6c14c8e0e21d8aec588a0c9de",
+      "path": "games/caribbean-treasures/tsconfig.json",
+      "baseSha256": "8042595943f6a5a146b0dce64ce967e88ad5c17045c106ba63aae8cd1b92096b",
+      "sha256": "8042595943f6a5a146b0dce64ce967e88ad5c17045c106ba63aae8cd1b92096b"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0",
+      "sha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "c30c2056c5e5f4e9de50fb6cc0a022581448512938e6d8eed6d6d1817523c835",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        },
+        {
+          "from": "/** Independent client packages",
+          "to": "import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol.ts';\n\n/** Independent client packages"
+        },
+        {
+          "from": "export const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES] as const;",
+          "to": "export const DRAGON_PATH = { gameId: DRAGON_PATH_GAME, slug: 'panda-dragon', apiVersion: 1, rulesVersion: DRAGON_PATH_RULES_VERSION, progressVersion: 2, title: DRAGON_PATH_TITLE } as const;\nexport const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES, DRAGON_PATH] as const;"
+        },
+        {
+          "from": "import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol.ts';",
+          "to": "const DRAGON_PATH_GAME = 'panda-dragon-preview';\nconst DRAGON_PATH_RULES_VERSION = 1;\nconst DRAGON_PATH_TITLE = 'Путь дракона';"
+        }
+      ]
+    },
+    "src/shared/caribbeanCrew.ts": {
+      "commit": "e63341f774db47aee5a05255c0771aa058543dc4",
+      "path": "src/shared/caribbeanCrew.ts",
+      "baseSha256": "e96587114a2e20aaeb7504fd43a7c03a6769b4d77aaa3d91a4f39597d5057b7c",
+      "sha256": "e96587114a2e20aaeb7504fd43a7c03a6769b4d77aaa3d91a4f39597d5057b7c"
+    },
+    "src/shared/caribbeanTreasures.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/caribbeanTreasures.ts",
+      "baseSha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
+      "sha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb"
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/caribbeanVoyage.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/caribbeanVoyage.ts",
+      "baseSha256": "1031cc39563c00c6b4a4be68341138da30d81d285d09b2a1d6dffe3f4ac166bb",
+      "sha256": "1031cc39563c00c6b4a4be68341138da30d81d285d09b2a1d6dffe3f4ac166bb"
+    },
+    "src/shared/dragonPathLayout.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/dragonPathLayout.ts",
+      "baseSha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458",
+      "sha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458"
+    },
+    "src/shared/dragonPathMath.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/dragonPathMath.ts",
+      "baseSha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e",
+      "sha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e"
+    },
+    "src/shared/dragonPathProtocol.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/dragonPathProtocol.ts",
+      "baseSha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca",
+      "sha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca"
+    },
+    "src/shared/dragonPathRound.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/dragonPathRound.ts",
+      "baseSha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794",
+      "sha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
+      "sha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
+      "sha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870"
+    },
+    "src/shared/walletAccount.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/shared/walletAccount.ts",
+      "baseSha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
+      "sha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560"
+    },
+    "src/ui/operationFeedback.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/ui/operationFeedback.ts",
+      "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+      "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    },
+    "src/ui/slotKit/SlotDialog.ts": {
+      "commit": "e63341f774db47aee5a05255c0771aa058543dc4",
+      "path": "src/ui/slotKit/SlotDialog.ts",
+      "baseSha256": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d",
+      "sha256": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86",
+      "sha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86"
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    }
+  },
+  "moduleDependencies": {}
+}
