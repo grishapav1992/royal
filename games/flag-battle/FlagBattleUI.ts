@@ -6,9 +6,9 @@ import {ROYAL_GAME_STAKE_UNITS as FLAG_BETS} from '../../src/shared/gameStakes';
 import { FLAG_GAME, FLAG_COUNTRIES, FLAG_MODES, flagCountries, flagModeInfo, flagViewMode, flagPayout, validFlagSettings, type FlagMode, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
 import { expansionClient as client } from '../../src/wallet/ExpansionClient';
 import { demoWallet } from '../../src/wallet/WalletClient';
-import { FlagAudio } from './FlagAudio';
+import { FlagBattleSound } from './FlagBattleSound';
 import { language } from '../../src/i18n/index';
-import { FlagArena, flagAsset } from './FlagArena';
+import { FlagStage, flagStageAsset as flagAsset } from './FlagStage';
 
 const en = language === 'en';
 const text = (ru: string, english: string) => en ? english : ru;
@@ -18,8 +18,9 @@ const flags = (n: number) => en ? `${n} flags` : `${n} ${n % 10 === 1 && n % 100
 export class FlagBattleUI {
   private priorityPanel: GamePriorityPanel;
   private root = document.createElement('section');
-  private arena: FlagArena;
-  private audio = new FlagAudio();
+  private arena: FlagStage;
+  private audio = new FlagBattleSound();
+  private payoutFrame = 0;
   private lifetime = new AbortController();
   private motion = matchMedia('(prefers-reduced-motion: reduce)');
   private owner = client.accountId;
@@ -57,14 +58,14 @@ export class FlagBattleUI {
     balance.innerHTML = '<span>' + text('Баланс · USDT', 'Balance · USDT') + '</span><strong data-fb="balance"></strong>';
     bet.before(balance);
     this.priorityPanel = new GamePriorityPanel(this.root, summary, text('Режим и страна', 'Mode and country'), text('Закрыть панель', 'Close panel'), [selection]);
-    this.arena = new FlagArena(this.find('canvas'));
+    this.arena = new FlagStage(this.find('canvas'));
     const signal = this.lifetime.signal;
     this.root.addEventListener('pointerdown', () => { void this.audio.unlock(); }, { signal });
     this.root.addEventListener('click', e => {
       const button = (e.target as HTMLElement).closest<HTMLButtonElement>('button');
       if (!button) return;
       if (button.dataset.mode && !this.blocked()) this.chooseMode(button.dataset.mode as FlagMode);
-      if (button.dataset.country && !this.blocked()) { this.selected = button.dataset.country as FlagCountry; this.selectionSound(); this.render(); }
+      if (button.dataset.country && !this.blocked()) { this.selected = button.dataset.country as FlagCountry; this.selectionSound(); this.render(); this.arena.pulse(this.selected); }
       if (button.dataset.fb === 'play') void this.send(false);
       if (button.dataset.fb === 'retry') void this.send(true);
       if (button.dataset.fb === 'skip') this.finish(false);
@@ -162,19 +163,36 @@ export class FlagBattleUI {
     this.put('headline', done ? name(this.view!.order.at(-1)!) : this.running ? flags(remaining) : text('Весь мир на арене', 'The world in one arena'));
     this.put('detail', done ? this.returned !== '0' ? text('Твоя страна победила! Выплата ', 'Your country won! Return ') + money(this.returned) + ' USDT' : text('Выплата 0,00 USDT · Ставка ', 'Return 0.00 USDT · Stake ') + money(this.spent) : this.running ? name(this.selected) + ' · ' + text('твой выбор', 'your pick') : text(`${this.count} стран. Последний забирает победу.`, `${this.count} countries. Last flag standing wins.`));
     this.root.dataset.won = String(done && this.returned !== '0');
+    this.root.dataset.phase = done ? 'done' : this.running ? remaining <= 2 ? 'final' : 'live' : 'idle';
   }
   private finish(sound: boolean) {
     if (!sound) this.audio.silence();
     if (!this.running) return;
     this.running = false; this.arena.finish(); this.eliminated = this.count - 1; this.render();
-    if (sound) this.audio.complete();
+    if (sound) { this.audio.complete(); this.arena.celebrate(this.returned !== '0'); if (this.returned !== '0') this.countPayout(); }
+  }
+  /** Restart the short counter and ticker animation for a confirmed elimination. */
+  private beat() {
+    const counter = this.find('.fb-counter'); counter.classList.remove('fb-beat'); void counter.offsetWidth; counter.classList.add('fb-beat');
+  }
+  /** Roll the shown return up to the confirmed amount after a fully played winning round. */
+  private countPayout() {
+    if (this.motion.matches) return;
+    const target = Number(this.returned), detail = this.find('[data-fb="detail"]'), started = performance.now(), prefix = text('Твоя страна победила! Выплата ', 'Your country won! Return ');
+    cancelAnimationFrame(this.payoutFrame);
+    const step = (now: number) => {
+      const p = Math.min(1, (now - started) / 1100), eased = 1 - Math.pow(1 - p, 3);
+      detail.textContent = prefix + money(String(Math.round(target * eased))) + ' USDT';
+      if (p < 1 && this.view && !this.running) this.payoutFrame = requestAnimationFrame(step); else this.moment();
+    };
+    this.payoutFrame = requestAnimationFrame(step);
   }
   private tick(now: number) {
     const state = this.arena.tick(now, this.running, this.view?.country ?? this.selected, !this.motion.matches);
     if (this.running) this.audio.advance(state.playhead, now);
     if (state.eliminated !== this.eliminated) {
-      this.eliminated = state.eliminated; this.put('count', String(this.count - this.eliminated));
-      this.find('[data-fb="ticker"]').innerHTML = (this.view?.order.slice(0, this.eliminated) ?? []).map(id => `<span title="${name(id)}"><img src="${flagAsset(id)}" alt="${name(id)}"><i>×</i></span>`).join('');
+      this.eliminated = state.eliminated; this.put('count', String(this.count - this.eliminated)); this.beat();
+      this.find('[data-fb="ticker"]').innerHTML = (this.view?.order.slice(0, this.eliminated) ?? []).map((id, i) => `<span title="${name(id)}"${i === this.eliminated - 1 ? ' class="fb-fresh"' : ''}><img src="${flagAsset(id)}" alt="${name(id)}"><i>×</i></span>`).join('');
       this.moment();
     }
     if (state.finished) this.finish(true);
@@ -193,5 +211,5 @@ export class FlagBattleUI {
   pause() { this.audio.silence(); this.finish(false); }
   resume() {}
   getState() { return { gameId: FLAG_GAME, sessionId: this.seen, presenting: this.running, mode: this.mode, count: this.count, country: this.selected, eliminated: this.eliminated, returnedUnits: this.returned, physics: this.arena.getState(), audio: this.audio.state() }; }
-  destroy() { this.audio.destroy(); this.lifetime.abort(); this.priorityPanel.destroy(); cancelAnimationFrame(this.frame); this.find<HTMLDialogElement>('dialog').close(); this.root.remove(); }
+  destroy() { cancelAnimationFrame(this.payoutFrame); this.audio.destroy(); this.lifetime.abort(); this.priorityPanel.destroy(); cancelAnimationFrame(this.frame); this.find<HTMLDialogElement>('dialog').close(); this.root.remove(); }
 }
