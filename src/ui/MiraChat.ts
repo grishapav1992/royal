@@ -113,7 +113,7 @@ export class MiraChat {
     this.offerGlass.className = 'drink-glass'; this.offerGlass.setAttribute('aria-hidden', 'true');
     const offerCopy = document.createElement('span'); offerCopy.className = 'mira-drink-offer-copy';
     this.offerLabel.className = 'mira-drink-offer-name'; this.offerNote.className = 'mira-drink-offer-note'; offerCopy.append(this.offerLabel, this.offerNote);
-    this.offerButton.type = 'button'; this.offerButton.textContent = translateText('Выпить');
+    this.offerButton.type = 'button'; this.offerButton.className = 'mira-drink-take'; this.offerButton.textContent = translateText('Выпить');
     this.offerButton.addEventListener('click', () => this.consume(this.offeredDrink));
     const offerLater = document.createElement('button'); offerLater.type = 'button'; offerLater.className = 'mira-drink-later'; offerLater.textContent = translateText('Не сейчас');
     offerLater.addEventListener('click', () => this.updateOffer());

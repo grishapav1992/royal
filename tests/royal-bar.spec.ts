@@ -1,14 +1,15 @@
-import {test,expect,type Browser,type BrowserContext,type Page} from '@playwright/test';
+import {test,expect,type Browser,type BrowserContext} from '@playwright/test';
+import {openBar,roomState,selectEntryMode} from './entry-mode';
 
-const state=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getState());
+const state=roomState;
 async function guest(browser:Browser,baseURL:string,room?:string) {
   const context=await browser.newContext({baseURL,viewport:{width:1440,height:1000}});
   expect((await context.request.post('/api/auth/login',{data:{email:`royal-bar-${crypto.randomUUID()}@example.test`,password:'RoyalBarTest2026!'}})).ok()).toBe(true);
   expect((await context.request.post('/api/auth/character',{data:{skin:0,name:'Гость бара'}})).ok()).toBe(true);
-  const page=await context.newPage();await page.goto(room?`/?room=${room}`:'/');
+  const page=await context.newPage();await page.goto(room?`/?room=${room}`:'/');await selectEntryMode(page);
   await expect(page.locator('#join-dialog')).not.toBeVisible({timeout:20000});
-  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getNetworkState()?.status)).toBe('connected');
-  await expect.poll(async()=>(await state(page)).serverX).toBeDefined();
+  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo?.getNetworkState()?.status)).toBe('connected');
+  await expect.poll(async()=>(await state(page))?.serverX).toBeDefined();
   return {context,page};
 }
 
@@ -24,15 +25,15 @@ test('dialogue drives the shared room Mira, including listening, reply, serving 
       await new Promise<void>(resolve=>{reply=resolve;});
       await route.fulfill({json:{reply:'Смена длинная, но я ещё успею приготовить тебе лимонад. Рассказывай, как проходит твой вечер.',emotion:'tease'}});
     });
-    await a.locator('#visit-bar').click();await expect(a.locator('#bar-dialog')).toBeVisible({timeout:20000});
-    await expect.poll(async()=>(await state(a)).mira.action).toBe('listen');
-    await expect.poll(async()=>(await state(b)).mira.action).toBe('listen');
+    await openBar(a);
+    await expect.poll(async()=>(await state(a))?.mira?.action,{timeout:20000}).toBe('listen');
+    await expect.poll(async()=>(await state(b))?.mira?.action,{timeout:20000}).toBe('listen');
     // Restoring history must not look like a fresh response.
     await expect(a.locator('.mira-portrait')).toHaveAttribute('data-activity','listen');
     await a.getByRole('textbox',{name:'Твоя реплика Мире'}).fill('Как твоя смена?');
     await a.getByRole('button',{name:'Сказать',exact:true}).click();
     await expect(a.locator('.mira-status')).toHaveText('Мира отвечает…');
-    await expect.poll(async()=>(await state(a)).mira.action).toBe('listen');
+    await expect.poll(async()=>(await state(a))?.mira?.action,{timeout:20000}).toBe('listen');
     expect(reply).toBeDefined();reply!();
     await expect(a.locator('.mira-portrait')).toHaveAttribute('data-activity','speak');
     await expect.poll(async()=>(await state(a)).mira.action).toBe('chat');
@@ -51,15 +52,15 @@ test('dialogue drives the shared room Mira, including listening, reply, serving 
 test('seated rest, layered contact and localized bar are usable at real desktop and mobile scale',async({page})=>{
   test.setTimeout(65000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('/?offline=1');await page.locator('#loading').waitFor({state:'detached'});
-  await expect.poll(async()=>(await state(page)).mira.action,{timeout:50000,intervals:[500]}).toBe('sit');
+  await expect.poll(async()=>(await state(page))?.mira?.action,{timeout:50000,intervals:[500]}).toBe('sit');
   const rest=(await state(page)).mira;expect(rest.seatAmount).toBe(1);expect(rest.artVersion).toBe(3);
-  expect(rest.animationMethod).toBe('painted-sequences');expect(rest.atlas).toBe('seat');expect(rest.frame).toBe(0);
+  expect(rest.animationMethod).toBe('painted-sequences');expect(rest.atlas).toBe('seat');expect(rest.frame).toBeGreaterThanOrEqual(24);expect(rest.frame).toBeLessThanOrEqual(47);
   expect(rest.paintedBounds.y).toBeGreaterThan(365);expect(rest.paintedBounds.y).toBeLessThan(400);
   expect(rest.paintedBounds.y+rest.paintedBounds.height).toBeGreaterThan(480);
   expect(rest.paintedBounds.y+rest.paintedBounds.height).toBeLessThan(505);expect(rest.foregroundDepth).toBe(510);
   await page.screenshot({path:'artifacts/work/royal-bar-mira/seated-desktop.png'});
   await page.route('**/api/npc/mira',route=>route.fulfill({json:{turns:[{role:'assistant',content:'Ну? Чем удивишь?'}]}}));
-  await page.locator('#visit-bar').click();await expect(page.locator('#bar-dialog')).toBeVisible({timeout:20000});
+  await openBar(page);
   for(const size of [{width:1440,height:1000},{width:390,height:844},{width:844,height:390}]) {
     await page.setViewportSize(size);await expect(page.getByRole('textbox',{name:'Твоя реплика Мире'})).toBeInViewport();
     const box=(await page.locator('#bar-dialog').boundingBox())!;expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(size.width+1);

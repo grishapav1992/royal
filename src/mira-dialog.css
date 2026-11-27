@@ -88,7 +88,7 @@
 .mira-rpg .mira-drink-offer-name{font-size:14px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mira-rpg .mira-drink-offer-note{font-size:12px;line-height:1.3;color:#5e4330;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mira-rpg .mira-drink-offer button{flex:none;min-height:36px;padding:0 15px;border-radius:999px;font-size:13px}
-.mira-rpg .mira-drink-offer>button:not(.mira-drink-later){margin-left:auto;border:1px solid #69343c;background:#69343c;color:#fff2d9}
+.mira-rpg .mira-drink-take{margin-left:auto;border:1px solid #69343c;background:#69343c;color:#fff2d9}
 .mira-rpg .mira-drink-later{border:1px solid #c9a47a;background:transparent;color:#5e4330}
 .mira-rpg .mira-choices{display:flex;flex-wrap:wrap;gap:7px;margin:0;min-width:0;flex:none}
 .mira-rpg .mira-choices button{max-width:100%;min-height:34px;padding:6px 14px;border-radius:18px;border:1px solid #d2b182;background:#fffaf0;color:#5e3a2c;font-size:13px;line-height:1.3;text-align:left;overflow-wrap:anywhere}
@@ -98,8 +98,7 @@
 .mira-rpg .mira-answer input:focus{outline:2px solid #bd9156;outline-offset:1px}
 .mira-rpg .mira-answer input:read-only{background:#f6ead2}
 .mira-rpg .mira-answer button{flex:none;height:44px;padding:0 22px;border-radius:999px;border:1px solid #69343c;background:#69343c;color:#fff2d9;font-size:14px}
-.mira-rpg .mira-status{margin:0;font-size:12px;line-height:16px;color:#8f3527;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}
-.mira-rpg .mira-status:empty{display:none}
+.mira-rpg .mira-status{margin:0;min-height:16px;font-size:12px;line-height:16px;color:#8f3527;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}
 
 /* Drinks and history */
 .mira-rpg .mira-menu,.mira-rpg .mira-archive{flex:1;overflow:auto;min-height:0;scrollbar-width:thin}
@@ -201,7 +200,7 @@
 .mira-short .mira-footer{padding-top:3px}
 .mira-short .mira-options summary{font-size:11px}
 .mira-short .mira-options-content{bottom:28px}
-.mira-short .mira-log p{font-size:14px;line-height:1.35;padding:6px 10px}
+.mira-short .mira-log p{font-size:14px;line-height:1.35;padding:8px 10px}
 .mira-short .mira-chosen{font-size:12px;padding:4px 10px}
 .mira-short .mira-drink-offer{padding:4px 5px 4px 8px;gap:8px}
 .mira-short .drink-glass{width:18px;height:24px}
@@ -209,16 +208,32 @@
 .mira-short .mira-drink-offer button{min-height:30px}
 .mira-short .mira-choices button{min-height:30px;font-size:12px;padding:3px 10px}
 .mira-short .mira-answer input,.mira-short .mira-answer button{height:36px}
-.mira-short .mira-status{font-size:11px;line-height:14px}
+.mira-short .mira-status{font-size:11px;line-height:14px;min-height:14px}
 .mira-scroll .mira-portrait,.mira-scroll .mira-heading .mira-title{display:none!important}
 .mira-scroll .mira-leave{margin-left:auto}
 .mira-scroll .mira-talk,.mira-scroll .mira-reply-scroll{gap:4px}
 .mira-scroll .mira-chosen{display:none!important}
 .mira-scroll .mira-answer input,.mira-scroll .mira-answer button{height:32px}
 .mira-scroll .mira-tabs button,.mira-scroll .mira-leave{min-height:30px;padding-top:4px;padding-bottom:4px}
-.mira-tiny .mira-choices{display:none}
-.mira-tiny .mira-footer{padding-top:1px;border-top:0}
-.mira-tiny .mira-content{padding:4px 8px;gap:3px}
+
+/* Tiny room (under 165 px): the thread above one control row of tabs, composer and leave. */
+.mira-tiny .mira-content{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:minmax(0,1fr) auto;gap:3px 6px;padding:4px 6px}
+.mira-tiny .mira-heading,.mira-tiny .mira-talk{display:contents}
+.mira-tiny .mira-reply-scroll,.mira-tiny .mira-menu,.mira-tiny .mira-archive{grid-column:1/-1;grid-row:1;padding-top:6px}
+.mira-tiny .mira-tabs{grid-column:1;grid-row:2;align-self:center}
+.mira-tiny .mira-answer{grid-column:2;grid-row:2;min-width:0}
+.mira-tiny .mira-leave{grid-column:3;grid-row:2;margin:0;padding:0 9px;min-height:30px}
+.mira-tiny .mira-leave span{display:none}
+.mira-tiny .mira-player,.mira-tiny .mira-footer,.mira-tiny .mira-choices{display:none!important}
+.mira-tiny .mira-status{grid-column:1/-1;grid-row:1;align-self:end;position:relative;z-index:1;background:#fff3d8;min-height:0}
+.mira-tiny .mira-status:empty{display:none}
+.mira-tiny .mira-tabs button{font-size:11px;padding:5px 7px}
+.mira-tiny .mira-answer input,.mira-tiny .mira-answer button{height:30px}
+.mira-tiny .mira-answer input{padding:0 12px;font-size:14px}
+.mira-tiny .mira-answer button{padding:0 12px;font-size:12px}
+.mira-tiny .mira-log p{font-size:13px;padding:5px 9px}
+.mira-tiny .mira-drink-offer{padding:2px 4px 2px 8px}
+.mira-tiny .mira-drink-offer button{min-height:26px}
 
 .mira-rpg .mira-motion-reduced canvas,.mira-rpg .mira-motion-reduced .mira-player-avatar,.mira-rpg .mira-motion-reduced .mira-player-bubbles{animation:none!important}
 @media(prefers-reduced-motion:reduce){.mira-rpg .mira-portrait canvas,.mira-rpg .mira-player-avatar,.mira-rpg .mira-player-bubbles,.mira-rpg .mira-voice i,.mira-rpg .mira-log .mira-typing::before{animation:none!important}.mira-rpg .mira-pause-arc{transition:none}}

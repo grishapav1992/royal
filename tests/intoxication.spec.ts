@@ -43,7 +43,7 @@ test('drinking is explicit, has multiple stages, persists offline and never prev
   await expect(page.locator('.mira-drink-offer')).toContainText('Вино');
   await expect(page.locator('.mira-player-avatar')).toHaveAttribute('src', /^data:image\/png/);
   expect((await state(page)).intoxication.stage).toBe(0);
-  await page.locator('.mira-drink-offer button').click();
+  await page.locator('.mira-drink-offer .mira-drink-take').click();
   await expect.poll(async () => (await state(page)).drink).toBe('wine');
   expect((await state(page)).intoxication.stage).toBe(1);
   const wineDeadline = (await state(page)).soberAt;
