@@ -1,99 +1,88 @@
+/* Shared priority layouts: the host measures the space left by its chat. */
 .rr-root[data-priority-layout] .rr-compact-stake { display:none }
-.rr-root[data-priority-layout=full] .rr-compact-stake { display:flex; grid-column:2; grid-row:2; justify-self:center; align-items:center; gap:8px; font-size:11px; color:#f7ebd3 }
+.rr-root[data-priority-layout=full] .rr-choose-bet { display:none }
+.rr-root[data-priority-layout=full] .rr-compact-stake { display:flex; grid-column:2; grid-row:2; justify-self:center; align-items:center; gap:8px; font-size:9px; letter-spacing:.8px; text-transform:uppercase; color:#cbbb9e }
 .rr-root[data-priority-layout=full] .rr-status { grid-column:1; grid-row:2 }
-.rr-root[data-priority-layout=full] .rr-content {
-  container:rr-playfield / size;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  grid-template-rows:minmax(0,1fr);
-  overflow:hidden; padding:12px 16px; gap:18px;
-}
-.rr-root[data-priority-layout=full] .rr-table-area { min-height:0; max-height:100%; overflow:auto; overscroll-behavior:contain }
-.rr-root[data-priority-layout=full] .rr-wheel-area {
-  --rr-wheel-heading-height:12px;
-  --rr-wheel-result-height:46px;
-  --rr-wheel-history-height:22px;
-  --rr-wheel-row-gap:6px;
-  display:grid; align-items:center;
-  grid-template-rows:var(--rr-wheel-heading-height) minmax(0,1fr) var(--rr-wheel-result-height) var(--rr-wheel-history-height);
-  gap:var(--rr-wheel-row-gap); height:100%; min-height:0; max-width:520px;
-}
-.rr-root[data-priority-layout=full] .rr-wheel-heading { width:100%; margin:0 auto }
-.rr-root[data-priority-layout=full] .rr-wheel {
-  width:min(100%,calc(100cqh - var(--rr-wheel-heading-height) - var(--rr-wheel-result-height) - var(--rr-wheel-history-height) - 3 * var(--rr-wheel-row-gap)));
-  max-width:none;
-}
-.rr-root[data-priority-layout=full] .rr-center { height:100%; margin:0 auto; padding:4px 10px }
-.rr-root[data-priority-layout=full] .rr-result-orb { flex-basis:34px; height:34px }
-.rr-root[data-priority-layout=full] .rr-result-orb strong { font-size:23px }
-.rr-root[data-priority-layout=full] .rr-result-copy>span { margin-bottom:4px }
-.rr-root[data-priority-layout=full] .rr-wheel-area>.rr-history { flex-wrap:nowrap; min-height:0; max-width:none; margin:0; overflow:hidden }
-.rr-root[data-priority-layout=full] .rr-history>span { flex:0 0 22px; height:22px }
-.rr-root[data-priority-layout=full] .rr-numbers { grid-template-rows:repeat(3,44px) }
-@container rr-playfield (max-height:420px) {
-  .rr-root[data-priority-layout=full] .rr-table-area { padding:12px }
-  .rr-root[data-priority-layout=full] .rr-table-heading { padding-bottom:8px }
-  .rr-root[data-priority-layout=full] .rr-table-heading h3 { font-size:22px; margin-top:4px }
-  .rr-root[data-priority-layout=full] :is(.rr-outside-heading,.rr-number-heading) { margin:9px 0 6px }
-  .rr-root[data-priority-layout=full] .rr-outside button { min-height:58px; gap:4px; padding:6px 4px }
-  .rr-root[data-priority-layout=full] .rr-bet-symbol { height:14px; font-size:13px }
-  .rr-root[data-priority-layout=full] .rr-numbers { grid-template-rows:repeat(3,36px) }
-}
-.rr-root[data-priority-layout=full] .rr-footer { padding:10px 16px }
-.rr-root[data-priority-layout=full] .rr-chips { display:flex; flex-wrap:wrap; gap:5px }
-.rr-root[data-priority-layout=full] .rr-chips button { width:44px; height:44px }
+.rr-root[data-priority-layout] .rr-compact-stake select { color-scheme:dark; min-width:0; width:100%; min-height:40px; font-size:16px; color:#f7ebd3; background:#1d110a; border:1px solid #c7ac73; border-radius:6px }
+
+/* Phones and small windows: the wheel fills the felt; bets open in the shared panel. */
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) { grid-template-rows:44px minmax(0,1fr) auto }
-.rr-root[data-priority-layout]:not([data-priority-layout=full])>.rr-header { padding:3px 8px; gap:5px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full])>.rr-header { padding:3px 10px; gap:5px }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-brand { display:none }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-wallet { min-height:38px; border:0; padding:3px; gap:6px; background:transparent; box-shadow:none }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-wallet :is(.rr-wallet-icon,.rr-wallet-plus,small) { display:none }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-wallet strong { font-size:16px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full])>.rr-content { display:block; min-height:0; overflow:hidden; padding:3px; container-type:size }
+.rr-root[data-priority-layout]:not([data-priority-layout=full])>.rr-content { grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr) 44px; grid-template-areas:"wheel" "result"; gap:4px; padding:4px 4px 6px }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-content>.rr-table-area,
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-wheel-area>.rr-history,
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-wheel-heading,
+.rr-root[data-priority-layout=landscape] .rr-wheel-area>.rr-history,
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-stake-picker { display:none }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-wheel-area {
-  --rr-wheel-result-height:38px;
-  display:grid; grid-template-rows:minmax(0,1fr) var(--rr-wheel-result-height); width:100%; height:100%; max-width:none;
-}
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-wheel { width:min(100%,calc(100cqh - var(--rr-wheel-result-height))); height:auto; max-width:none; margin:auto; align-self:center }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-center { grid-row:2; margin:0 auto; padding:2px 8px; height:100%; width:min(100%,320px); gap:8px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-result-orb { flex-basis:32px; height:32px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-result-orb strong { font-size:22px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-result-copy>span { font-size:8px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-result-copy>small { font-size:11px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full])>.rr-footer { grid-template-columns:minmax(0,1fr) minmax(0,1fr); padding:6px; gap:5px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-selection { grid-column:1; grid-row:1; gap:4px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-selection-mark { display:none }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-center { justify-self:center; height:100%; width:min(100%,300px); padding:3px 10px 3px 4px; gap:9px; border-radius:22px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-result-orb { flex-basis:36px; height:36px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-result-orb strong { font-size:21px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-result-copy>span { font-size:8px; margin-bottom:3px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-result-copy>small { font-size:13px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-marquee { padding:4px 10px 6px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-marquee b { min-width:44px; height:44px; font-size:26px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full])>.rr-footer { grid-template-columns:minmax(0,1fr) minmax(0,1fr); padding:7px 8px 6px; gap:5px 8px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-selection { grid-column:1; grid-row:1; gap:6px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-selection-mark { flex-basis:22px; height:22px }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-selection strong { font-size:14px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-selection small { font-size:9px; margin-bottom:3px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-choose-bet { grid-column:2; grid-row:1; border:1px solid #c7ac73; border-radius:6px; background:#213c2c; color:#f7ebd3; font-size:12px; padding:4px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-compact-stake { display:flex; grid-column:1; grid-row:2; align-items:center; gap:4px; font-size:9px }
-.rr-root[data-priority-layout] .rr-compact-stake select { color-scheme:dark; min-width:0; width:100%; min-height:44px; font-size:16px; color:#f7ebd3; background:#193728; border:1px solid #c7ac73; border-radius:5px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-spin { grid-column:2; grid-row:2; min-height:44px; padding:6px; gap:5px; font-size:12px!important }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-selection small { font-size:8px; margin-bottom:3px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-choose-bet { grid-column:2; grid-row:1; min-height:40px; border:1px solid #c7ac73; border-radius:999px; background:linear-gradient(180deg,#1f6b4d,#124532); color:#f7ebd3; font-size:12px; padding:4px 10px; box-shadow:inset 0 1px #ffe8b022 }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-compact-stake { display:flex; grid-column:1; grid-row:2; align-items:center; gap:5px; font-size:9px; color:#cbbb9e }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-spin { grid-column:2; grid-row:2; min-height:44px; padding:6px 10px; gap:7px; font-size:11px!important }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-spin-glyph { flex-basis:20px; height:20px }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-return { grid-column:1/-1; grid-row:3; justify-content:space-between; gap:5px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-return>span { font-size:9px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-return strong { font-size:13px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-return>span { font-size:8px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-return strong { font-size:14px }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-status { grid-column:1/-1; grid-row:4; font-size:10px; line-height:13px; min-height:13px }
+
+.rr-root[data-priority-layout=portrait][data-priority-layout]>.rr-content { grid-template-rows:34px minmax(0,1fr) 44px; grid-template-areas:"tote" "wheel" "result"; padding-top:8px }
+.rr-root[data-priority-layout=portrait] .rr-wheel-area>.rr-history { flex-direction:row; justify-self:center; align-self:center; width:auto; max-width:100%; height:34px; padding:4px 8px; gap:4px }
+.rr-root[data-priority-layout=portrait] .rr-wheel-area>.rr-history>span { width:26px; height:22px; font-size:11px }
+.rr-root[data-priority-layout=portrait] .rr-wheel-area>.rr-history>.rr-red { translate:0 -2px }
+.rr-root[data-priority-layout=portrait] .rr-wheel-area>.rr-history>.rr-black { translate:0 2px }
+.rr-root[data-priority-layout=portrait] .rr-wheel-area>.rr-history:empty::before { font-size:10px; padding:0 4px; line-height:24px }
+
+/* Phone landscape: controls in a side rail beside the wheel. */
 .rr-root[data-priority-layout=landscape][data-priority-layout] { grid-template-columns:minmax(0,1fr) 212px; grid-template-rows:minmax(0,1fr) }
-.rr-root[data-priority-layout=landscape][data-priority-layout]>.rr-header { grid-column:2; grid-row:1; align-self:start; z-index:2; border:0; height:34px; pointer-events:none }
+.rr-root[data-priority-layout=landscape][data-priority-layout]>.rr-header { grid-column:2; grid-row:1; align-self:start; z-index:3; height:34px; box-shadow:none; background:transparent; pointer-events:none }
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-wallet { pointer-events:auto; min-height:28px }
-.rr-root[data-priority-layout=landscape][data-priority-layout]>.rr-content { grid-column:1; grid-row:1; height:100%; width:100% }
-.rr-root[data-priority-layout=landscape][data-priority-layout]>.rr-footer { grid-column:2; grid-row:1; height:100%; grid-template-columns:minmax(0,1fr); grid-template-rows:auto 44px 44px 44px auto auto; align-content:center; padding:34px 6px 4px; gap:4px; border-left:1px solid #b99c6350; border-top:0 }
+.rr-root[data-priority-layout=landscape][data-priority-layout]>.rr-content { grid-column:1; grid-row:1; height:100%; width:100%; grid-template-rows:minmax(0,1fr) 40px }
+.rr-root[data-priority-layout=landscape][data-priority-layout]>.rr-footer { grid-column:2; grid-row:1; height:100%; grid-template-columns:minmax(0,1fr); grid-template-rows:auto 44px 44px 44px auto auto; align-content:center; padding:34px 8px 4px; gap:5px; box-shadow:inset 1px 0 #f0cf8a99,-10px 0 24px #0007 }
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-selection { grid-column:1; grid-row:1 }
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-choose-bet { grid-column:1; grid-row:2 }
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-compact-stake { grid-column:1; grid-row:3 }
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-spin { grid-column:1; grid-row:4 }
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-return { grid-column:1; grid-row:5 }
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-status { grid-column:1; grid-row:6 }
-.rr-root .game-options-content .rr-table-area { display:block; width:100%; min-width:0; max-height:none; overflow:visible }
+
+/* The same felt inside the shared bet panel. */
+.rr-root .game-options-content .rr-table-area { display:block; width:100%; min-width:0; max-height:none; overflow:visible; padding:10px; border-radius:12px; background:linear-gradient(180deg,#15503a,#0f3d2c) }
 .rr-root .game-options-content .rr-table-heading { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px }
-.rr-root .game-options-content .rr-outside { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; margin:6px 0 12px }
-.rr-root .game-options-content .rr-outside button { min-height:64px; padding:6px; gap:4px; font-size:12px }
-.rr-root .game-options-content :is(.rr-outside-heading,.rr-number-heading) { margin:12px 0 6px }
-.rr-root .game-options-content .rr-numbers { display:grid; grid-template-columns:repeat(auto-fit,minmax(44px,1fr)); grid-template-rows:none; grid-auto-rows:44px; padding:3px }
-.rr-root .game-options-content .rr-numbers button { grid-row:auto; grid-column:auto; min-height:44px; font-size:16px }
-.rr-root .game-options-content .rr-numbers .rr-green { grid-row:auto; grid-column:1/-1; display:grid; place-items:center; padding:0 }
+.rr-root .game-options-content .rr-felt { display:block; --rr-cell:44px }
+.rr-root .game-options-content :is(.rr-outside-heading,.rr-number-heading) { display:flex; justify-content:space-between; font-size:11px; color:#cfdcc8; margin:12px 0 6px }
+.rr-root .game-options-content :is(.rr-outside-heading,.rr-number-heading) b { color:#e9cf93 }
+.rr-root .game-options-content .rr-felt>.rr-number-heading { margin-top:0 }
+.rr-root .game-options-content .rr-felt { display:flex; flex-direction:column }
+.rr-root .game-options-content .rr-outside-heading { order:1 }
+.rr-root .game-options-content .rr-outside { order:2; grid-template-columns:repeat(2,minmax(0,1fr)); margin:0 0 4px }
+.rr-root .game-options-content .rr-number-heading { order:3 }
+.rr-root .game-options-content .rr-numbers { order:4; grid-template-columns:repeat(auto-fit,minmax(44px,1fr)); grid-template-rows:none; grid-auto-rows:46px }
+.rr-root .game-options-content .rr-numbers button { grid-row:auto; grid-column:auto; min-height:46px }
+.rr-root .game-options-content .rr-numbers button>span { font-size:16px }
+.rr-root .game-options-content .rr-numbers .rr-green { grid-row:auto; grid-column:1/-1; clip-path:none }
+.rr-root .game-options-content .rr-numbers .rr-green>span { margin:0; height:70% }
+.rr-root .game-options-content .rr-outside button { min-height:52px }
 .rr-root .game-options-content .rr-rules { display:block }
 .rr-root .game-options-content .rr-rules p { font-size:12px; line-height:1.5 }
-.rr-root .game-options-content .rr-history { grid-column:auto; grid-row:auto; max-height:none; flex-wrap:wrap }
+.rr-root .game-options-content .rr-history { flex-direction:row; flex-wrap:wrap; width:auto; max-height:none; margin-top:10px; padding:8px; justify-content:flex-start }
+.rr-root .game-options-content .rr-history>.rr-red { translate:0 -3px }
+.rr-root .game-options-content .rr-history>.rr-black { translate:0 3px }
+.rr-root .game-options-content :is(.rr-table-area,.rr-history) { grid-area:auto }
+.rr-root .game-options-content .rr-numbers { border-radius:6px }
+.rr-root .game-options-content .rr-numbers .rr-green { border-radius:5px 5px 0 0 }
+.rr-root .game-options-content .rr-outside button { padding-right:40px }
+.rr-root .game-options-content .rr-numbers { gap:2px; padding:0; background:transparent; box-shadow:none }
+.rr-root .game-options-content .rr-numbers button { box-shadow:inset 0 0 0 1px #d3b16f66; border-radius:4px }
+.rr-root .game-options-content .rr-numbers button[aria-pressed="true"] { box-shadow:inset 0 0 0 2px #ffe3a6,0 0 14px #ffd98a55 }

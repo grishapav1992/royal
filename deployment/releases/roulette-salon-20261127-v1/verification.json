@@ -1,0 +1,139 @@
+{
+  "published": true,
+  "release": "roulette-salon-20261127-v1",
+  "sourceCommit": "a16062f2cbbddcbcf436f58313b09977a92636a1",
+  "baseCommit": "3b59bfdcc62eeac209f608499d60f0064bc70df9",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/roulette-salon-20261127-v1/source.tgz",
+    "sha256": "d554740786bb219bba8bdf91b6d11c971b6a7903e1e9b70c040d50105f61d350",
+    "bytes": 25091,
+    "oldVersion": "1.6.2-3d23a9065856",
+    "imageTag": "royal-game:before-roulette-salon-20261127-v1",
+    "image": "sha256:ab435e92875ed3f7ea13a3437bb915eb107e7ba146a02531c2478cb12ea312ff",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/royal-roulette/BallPhysics.ts",
+      "games/royal-roulette/WheelRenderer.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "royal-roulette",
+    "version": "2.0.0-05cd75eece09",
+    "bytes": 105899,
+    "files": 2,
+    "beforeSha256": "43df4ba8c80258de68715654ddba836ef1ba7c5359a8464842ccf3946797831c",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "e0172e1a0fed467f603e5803d1d54d3c48c02865822c47e65d29a2c9ca77269c",
+    "history": "/opt/royal-game-modules-state/history/20261127T070659-69f3e6b33ff94ddaa9cb2ecc9ccf38be.json"
+  },
+  "freeBefore": 10959790080,
+  "freeAfter": 10959581184,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8845,
+  "servicesPreserved": 11,
+  "verifiedAt": "2026-11-27T07:07:55.495Z",
+  "previousVersion": "1.6.2-3d23a9065856",
+  "contracts": {
+    "apiVersion": 1,
+    "rulesVersion": 1,
+    "progressVersion": 1
+  },
+  "wrapperSourceCommit": "a16062f2cbbddcbcf436f58313b09977a92636a1",
+  "pointerSha256": "e0172e1a0fed467f603e5803d1d54d3c48c02865822c47e65d29a2c9ca77269c",
+  "priorPointerSha256": "43df4ba8c80258de68715654ddba836ef1ba7c5359a8464842ccf3946797831c",
+  "releaseManifestSha256": "901c51acea27d4c9f5eb96412de6652c19ca7e2939c1ef0806c95895bbbc281b",
+  "receiptSha256": "1ae08201c806869272f13b836ffe5b1d3a7e94bd4d341056f0ddbeca9ae677dd",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "installedSourceFiles": 13,
+  "changedExistingSources": [
+    "games/royal-roulette/package.json",
+    "games/royal-roulette/RouletteMotion.ts",
+    "games/royal-roulette/RouletteSound.ts",
+    "games/royal-roulette/RouletteSoundTimeline.ts",
+    "games/royal-roulette/RoyalRoulette.ts",
+    "games/royal-roulette/SpinTimeline.ts",
+    "games/royal-roulette/priorities.css",
+    "games/royal-roulette/roulette.css",
+    "games/royal-roulette/tsconfig.json"
+  ],
+  "unchangedListedSources": [
+    "games/royal-roulette/RouletteAudioBank.ts",
+    "games/royal-roulette/entry.ts"
+  ],
+  "liveUncompiledSourcesKept": [
+    "games/royal-roulette/README.md",
+    "games/royal-roulette/WheelArtwork.ts"
+  ],
+  "publicChecks": {
+    "at": "2026-11-27T07:07:55.495Z",
+    "health": 200,
+    "home": 200,
+    "version": "2.0.0-05cd75eece09",
+    "previous": "1.6.2-3d23a9065856",
+    "files": 2,
+    "previousFiles": 2,
+    "manifestSha256": "06fa94f2d334dd6c28d98fd5047603d024e326c068d377f60d986ea920b7de3b",
+    "pointerSha256": "e0172e1a0fed467f603e5803d1d54d3c48c02865822c47e65d29a2c9ca77269c",
+    "activeModulePointers": 125,
+    "changedPointers": [
+      "/opt/royal-game-modules/royal-roulette/active.json"
+    ],
+    "hostUnchanged": true,
+    "backendUnchanged": true,
+    "transport": "Public HTTPS hostname with normal certificate validation from the workstation",
+    "productionAccountsUsed": false,
+    "realWagers": false,
+    "postMaintenanceHealth": 200,
+    "postMaintenancePointerSha256": "e0172e1a0fed467f603e5803d1d54d3c48c02865822c47e65d29a2c9ca77269c"
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 83.69,
+    "timerEnabled": true,
+    "timerActive": true,
+    "freeBytes": 10952761344,
+    "hostHealthy": true
+  },
+  "browserReport": {
+    "version": "2.0.0-05cd75eece09",
+    "moduleManifestSha256": "06fa94f2d334dd6c28d98fd5047603d024e326c068d377f60d986ea920b7de3b",
+    "sourceCommit": "a16062f2cbbddcbcf436f58313b09977a92636a1",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "command": "npx playwright test --config playwright.roulette.config.ts",
+    "result": "8 passed, 1 skipped (built-release scenario runs only with ROYAL_ROULETTE_BUILT=1)",
+    "walletSuite": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts: 19 passed",
+    "unitSuites": "server-tests/roulette-motion.test.ts and roulette-audio.test.ts: 13 passed",
+    "viewports": [
+      "1440x1000 with chat column",
+      "1280x720 with chat column",
+      "390x844 phone with chat overlay"
+    ],
+    "uniqueBrowserScenariosPassed": [
+      "real wallet settlement, responsive host chat, history and catalogue reopening",
+      "a lost accepted response survives close and reopening and retries the exact same wallet UUID",
+      "closing during an accepted request shows its result on reopening without a second wager or recovery reaction",
+      "wheel and ball share a continuous confirmed landing that rests in the receipt pocket and release their frames",
+      "reduced motion, hidden pages and closing interrupt a spin without another wager or late reaction",
+      "shared mute and volume, dropped interrupted cues and quiet recovery",
+      "sound sequence renders without clipping with aligned contacts and a quiet tail",
+      "audio close and blocked unlock discard future sources without closing the shared context"
+    ],
+    "notCovered": [
+      "physical phones",
+      "Safari",
+      "listening review of sound"
+    ],
+    "at": "2026-11-27T07:05:21.433Z"
+  },
+  "knownUnrelatedFailure": "server-tests/roulette-catalog.test.ts cannot load on main: node has no loader for games/wild-nudge/assets/catalog-cover.webp imported by src/ui/RoyalGameArtwork.ts (not part of this package)"
+}

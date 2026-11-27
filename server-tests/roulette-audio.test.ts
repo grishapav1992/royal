@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {roulettePcm} from '../games/royal-roulette/RouletteAudioBank';
 import {rouletteAudioTime,rouletteClock,rouletteContacts} from '../games/royal-roulette/RouletteSoundTimeline';
-import {landingPlan,landingPose,launchPose,SPIN_TIMING,type SpinPose} from '../games/royal-roulette/SpinTimeline';
+import {landingPlan,launchPose,restingPose} from '../games/royal-roulette/SpinTimeline';
 
 test('roulette samples are deterministic, finite, bounded and have shaped endpoints',()=>{
  for(const rate of [8000,44100,48000,96000]){
@@ -22,14 +22,15 @@ test('roulette samples are deterministic, finite, bounded and have shaped endpoi
  }
  for(const rate of [0,7999,192001,NaN,Infinity])assert.throws(()=>roulettePcm(rate));
 });
-test('contact accents coincide with the visual ball contacts for every pocket',()=>{
- const base:SpinPose={wheel:130,ball:-352,wheelVelocity:0,ballVelocity:0,radius:148,hop:0,phase:'idle'};
+test('contact accents coincide with simulated ball impacts for every pocket',()=>{
  for(let pocket=0;pocket<37;pocket++){
-  const plan=landingPlan(launchPose(base,650),pocket),contacts=rouletteContacts(plan);
-  assert.equal(contacts.length,6);assert.equal(contacts.at(-1)!.cue,'landing');assert.equal(contacts.at(-1)!.ms,SPIN_TIMING.landing);
+  const plan=landingPlan(launchPose(restingPose(9),650),pocket,31*pocket+5),contacts=rouletteContacts(plan);
+  const impacts=new Set(plan.contacts.map(c=>c.t*1000));
+  assert(contacts.length>=2&&contacts.length<=17);assert.equal(contacts.at(-1)!.cue,'landing');
+  assert(Math.abs(contacts.at(-1)!.ms-plan.simulation.settled*1000)<1e-9);
   for(const [i,c]of contacts.entries()){
-   assert(landingPose(plan,c.ms).hop<1e-10);assert(c.pan>=-.28&&c.pan<=.28);assert(c.gain>0&&c.gain<=.43);
-   if(i)assert(c.ms>contacts[i-1].ms);
+   assert(impacts.has(c.ms),'every accent is a simulated contact');assert(c.pan>=-.28&&c.pan<=.28);assert(c.gain>0&&c.gain<=.34);
+   if(i)assert(c.ms>=contacts[i-1].ms);
   }
  }
 });
@@ -50,13 +51,8 @@ test('latency fallback rejects stale or incomplete timestamps and reports unavoi
  assert.equal(late.at,1.004);assert.equal(late.errorMs,164);
 });
 
-test('impact intervals and bounce heights shrink instead of repeating equally spaced hops',()=>{
- const plan=landingPlan(launchPose({wheel:0,ball:0,wheelVelocity:0,ballVelocity:0,radius:148,hop:0,phase:'idle'},650),0);
- const contacts=rouletteContacts(plan);let previousHeight=Infinity,previousDuration=Infinity;
- for(let i=0;i<contacts.length-1;i++){
-  const a=contacts[i].ms,b=contacts[i+1].ms,height=landingPose(plan,(a+b)/2).hop,duration=b-a;
-  assert(duration<previousDuration);assert(height<previousHeight);assert(height>0);
-  if(i){assert(Math.abs(duration/previousDuration-.68)<1e-10);assert(Math.abs(height/previousHeight-.68**2)<1e-10);}
-  previousHeight=height;previousDuration=duration;
- }
+test('stronger simulated impacts produce louder taps',()=>{
+ const plan=landingPlan(launchPose(restingPose(),650),12,99),taps=rouletteContacts(plan).filter(c=>c.cue==='tap');
+ const byTime=new Map(plan.contacts.map(c=>[c.t*1000,c]));
+ for(const a of taps)for(const b of taps){const x=byTime.get(a.ms)!,y=byTime.get(b.ms)!;if(x.kind===y.kind&&x.strength>y.strength)assert(a.gain>=b.gain);}
 });

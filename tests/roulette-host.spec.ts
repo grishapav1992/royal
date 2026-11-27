@@ -1,7 +1,8 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
-import {BALL_RADIUS,POCKET_DIVIDER,SPIN_TIMING} from '../games/royal-roulette/SpinTimeline';
-const settlingTimeout=SPIN_TIMING.launch+SPIN_TIMING.landing+2500;
+import {selectEntryMode} from './entry-mode';
+import {BALL_RADIUS,SPIN_TIMING,WHEEL} from '../games/royal-roulette/SpinTimeline';
+const settlingTimeout=SPIN_TIMING.launch+SPIN_TIMING.maxLanding+2500;
 const out='artifacts/work/roulette-audio';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const r=await request.post('/api/auth/login',{data:{email:`roulette-room-${crypto.randomUUID()}@example.test`,password:'Roulette-test-123!'}});expect(r.ok()).toBe(true);
@@ -16,7 +17,7 @@ const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
 }});
 const state=(page:Page)=>page.evaluate(()=>{try{return (window as any).royalDemo.getState();}catch{return{online:false};}});
 async function enter(page:Page,path:string){
- await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);
+ await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);await selectEntryMode(page);
  await page.getByLabel('Почта',{exact:true}).fill(`roulette-player-${crypto.randomUUID()}@example.test`);
  await page.getByLabel('Пароль',{exact:true}).fill('Roulette-player-123!');await page.getByRole('button',{name:'Продолжить',exact:true}).click();
  await expect.poll(async()=>await page.locator('#character-step').isVisible()||!(await page.locator('#join-dialog').isVisible())).toBe(true);
@@ -24,7 +25,7 @@ async function enter(page:Page,path:string){
  await expect(page.locator('#join-dialog')).toBeHidden({timeout:25000});await expect.poll(async()=>(await state(page)).online).toBe(true);
  const r=await page.request.post('/__test/roulette/fund');expect(r.ok()).toBe(true);
  if(process.env.ROYAL_ROULETTE_BUILT==='1'){
-  await page.reload();await expect.poll(async()=>(await state(page)).online,{timeout:30000}).toBe(true);
+  await page.reload();await selectEntryMode(page);await expect.poll(async()=>(await state(page)).online,{timeout:30000}).toBe(true);
  }else await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */path)).demoWallet.refresh();});
 }
 async function open(page:Page){
@@ -48,7 +49,14 @@ async function open(page:Page){
   await expect(chat).toBeHidden();
  }
 }
-async function close(page:Page){await page.locator('#mini-dialog .mini-top [data-close]').click();await expect.poll(async()=>(await state(page)).cabinet).toBe('');}
+/** Host level-up rewards lock stakes until acknowledged; they are not part of the roulette round. */
+async function acknowledgeRewards(page:Page){
+ const notice=page.locator('#level-reward-dialog');
+ await expect(async()=>{if(await notice.isVisible())await notice.getByRole('button',{name:'OK',exact:true}).click({timeout:1000});await expect(notice).toBeHidden({timeout:500});}).toPass({timeout:15000});
+}
+async function close(page:Page){
+ await acknowledgeRewards(page);
+ await page.locator('#mini-dialog .mini-top [data-close]').click();await expect.poll(async()=>(await state(page)).cabinet).toBe('');}
 async function layout(page:Page,name:string,mode:'full'|'portrait',minWheel:number){
  const root=page.locator('.rr-root');
  await expect(root).toHaveAttribute('data-priority-layout',mode);
@@ -67,9 +75,13 @@ async function layout(page:Page,name:string,mode:'full'|'portrait',minWheel:numb
  await page.screenshot({path:out+'/'+name+'.png'});
 }
 async function phoneBet(page:Page,selector:string,screenshot?:string){
- await page.locator('.rr-choose-bet').click();
  const panel=page.locator('.rr-root .game-options-panel');
- await panel.locator(selector).click();
+ // A delayed host reward notice can lock stakes after the panel opens; acknowledge it and retry.
+ await expect(async()=>{
+  await acknowledgeRewards(page);
+  if(!await panel.isVisible())await page.locator('.rr-choose-bet').click({timeout:2000});
+  await panel.locator(selector).click({timeout:2000});
+ }).toPass({timeout:40000});
  await expect(panel.locator(selector)).toHaveAttribute('aria-pressed','true');
  if(screenshot)await page.screenshot({path:out+'/'+screenshot+'.png'});
  await panel.getByRole('button',{name:'Закрыть',exact:true}).click();
@@ -91,8 +103,8 @@ test('roulette uses real wallet settlement, responsive host chat, history, and c
  await page.setViewportSize({width:1280,height:720});await layout(page,'laptop','full',305);
  await page.setViewportSize({width:390,height:844});
  const chat=page.locator('#mini-dialog #club-chat-dock');
- if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
- await expect(page.locator('#chat-input')).toBeInViewport();
+ // The host switches its chat from a column to an overlay after the resize settles.
+ await expect(async()=>{if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();await expect(page.locator('#chat-input')).toBeInViewport({timeout:1000});}).toPass({timeout:15000});
  await chat.getByRole('button',{name:'Закрыть чат',exact:true}).click();
  await layout(page,'mobile','portrait',370);
  await phoneBet(page,'[data-rr-bet="even"]');await page.locator('.rr-compact-stake input[data-manual-stake]').fill('10.00');await play(page);
@@ -157,13 +169,12 @@ test('wheel and ball share a continuous confirmed landing and release their fram
   await expect.poll(async()=>(await motion(page)).phase,{intervals:[30,50,80]}).toBe('drop');const drop=await motion(page);
   await expect.poll(async()=>(await motion(page)).phase,{intervals:[30,50,80]}).toBe('pocket');const pocket=await motion(page);
   const index=numberOrder.indexOf(receipt.gameRound.outcome.number);
-  const offset=angularError(pocket.pose.ball-pocket.pose.wheel-index*360/37);
-  const wallDistance=pocket.pose.radius*Math.sin((180/37-offset)*Math.PI/180);
-  expect(wallDistance).toBeGreaterThanOrEqual(BALL_RADIUS+POCKET_DIVIDER.width/2-1e-6);
+  expect(pocket.pose.radius).toBeGreaterThanOrEqual(WHEEL.pocketInner+BALL_RADIUS-.05);expect(pocket.pose.radius).toBeLessThanOrEqual(WHEEL.pocketOuter);
+  expect(Math.round(((pocket.pose.ball-pocket.pose.wheel)%360+360)%360/(360/37))%37).toBe(index);
   await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false',{timeout:settlingTimeout});await expect(page.locator('[data-rr-number]')).toHaveText(String(receipt.gameRound.outcome.number));
   await expect.poll(async()=>(await motion(page)).effects).toBe(0);const end=await motion(page);
-  expect(end.active).toBe(false);expect(end.scheduledFrames).toBe(0);expect(end.frames).toBeGreaterThan(10);expect(end.pose.radius).toBe(148);
-  expect(angularError(end.pose.wheel+index*360/37)).toBeLessThan(.000001);expect(angularError(end.pose.ball)).toBeLessThan(.000001);
+  expect(end.active).toBe(false);expect(end.scheduledFrames).toBe(0);expect(end.frames).toBeGreaterThan(10);expect(end.pose.radius).toBeCloseTo(WHEEL.rest,6);
+  expect(angularError(end.pose.ball-end.pose.wheel-index*360/37)).toBeLessThan(.000001);expect(end.highlight).toBe(index);
   report={coast,drop,pocket,end,number:receipt.gameRound.outcome.number,stakeUnits:receipt.gameRound.stakeUnits,payoutUnits:receipt.gameRound.payoutUnits};
   await page.screenshot({path:out+'/motion-result.png'});await page.waitForTimeout(650);
  }finally{
@@ -179,7 +190,7 @@ test('reduced motion, hidden pages and closing interrupt a spin without another 
  const first=await start();await page.emulateMedia({reducedMotion:'reduce'});
  await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false',{timeout:settlingTimeout});await expect(page.locator('[data-rr-number]')).toHaveText(String(first.gameRound.outcome.number));
  expect((await motion(page)).scheduledFrames).toBe(0);expect((await motion(page)).effects).toBe(0);expect(posts).toBe(1);await expect.poll(async()=>(await sound(page)).activeSources).toBe(0);
- expect(angularError((await motion(page)).pose.wheel+numberOrder.indexOf(first.gameRound.outcome.number)*360/37)).toBeLessThan(.000001);
+ expect(angularError((await motion(page)).pose.wheel+numberOrder.indexOf(first.gameRound.outcome.number)*360/37-180)).toBeLessThan(.000001);
  await page.emulateMedia({reducedMotion:'no-preference'});const frames=(await motion(page)).frames;await page.waitForTimeout(150);expect((await motion(page)).frames).toBe(frames);
  const second=await start();
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
@@ -233,21 +244,21 @@ test('original roulette sound sequence renders without clipping, with aligned co
    const value=Reflect.get(target,key,target);return typeof value==='function'?value.bind(target):value;
   }});
   const path='/games/royal-roulette/RouletteSound.ts',timeline='/games/royal-roulette/SpinTimeline.ts';
-  const {RouletteSound}=await import(/* @vite-ignore */path),{launchPose,landingPose,landingPlan,SPIN_TIMING}=await import(/* @vite-ignore */timeline);
+  const {RouletteSound}=await import(/* @vite-ignore */path),{launchPose,landingPose,landingPlan,restingPose}=await import(/* @vite-ignore */timeline);
   const host={context,output,unlock:async()=>{},getPreferences:()=>({muted:false,volume:.35}),onPreferences:(fn:()=>void)=>{fn();return()=>{};}};
   const audio=new RouletteSound(host as any,now);await audio.warm();
   seconds=.05;audio.select('chip',now()+137.5);await audio.warm();await Promise.resolve();
   seconds=.35;audio.select('chip',now()+137.5);await audio.warm();await Promise.resolve();
   seconds=.65;audio.select('bet',now()+137.5);await audio.warm();await Promise.resolve();
   seconds=1;const began=audio.begin(true);await audio.warm();await Promise.resolve();
-  const base={wheel:0,ball:0,wheelVelocity:0,ballVelocity:0,radius:148,hop:0,phase:'idle'},landingAt=began+650;
-  const plan=landingPlan(launchPose(base,650),17);
+  const base=restingPose(),landingAt=began+650;
+  const plan=landingPlan(launchPose(base,650),17,1717);
   for(let time=began;time<landingAt;time+=1000/60){seconds=(time-origin)/1000;audio.frame(launchPose(base,time-began));}
   seconds=(landingAt-origin)/1000;audio.plan(plan,landingAt);
-  for(let time=landingAt;time<=landingAt+SPIN_TIMING.landing;time+=1000/60){seconds=(time-origin)/1000;audio.frame(landingPose(plan,time-landingAt));}
-  seconds=(landingAt+SPIN_TIMING.landing-origin)/1000;audio.finish();audio.result(2,now()+252);await audio.warm();await Promise.resolve();
-  seconds=6.3;audio.result(0,now()+252);await audio.warm();await Promise.resolve();
-  seconds=7.3;audio.result(36,now()+252);await audio.warm();await Promise.resolve();
+  for(let time=landingAt;time<=landingAt+plan.duration;time+=1000/60){seconds=(time-origin)/1000;audio.frame(landingPose(plan,time-landingAt));}
+  seconds=(landingAt+plan.duration-origin)/1000;audio.finish();audio.result(2,now()+252);await audio.warm();await Promise.resolve();
+  seconds=Math.max(6.3,seconds+.5);audio.result(0,now()+252);await audio.warm();await Promise.resolve();
+  seconds=Math.max(7.3,seconds+1);audio.result(36,now()+252);await audio.warm();await Promise.resolve();
   const scheduled=audio.state();const buffer=await offline.startRendering();audio.destroy();const end=audio.state();
   let peak=0,sum=0,step=0,tail=0,dc=0;
   const bytes=new Uint8Array(44+buffer.length*4),view=new DataView(bytes.buffer),word=(at:number,text:string)=>{for(let i=0;i<text.length;i++)bytes[at+i]=text.charCodeAt(i);};
@@ -264,7 +275,7 @@ test('original roulette sound sequence renders without clipping, with aligned co
  const {writeFile}=await import('node:fs/promises');await writeFile(out+'/sound-preview.wav',Buffer.from(rendered.wav,'base64'));
  await writeFile(out+'/audio-measurements.json',JSON.stringify({...rendered,wav:undefined},null,2));
  expect(rendered.peak).toBeGreaterThan(.01);expect(rendered.peak).toBeLessThan(.5);expect(Math.abs(rendered.dc)).toBeLessThan(.005);expect(rendered.tail).toBeLessThan(.00001);
- expect(rendered.scheduled.skipped).toBe(0);expect(rendered.scheduled.maxVoices).toBeLessThanOrEqual(24);expect(rendered.scheduled.scheduled).toMatchObject({chip:1,'chip-alt':1,bet:1,wheel:1,roll:1,tap:5,landing:1,win:1,settle:1,straight:1});
+ expect(rendered.scheduled.skipped).toBe(0);expect(rendered.scheduled.maxVoices).toBeLessThanOrEqual(24);expect(rendered.scheduled.scheduled).toMatchObject({chip:1,'chip-alt':1,bet:1,wheel:1,roll:1,landing:1,win:1,settle:1,straight:1});expect(rendered.scheduled.scheduled.tap).toBeGreaterThanOrEqual(2);expect(rendered.scheduled.scheduled.tap).toBeLessThanOrEqual(16);
  expect(Math.max(...rendered.scheduled.alignment.map((v:any)=>Math.abs(v.errorMs)))).toBeLessThan(40);
  expect(rendered.end.activeSources).toBe(0);expect(rendered.end.graphOwners).toBe(0);expect(rendered.end.disposed).toBe(true);
 });
@@ -279,8 +290,8 @@ test('audio close and blocked unlock discard future sources without closing the 
   const blocked=new RouletteSound(host);blocked.begin(true);blocked.result(36,performance.now()+252);blocked.destroy();release();await blocked.warm();await Promise.resolve();
   (window as any).__rrBlocked=blocked.state();
   const running=new RouletteSound({...host,unlock:async()=>{}});await running.warm();running.begin(true);await running.warm();await Promise.resolve();
-  const timeline='/games/royal-roulette/SpinTimeline.ts';const {landingPlan,launchPose}=await import(/* @vite-ignore */timeline);
-  running.plan(landingPlan(launchPose({wheel:0,ball:0,wheelVelocity:0,ballVelocity:0,radius:148,hop:0,phase:'idle'},650),2),performance.now()+650);
+  const timeline='/games/royal-roulette/SpinTimeline.ts';const {landingPlan,launchPose,restingPose}=await import(/* @vite-ignore */timeline);
+  running.plan(landingPlan(launchPose(restingPose(),650),2,22),performance.now()+650);
   (window as any).__rrRunning=running;(window as any).__rrBeforeClose=running.state();running.destroy();
   (window as any).__rrShared=context;(window as any).__rrListeners=()=>listeners;
  });
