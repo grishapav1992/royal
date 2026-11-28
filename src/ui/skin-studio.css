@@ -125,7 +125,9 @@
   .skin-studio h2{font-size:22px}
   .skin-scissors{display:none}
   .skin-studio .eyebrow{display:none}
-  .skin-balance{font-size:12px;white-space:nowrap}
+  .skin-heading-text{flex:none}
+  .skin-studio h2{white-space:nowrap}
+  .skin-balance{flex:0 1 auto;min-width:0;font-size:12px;line-height:1.25}
   .skin-studio-body{padding:0 0 14px;gap:12px}
   .skin-fitting-room{border-radius:0;border-width:0 0 1px}
   .skin-fitting-stage canvas{height:clamp(240px,38dvh,320px)}
