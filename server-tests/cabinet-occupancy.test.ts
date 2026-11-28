@@ -126,12 +126,9 @@ test('disconnecting cancels a play request deferred behind accepted movement', a
   assert.equal((await play(1, cabinet.id)).accepted, true, 'a cancelled request never reserves the cabinet');
 });
 
-test('moderation, logout and an expired account lease release cabinet ownership immediately', async context => {
+test('logout and an expired account lease release cabinet ownership immediately', async context => {
   const { room, clients, player, play } = fixture(context), cabinet = CABINETS[0], seat = cabinetSeat(cabinet);
   for (const p of room.state.players.values()) Object.assign(p, { hall: cabinetHall(cabinet), ...seat.entry });
-  await play(0, cabinet.id);
-  accounts.events.emit('security', 'first', { kind: 'warning', reason: 'spam' });
-  assert.equal(player().cabinet, ''); assert.equal(player().playing, false); assert.equal(player().y, seat.entry.y);
   assert.equal((await play(1, cabinet.id)).accepted, true);
   accounts.events.emit('logout', 'second');
   assert.equal(player(1).cabinet, ''); assert.equal(player(1).playing, false); assert.equal(player(1).connected, false);

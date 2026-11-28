@@ -102,7 +102,7 @@ test('roof connects the rear street stairs and discreet restroom window with saf
 });
 
 test('security can reach a roof visitor and finish without crossing a parapet', () => {
-  for (const kind of ['warning', 'ejecting'] as const) {
+  for (const kind of ['ejecting'] as const) {
     const state = new LobbyState(), completed: string[] = [], visited = new Set<string>();
     const guards = new Guards(state, (_id, decision) => completed.push(decision.kind), () => .5);
     const p = new Player(); Object.assign(p, { hall: 'roof', x: 1700, y: 1050 }); state.players.set('roof-visitor', p);

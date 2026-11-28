@@ -86,18 +86,10 @@ export class Guards {
     d.guard.x=x;d.guard.y=y;return true;
   }
 
+  // Escorts an already decided player without a pursuit. Live play starts with pursue().
   enqueue(id: string, decision: SecurityDecision) {
     const p = this.state.players.get(id);
-    if (!p) return;
-    if (p.security) {
-      const duty = this.duties[0];
-      const job = duty.job?.id === id ? duty.job : duty.queue.find(j => j.id === id);
-      if (job && decision.kind === 'ejecting') {
-        job.decision = decision; p.security = decision.kind;
-        if (duty.job === job && duty.guard.phase === 'warn') this.phase(duty, 'grab');
-      }
-      return;
-    }
+    if (!p || p.security) return;
     p.security = decision.kind; p.moving = false;
     this.duties[0].queue.push({ id, decision });
   }
@@ -276,14 +268,10 @@ export class Guards {
       }
     }
     this.phase(d, 'approach');
-    const { kind, reason } = d.job!.decision;
-    if (kind === 'warning') {
-      g.speech = 'Не засоряй чат. Хватит спамить.';
-    } else {
-      g.speech = reason === 'collision' ? 'Десятый толчок. На выход.'
-        : reason === 'profanity' ? 'Слишком много грубых слов. На выход.'
-        : 'Спам в чате. На выход.';
-    }
+    const { reason } = d.job!.decision;
+    g.speech = reason === 'collision' ? 'Десятый толчок. На выход.'
+      : reason === 'profanity' ? 'Слишком много грубых слов. На выход.'
+      : 'Спам в чате. На выход.';
   }
   tick(dt: number) {
     for(const id of this.touching){const p=this.state.players.get(id),g=this.duties[0].guard;if(!p||p.hall!==g.hall||Math.hypot(p.x-g.x,p.y-g.y)>GUARD_CONTACT_RADIUS+10)this.touching.delete(id);}
@@ -346,8 +334,8 @@ export class Guards {
             if(d.job){const player=this.state.players.get(d.job.id);if(player&&player.hall!==g.hall)this.transfer(d,player.hall as HallId);else this.approach(d);}else this.nextVisit(d);
           } else if (g.phase === 'approach') {
             if (!this.contactReached(g, this.state.players.get(d.job!.id)!)) { this.release(d); continue; }
-            g.facing = 'down'; this.phase(d, d.job!.decision.kind === 'warning' ? 'warn' : 'grab');
-            g.speech = d.job!.decision.kind === 'warning' ? 'Первое предупреждение!\nЕщё раз в течение суток: выход на 10 минут.' : 'Пора проветриться.';
+            g.facing = 'down'; this.phase(d, 'grab');
+            g.speech = 'Пора проветриться.';
           } else if (g.phase === 'patrol') { this.settle(d); }
           else if (g.phase === 'carry') { this.phase(d, 'throw'); g.facing = 'down'; g.speech = d.job?.decision.reason==='collision'?'Больше не толкайся.':'Соблюдай правила чата.'; }
           else { this.phase(d, 'idle'); g.facing = 'down'; }
@@ -362,15 +350,13 @@ export class Guards {
           g.x=door.entry.x;g.y=door.entry.y;g.facing=door.facing;
           this.route(d,door.arrival);this.phase(d,'enter');
         }
-      } else if (g.phase === 'warn' || g.phase === 'grab' || g.phase === 'throw') {
-        const duration = g.phase === 'warn' ? 3.5 : g.phase === 'grab' ? .7 : 1.2;
+      } else if (g.phase === 'grab' || g.phase === 'throw') {
+        const duration = g.phase === 'grab' ? .7 : 1.2;
         g.progress = Math.min(1, d.elapsed / duration);
         if (d.elapsed >= duration) {
           if (g.phase === 'grab') { this.route(d, GUARD_EXIT); this.phase(d, 'carry'); g.speech = ''; }
           else {
             const job = d.job!;
-            const p = this.state.players.get(job.id);
-            if (p && job.decision.kind === 'warning') p.security = '';
             this.finish(job.id, job.decision);
             this.release(d, false);
           }

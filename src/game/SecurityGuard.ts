@@ -264,7 +264,7 @@ export class SecurityGuard {
     const opacity = g.phase==='door' ? 1-g.progress : g.phase==='enter' ? g.progress : 1;
     this.sprite.setAlpha(opacity);this.shadow.setAlpha(opacity);
     const leisurely = g.phase==='patrol'||g.phase==='return'||(['transit','enter'].includes(g.phase)&&!g.target);
-    let frame = g.phase==='warn' ? 7 : g.phase==='grab' ? 8 : g.phase==='carry' ? 12+(moving?Math.floor(time/130)%6:0) : g.phase==='throw' ? (g.progress<.3?10:11) : moving ? Math.floor(time/(leisurely?170:110))%6 : 6;
+    let frame = g.phase==='grab' ? 8 : g.phase==='carry' ? 12+(moving?Math.floor(time/130)%6:0) : g.phase==='throw' ? (g.progress<.3?10:11) : moving ? Math.floor(time/(leisurely?170:110))%6 : 6;
     if(g.phase==='chat')frame=g.speech?(Math.floor(g.progress*40)%2?18:19):6;
     if(g.phase==='window')frame=g.progress<.7?20:6;
     if(g.phase==='inspect')frame=Math.floor(g.progress*6)%2?21:6;

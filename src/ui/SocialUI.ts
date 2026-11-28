@@ -106,15 +106,13 @@ export class SocialUI {
       await this.client.join(roomId, Boolean(roomId && history.state?.royalJoinedRoom === roomId), this.auth.account?.id);
     }, () => this.client.leave());
     this.dialog = this.auth.dialog; this.error = this.auth.error;
-    this.security = new SecurityUI(scene, () => this.auth.showRejoin());
+    this.security = new SecurityUI(scene);
     this.client = new LobbyClient({
       npcTime: (simulationAt, guestsAt) => this.scene.syncNpcTime(simulationAt, guestsAt),
       guests: guests => this.scene.syncGuests(guests),
       cat: cat => this.scene.syncCat(cat),
       guards: guards => this.scene.syncGuards(guards),
       mira: mira => this.scene.syncMira(mira),
-      security: decision => { this.sanctioned = true; this.security.intervention(decision); this.chatAvailability(); },
-      ejected: until => this.security.ejected(until),
       clubCapture: () => {
         this.sanctioned = true;
         this.security.capture();
@@ -198,7 +196,7 @@ export class SocialUI {
     this.invite.disabled = status !== 'connected';
     if (status === 'reconnecting' || status === 'disconnected') { this.scene.onElevatorCancel(); this.scene.cancelMovement(); this.scene.setLocked(true); }
     if (status === 'connected' && !document.querySelector('dialog[open]')) this.scene.setLocked(false);
-    if (status === 'disconnected' && this.roomId && !this.dialog.open && !this.security.active) {
+    if (status === 'disconnected' && this.roomId && !this.dialog.open) {
       document.querySelector<HTMLDialogElement>('#mini-dialog')?.close();
       this.auth.showRejoin(); this.scene.setLocked(true);
     }

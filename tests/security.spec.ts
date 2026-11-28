@@ -54,7 +54,6 @@ test('an observer sees masked profanity and the first confirmed spam capture whi
     await expect.poll(async () => (await state(player))?.hall, { timeout: 30000 }).toBe('street');
     expect(await network(player)).toMatchObject({ status: 'connected', roomId: host.roomId, selfId });
     await expect(player.locator('#club-chat-dock')).toBeHidden();
-    await expect(player.locator('#security-dialog')).toBeHidden();
 
     await player.setViewportSize({ width: 390, height: 844 });
     await player.reload();

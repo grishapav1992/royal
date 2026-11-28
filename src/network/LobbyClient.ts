@@ -1,6 +1,6 @@
 import { translateMessage as translateText } from '../i18n/index';
 import type { CatView } from '../shared/cat';
-import type { ClubCaptureDecision, GuardView, SecurityDecision } from '../shared/security';
+import type { ClubCaptureDecision, GuardView } from '../shared/security';
 import type { MiraView } from '../shared/miraRoutine';
 import type { AmbientGuestView } from '../shared/ambientGuests';
 import { Client, ErrorCode, type Room } from '@colyseus/sdk';
@@ -43,8 +43,6 @@ export class LobbyClient {
     guests: (guests: AmbientGuestView[]) => void;
     cat?: (cat: CatView) => void;
     mira: (mira: MiraView) => void;
-    security: (decision: SecurityDecision) => void;
-    ejected: (until: number) => void;
     clubCapture?: (decision: ClubCaptureDecision) => void;
     clubEjected?: () => void;
     clubSanctionChanged?: () => void;
@@ -119,12 +117,9 @@ export class LobbyClient {
       });
       // Recover even when the connection drops just after entering the room.
       configureReconnection(room.reconnection);
-      let banUntil = 0;
       let denied = false;
       const captureSession = room.roomId + ':' + room.sessionId;
       if (this.capture?.session !== captureSession) this.capture = undefined;
-      onMessage('security', (decision: SecurityDecision) => { if(decision.kind === 'ejecting') banUntil = decision.until; this.events.security(decision); });
-      onMessage('ejected', (value: {until: number}) => { banUntil = value.until; this.events.ejected(value.until); });
       onMessage('club-capture', (decision: ClubCaptureDecision) => {
         if (this.capture?.pursuitId === decision.pursuitId) return;
         this.capture = { session: captureSession, pursuitId: decision.pursuitId, escorted: false };
@@ -223,11 +218,10 @@ export class LobbyClient {
       room.onLeave(code => {
         if (!current()) return;
         this.lastCloseCode = code;
-        if (code === 4000 || banUntil > Date.now()) forgetSession(accountId, room.roomId, room.reconnectionToken);
-        // The SDK also uses 4003 when reconnection fails. Only a server sanction supplies a ban deadline.
-        if (code === 4003 && banUntil > Date.now()) this.events.ejected(banUntil);
+        if (code === 4000) forgetSession(accountId, room.roomId, room.reconnectionToken);
         this.room = undefined;
-        if (!denied && banUntil <= Date.now() && [1001, 1006, 4001, 4003].includes(code)) {
+        // The SDK also uses 4003 when reconnection fails. Club sanctions never close the room.
+        if (!denied && [1001, 1006, 4001, 4003].includes(code)) {
           this.recoverRoom(room.roomId, accountId);
         } else this.setStatus('disconnected');
       });

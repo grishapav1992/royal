@@ -7,7 +7,6 @@ import {MovementInputs} from '../server/movementInputs';
 import {MovementPrediction} from '../src/network/MovementPrediction';
 import {applyMovementInput} from '../src/shared/movement';
 import {GUARD_CONTACT_RADIUS} from '../src/shared/guardCollision';
-import {AccountStore} from '../server/accounts';
 import {hallObstacles} from '../src/shared/world';
 import {walkable} from '../src/game/navigation';
 
@@ -58,12 +57,4 @@ test('guard-initiated contact pushes an idle guest without a strike and never th
  const p=new Player();Object.assign(p,start);state.players.set('a',p);
  for(let i=0;i<120;i++){guards.tick(.05);assert(walkable(p.x,p.y,hallObstacles(p.hall)));assert(Math.hypot(g.x-p.x,g.y-p.y)>=GUARD_CONTACT_RADIUS-.001);}
  assert.equal(bumps,0);assert.equal(p.security,'');assert(p.x!==start.x||p.y!==start.y);
-});
-
-test('physical harassment ban needs no chat strike and is enforced by the account store',async()=>{
- const store=new AccountStore(':memory:');
- try{const {account}=await store.login('bumps@example.test','Royal-test-123!');const result=(await store.moderation.eject(account.id,1000));
-  assert.equal(result.kind,'ejecting');assert.equal(result.reason,'collision');assert.equal((await store.moderation.banUntil(account.id,1001)),result.until);
-  assert.equal((await store.moderation.banUntil(account.id,result.until)),0);assert.equal((await store.moderation.record(account.id,result.until)).kind,'warning');
- }finally{(await store.close());}
 });

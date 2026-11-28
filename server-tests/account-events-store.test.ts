@@ -20,7 +20,7 @@ async function drained(...stores: AccountStore[]) {
   throw new Error('Account event bridge did not drain');
 }
 
-test('another account process resolves stale profile, drinking and security events from PostgreSQL', async () => {
+test('another account process resolves stale profile and drinking events from PostgreSQL', async () => {
   const schema = 'account_events_' + randomUUID().replaceAll('-', '');
   const first = new AccountStore(schema), second = new AccountStore(schema), presence = new LocalPresence();
   try {
@@ -45,13 +45,6 @@ test('another account process resolves stale profile, drinking and security even
     assert.equal((state as any).lastDrinkAt, drinking.lastDrinkAt);
     assert.equal((state as any).lastDrink, drinking.lastDrink);
     assert.equal((state as any).soberAt, drinking.soberAt);
-
-    const warning = await first.moderation.record(id), ban = await first.moderation.eject(id);
-    delivered = nextEvent(second, 'security'); first.events.emit('security', id, warning);
-    const [securityId, decision] = await delivered;
-    assert.equal(securityId, id);
-    assert.equal((decision as any).kind, 'ejecting');
-    assert.equal((decision as any).until, ban.until);
     assert.equal(second.events.health().failed, false);
   } finally { await Promise.all([first.close(), second.close()]); }
 });

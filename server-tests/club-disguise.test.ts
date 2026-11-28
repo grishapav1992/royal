@@ -21,7 +21,8 @@ async function fixture(context: TestContext) {
   await db.exec("CREATE TABLE accounts(id TEXT PRIMARY KEY,skin INTEGER DEFAULT 0,appearance JSONB); INSERT INTO accounts(id) VALUES ('alice'),('bob')");
   const studio = skinStudio(db);
   const store = new ClubSanctionStore(db, Promise.resolve(), studio.ready);
-  await store.ready;
+  // Fixtures write skin rows directly, so every skin studio migration must finish first.
+  await Promise.all([store.ready, studio.ready]);
 
   const outfit = async (accountId: string, offerId: SkinOfferId, select = true) => {
     const jobId = randomUUID(), skinId = randomUUID();

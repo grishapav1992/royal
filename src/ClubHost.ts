@@ -55,7 +55,6 @@ export class ClubHost implements PlayerControls {
   setTyping(value: boolean) { this.world?.setTyping(value); }
   getReducedMotion() { return this.world?.getReducedMotion() ?? matchMedia('(prefers-reduced-motion: reduce)').matches; }
   getPortraitFrame(...args: Parameters<RoomScene['getPortraitFrame']>) { return this.world?.getPortraitFrame(...args) ?? ''; }
-  guardPortrait() { return this.world?.textures.getBase64('security-guard', 'down-6') ?? ''; }
   enableOnline(commands: Parameters<RoomScene['enableOnline']>[0]) { this.commands = commands; this.world?.enableOnline(commands); }
   syncPlayers(players: PlayerView[], selfId: string) {
     this.players = players; this.selfId = selfId;
