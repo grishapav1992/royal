@@ -1,0 +1,96 @@
+{
+ "release": "atelier-redesign-20261128-v1",
+ "published": true,
+ "preparedImage": "sha256:83235dec756ac9b2190aeef563f5000cfa3f859a2131a636a028a3827aec8c19",
+ "runningImage": "sha256:83235dec756ac9b2190aeef563f5000cfa3f859a2131a636a028a3827aec8c19",
+ "containerRestarted": true,
+ "sourceCommit": "5b0d49e525a08cdebed5dc8865c369cd64bd2cb8",
+ "baseCommit": "55e5012af1419801d66544ad760648032cde6999",
+ "changedSources": 10,
+ "clientDeltaFiles": 10,
+ "backendDeltaFiles": 0,
+ "configurationsAndMountsPreserved": true,
+ "gameDataPreserved": true,
+ "otherBackendProgramsAndModulesPreserved": true,
+ "oldAssetsPreserved": true,
+ "otherPersistentServicesPreserved": 10,
+ "rollbackImage": "sha256:3be9b15ce6d486fc346c60ce9a1b4d7f36f4281930802655073e8c19ef9024ae",
+ "rollbackTag": "royal-game:before-atelier-redesign-20261128-v1",
+ "backup": "/opt/royal-backups/atelier-redesign-20261128-v1",
+ "sourceArchive": {
+  "bytes": 181188,
+  "sha256": "268a87edd6b44904aac443be858d89084b8c2e8dad0785b459dc4bdfb0e44eea"
+ },
+ "financialBackupSha256": "59bbbe1279e967b4a197db7ab30d961bdee19a4c23fd9371a7ea5b2fedac268d",
+ "databaseRestored": false,
+ "hostProjectionSha256": "01ac27b95c9ceed04a923d02fbd8df972c986164d699bae9306fa52af2044e60",
+ "activeModulePointersUnchanged": true,
+ "moduleHostContractUnchanged": true,
+ "activeCatalogue": 20,
+ "addedGames": [],
+ "restoredGames": [],
+ "rulesOrMathChanged": false,
+ "pricesOrWalletChanged": false,
+ "checks": {
+  "build": {
+   "rtpProfiles": 39,
+   "stakePolicies": 21,
+   "typecheck": true,
+   "modules": true,
+   "host": true,
+   "reconciliation": true,
+   "payments": true
+  },
+  "releaseVerifyGithub": true,
+  "skinServerTests": {
+   "passed": 18,
+   "failed": 0
+  },
+  "atelierUiTests": {
+   "passed": 21,
+   "failed": 0,
+   "source": "5b0d49e5 working tree through the local entry stand"
+  },
+  "browser": {
+   "fixture": "Exact prepared dist through a local proxy over the entry stand with chat, temporary PostgreSQL and the local backend",
+   "atelier": {
+    "runs": 13,
+    "passed": 12,
+    "failedOnce": "first run after rebuild: the walk to the counter did not open the atelier within 30 s; not repeated in 12 later runs",
+    "viewports": [
+     "1440x1000",
+     "390x844"
+    ],
+    "wardrobeFromProfile": true,
+    "walkToCounterOpensShop": true,
+    "noHorizontalScroll": true,
+    "titleClearOfBalance": true
+   },
+   "entryModes": {
+    "passed": 9,
+    "walletStakeUnits": "10",
+    "lostResponseSameOperationOneDebit": true
+   }
+  },
+  "public": {
+   "healthz": 200,
+   "guestWallet": 401,
+   "sha256Matched": 10,
+   "oldAssetsServed": true,
+   "liveIndexLoadsWithoutConsoleErrors": true
+  }
+ },
+ "maintenance": {
+  "status": "completed",
+  "durationSeconds": 98.51,
+  "timerEnabled": true,
+  "appHealthy": true,
+  "freeBytes": 10528227328
+ },
+ "notChecked": [
+  "production accounts",
+  "Safari",
+  "real phones",
+  "map marker on other halls in production"
+ ]
+}
