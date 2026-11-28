@@ -1,0 +1,159 @@
+{
+  "tool": "a6api gpt-image-2.6-flare, /v1/images/edits, quality high, 1024x1024, background transparent",
+  "intent": "in-between frames and new waist-up poses for Mira in the room, painted over existing frames so the style holds",
+  "source": "each request received one or two cells of mira-work-corrected.png or mira-react.png, enlarged x3 and centred on a transparent 1024 square",
+  "processing": "painted backgrounds and checkerboards removed, colour matched to the source cell, scaled and placed by the belt line and hair top onto the source cell",
+  "sheet": {
+    "file": "mira-extra-28.png",
+    "columns": 7,
+    "rows": 4,
+    "cell": [
+      310,
+      318
+    ],
+    "workFrames": "0-8",
+    "reactionFrames": "9-27"
+  },
+  "frames": [
+    {
+      "frame": 0,
+      "id": "stock-12-13",
+      "trial": true
+    },
+    {
+      "frame": 1,
+      "id": "stock-13-14",
+      "trial": true
+    },
+    {
+      "frame": 2,
+      "id": "stock-14-15",
+      "trial": false
+    },
+    {
+      "frame": 3,
+      "id": "stock-15-12a",
+      "trial": false
+    },
+    {
+      "frame": 4,
+      "id": "stock-15-12b",
+      "trial": false
+    },
+    {
+      "frame": 5,
+      "id": "polish-8-9",
+      "trial": false
+    },
+    {
+      "frame": 6,
+      "id": "polish-9-10",
+      "trial": false
+    },
+    {
+      "frame": 7,
+      "id": "polish-10-11",
+      "trial": false
+    },
+    {
+      "frame": 8,
+      "id": "polish-11-8",
+      "trial": false
+    },
+    {
+      "frame": 9,
+      "id": "talk-15-13",
+      "trial": false
+    },
+    {
+      "frame": 10,
+      "id": "talk-13-wide",
+      "trial": false
+    },
+    {
+      "frame": 11,
+      "id": "talk-13-o",
+      "trial": false
+    },
+    {
+      "frame": 12,
+      "id": "talk-14-half",
+      "trial": false
+    },
+    {
+      "frame": 13,
+      "id": "talk-15-tilt",
+      "trial": false
+    },
+    {
+      "frame": 14,
+      "id": "talk-13-12",
+      "trial": false
+    },
+    {
+      "frame": 15,
+      "id": "laugh-1",
+      "trial": false
+    },
+    {
+      "frame": 16,
+      "id": "laugh-2",
+      "trial": false
+    },
+    {
+      "frame": 17,
+      "id": "laugh-3",
+      "trial": false
+    },
+    {
+      "frame": 18,
+      "id": "tease-1",
+      "trial": false
+    },
+    {
+      "frame": 19,
+      "id": "tease-2",
+      "trial": false
+    },
+    {
+      "frame": 20,
+      "id": "tease-3",
+      "trial": false
+    },
+    {
+      "frame": 21,
+      "id": "concern-1",
+      "trial": false
+    },
+    {
+      "frame": 22,
+      "id": "concern-2",
+      "trial": false
+    },
+    {
+      "frame": 23,
+      "id": "concern-3",
+      "trial": false
+    },
+    {
+      "frame": 24,
+      "id": "idle-left",
+      "trial": false
+    },
+    {
+      "frame": 25,
+      "id": "idle-right",
+      "trial": false
+    },
+    {
+      "frame": 26,
+      "id": "idle-chin",
+      "trial": false
+    },
+    {
+      "frame": 27,
+      "id": "idle-hair",
+      "trial": false
+    }
+  ]
+}

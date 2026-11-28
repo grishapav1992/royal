@@ -247,7 +247,8 @@ export class MiraChat {
 
   private animate(now: number) {
     if (!this.dialog.open || document.hidden) return;
-    const phase: MiraAttention=this.mira.isSpeaking(now)?'speak':now<this.greetedUntil?'greet':'listen';
+    const mood=this.mira.mood();
+    const phase: MiraAttention=this.mira.isSpeaking(now)?(mood==='neutral'?'speak':`speak-${mood}`):now<this.greetedUntil?'greet':'listen';
     if(phase!==this.lastAttention||now-this.attentionAt>1500) {
       this.lastAttention=phase;this.attentionAt=now;this.options.onAttention?.(phase);
     }

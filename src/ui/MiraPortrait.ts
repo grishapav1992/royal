@@ -53,6 +53,8 @@ export class MiraPortrait {
 
   stop() { this.speakingUntil = 0; this.reactionUntil = 0; this.lastFrame = -1; this.tick(Date.now()); }
   isSpeaking(now: number) { return now < this.speakingUntil; }
+  /** Mood of the latest reply, shown in the room as a short reaction when she starts speaking. */
+  mood(): MiraEmotion { return this.emotion; }
 
   tick(now: number) {
     const reduced = this.reducedMotion.matches;

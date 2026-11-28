@@ -1,4 +1,4 @@
-import { MiraRoutine, type MiraAttention } from '../src/shared/miraRoutine';
+import { MIRA_ATTENTION_PHASES, MiraRoutine, miraSpeaks, type MiraAttention } from '../src/shared/miraRoutine';
 import { atBar } from '../src/shared/world';
 import { type LobbyState } from './state';
 
@@ -9,10 +9,10 @@ export class Bartender {
   attend(id:string,value:unknown,now=Date.now()) {
     const phase=(value as {phase?:unknown}|null)?.phase;
     if (phase==='closed') {this.attention.delete(id);return;}
-    if (phase!=='greet'&&phase!=='listen'&&phase!=='speak') return;
+    if (!MIRA_ATTENTION_PHASES.includes(phase as MiraAttention)) return;
     const p=this.state.players.get(id);
     if(!p?.connected||p.hall!=='arcade'||p.security||p.playing||!atBar(p)) {this.attention.delete(id);return;}
-    this.attention.set(id,{phase,expires:now+5000});
+    this.attention.set(id,{phase:phase as MiraAttention,expires:now+5000});
   }
   forget(id:string) {this.attention.delete(id);}
   tick(dt: number) {
@@ -23,7 +23,8 @@ export class Bartender {
       if(entry.expires<Date.now()||!p?.connected||p.hall!=='arcade'||p.security||p.playing||!atBar(p))this.attention.delete(id);
     }
     const phases=[...this.attention.values()].map(entry=>entry.phase);
-    const attention:MiraAttention=phases.includes('speak')?'speak':phases.includes('greet')?'greet':phases.includes('listen')?'listen':'closed';
+    // A speaking reply wins, with the mood of whoever's reply that is; then greeting, then listening.
+    const attention:MiraAttention=phases.find(miraSpeaks)??(phases.includes('greet')?'greet':phases.includes('listen')?'listen':'closed');
     this.routine.tick(dt, serving, chatting,attention);
     Object.assign(this.state.mira, this.routine.state);
   }
