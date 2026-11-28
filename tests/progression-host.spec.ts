@@ -1,4 +1,4 @@
-import { openPlayerMenu } from './entry-mode';
+import { openPlayerMenu, revealHeaderItem } from './entry-mode';
 import { selectEntryMode } from './entry-mode';
 import { test, expect, type Page } from '@playwright/test';
 import { ROYAL_PLATFORM_GAMES } from '../src/shared/arcadeCatalog';
@@ -41,6 +41,8 @@ async function unlock(page: Page, confirm = true) {
   return result;
 }
 async function open(page: Page) {
+  // The levels button can sit in the player menu since the header redesign.
+  await revealHeaderItem(page, '#progression-button');
   await page.locator('#progression-button').click();
   await expect(page.locator('#progression-dialog')).toBeVisible();
   await expect(page.locator('[data-progression-roadmap] button')).toHaveCount(100);
@@ -299,23 +301,25 @@ test('the same location track and shared rewards are fully translated in English
   await expect(page.locator('#progression-dialog .game-chat-game')).not.toContainText(/[А-Яа-яЁё]/);
 });
 
-test('a level reward opens the real atelier, recovers a lost accepted request and creates two choices without a cash debit',async({page},info)=>{
+test('a level reward walks to the real atelier, recovers a lost accepted request and creates two choices without a cash debit',async({page},info)=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await enter(page);const before=await unlock(page);await open(page);await page.locator('[data-progression-tab="rewards"]').click();
-  await page.locator('[data-progression-atelier]').first().click();await expect(page.locator('#skin-studio-dialog')).toBeVisible();
+  // The reward walks the player to the counter; the order window opens there.
+  await page.locator('[data-progression-atelier]').first().click();await expect(page.locator('#skin-studio-dialog')).toBeVisible({timeout:25000});await expect(page.locator('#skin-studio-title')).toHaveText('Ателье');
   await expect(page.locator('.skin-free-generations')).toContainText('2');await expect(page.locator('.skin-generate-slot button')).toHaveText('Создать бесплатно');
   const wallet=await page.evaluate(async()=>{const {account}=await(await fetch('/api/auth/me')).json();return(await fetch('/api/demo-wallet',{headers:{'X-Royal-Account-Id':account.id}})).json();});
   let accepted:any;
   await page.route('**/api/skin-studio/generations',async route=>{accepted=route.request().postDataJSON();const response=await route.fetch();expect(response.ok()).toBe(true);await route.abort('failed');},{times:1});
   await page.locator('#skin-prompt').fill('Космонавт в красном костюме');await page.locator('.skin-generate-slot button').click();
   await expect.poll(()=>accepted?.rewardGrantId).toBe(before.skinGrants[0].id);await page.reload(); await selectEntryMode(page);await expect(page.locator('#join-dialog')).toBeHidden({timeout:25000});
-  await openPlayerMenu(page);await page.getByRole('button',{name:'Образы',exact:true}).click();
+  // After a reload the wardrobe button appears once the account has loaded.
+  await expect(page.locator('#skin-studio-button')).not.toHaveAttribute('hidden','',{timeout:25000});await openPlayerMenu(page);await page.getByRole('button',{name:'Гардероб',exact:true}).click();
   await expect(page.locator('#skin-studio-dialog .skin-results')).toBeVisible({timeout:25000});
   await expect(page.locator('[data-select-skin]')).toHaveCount(2);
   const state=await page.evaluate(async()=>{const {account}=await(await fetch('/api/auth/me')).json();const headers={'X-Royal-Account-Id':account.id};return {progression:await(await fetch('/api/progression',{headers})).json(),wallet:await(await fetch('/api/demo-wallet',{headers})).json(),atelier:await(await fetch('/api/skin-studio',{headers})).json()};});
   expect(state.atelier.job.id).toBe(accepted.id);expect(state.atelier.job.funding).toBe('reward');expect(state.wallet.balance).toBe(wallet.balance);
   expect(state.progression.xp).toBe(before.xp);expect(state.progression.skinGrants[0].remaining).toBe(0);expect(state.progression.skinGrants[1].remaining).toBe(1);
-  await page.locator('[data-select-skin]').first().click();await page.getByRole('button',{name:'Сохранить образ',exact:true}).click();
+  await page.locator('[data-select-skin]').first().click();await page.getByRole('button',{name:/^Забрать «/}).click();
   await expect(page.locator('.skin-closet-grid [data-skin-card]')).toHaveCount(1);
   await page.setViewportSize({width:390,height:844});expect(await page.locator('#skin-studio-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
   await page.screenshot({path:info.outputPath('free-generation-mobile.png')});expect(errors).toEqual([]);

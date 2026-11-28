@@ -3,7 +3,8 @@ import type { RoomScene } from '../game/RoomScene';
 import { CLUB_ZONES, ARCADE_OVERVIEW_SIZE, LOUNGES } from '../shared/clubLayout';
 import { BAR_SOLID } from '../shared/furniture';
 import { ACTIVITIES } from '../shared/activities';
-import { HALLS, hallLinks, isCasinoFloor } from '../shared/world';
+import { HALLS, hallLinks, hallLinkToward, isCasinoFloor } from '../shared/world';
+import { ATELIER } from '../shared/atelier';
 import { elevatorDock } from '../shared/elevator';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
@@ -89,6 +90,15 @@ export class ClubMap {
     const corners=[{x:view.x,y:view.y},{x:view.x+view.width/view.zoom,y:view.y},{x:view.x,y:view.y+view.height/view.zoom},{x:view.x+view.width/view.zoom,y:view.y+view.height/view.zoom}].map(p=>state.hall==='street'?unprojectStreetPoint(p,orientation):p);
     const left=Math.min(...corners.map(p=>p.x)),top=Math.min(...corners.map(p=>p.y));
     ctx.strokeStyle='#ece2c280';ctx.lineWidth=6;ctx.strokeRect(left,top,Math.max(...corners.map(p=>p.x))-left,Math.max(...corners.map(p=>p.y))-top);
+    if(state.atelierGuide){
+      // Route hint to the atelier: the counter on the first floor, otherwise the next doorway toward it.
+      const target=state.hall==='arcade'?ATELIER.entry:hallLinkToward(state.hall,'arcade')?.door.entry;
+      if(target){
+        const pulse=.5+.5*Math.sin(performance.now()/260);
+        ctx.setLineDash([26,20]);ctx.strokeStyle='#f3d48acc';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(state.x,state.y);ctx.lineTo(target.x,target.y);ctx.stroke();ctx.setLineDash([]);
+        ctx.strokeStyle='#f3d48a';ctx.lineWidth=10;ctx.beginPath();ctx.arc(target.x,target.y,44+pulse*18,0,Math.PI*2);ctx.stroke();
+      }
+    }
     ctx.fillStyle='#f7d26a';ctx.beginPath();ctx.arc(state.x,state.y,18,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#332936';ctx.lineWidth=5;ctx.stroke();ctx.restore();
   }
 }

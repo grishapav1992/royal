@@ -26,7 +26,7 @@ export class ProgressionUI {
   private renderedResult = '';
   private feedback = '';
   private account: string | null = null;
-  constructor(private scene: Pick<ClubHost, 'setLocked' | 'onAtelier'>, private client: ProgressionClient = progression) {
+  constructor(private scene: Pick<ClubHost, 'setLocked' | 'onAtelier' | 'goToAtelier'>, private client: ProgressionClient = progression) {
     this.button.type = 'button'; this.button.id = 'progression-button'; this.button.className = 'progression-button';
     this.button.hidden = true; this.button.onclick = () => this.show();
     document.querySelector('.profile-name')?.after(this.button);
@@ -58,7 +58,8 @@ export class ProgressionUI {
         const choice = button.closest('article')?.querySelector<HTMLSelectElement>('[data-progression-game]')?.value as RewardGame | undefined;
         this.tab = 'rewards'; void this.run(() => this.client.spin(button.dataset.progressionGrant!, choice));
       } else if (button.hasAttribute('data-progression-atelier')) {
-        this.dialog.close();this.scene.onAtelier?.();
+        // The walk starts after the dialog's close handler unlocks the world.
+        this.dialog.addEventListener('close',()=>setTimeout(()=>this.scene.goToAtelier?.(),0),{once:true});this.dialog.close();
       }
     });
     window.addEventListener('royal-account', event => this.client.setAccount((event as CustomEvent<string | null>).detail));
@@ -202,7 +203,7 @@ export class ProgressionUI {
       const offer=document.createElement('p');offer.textContent=t('2 варианта на выбор · 1 образ навсегда');
       const remaining=document.createElement('p');remaining.textContent=tr`Осталось: ${grant.remaining} из ${grant.count}`;
       const button=document.createElement('button');button.type='button';button.className='primary-button';button.setAttribute('data-progression-atelier','');
-      button.textContent=t(grant.remaining?'Открыть ателье':'Генерация использована');button.disabled=grant.remaining===0||!this.scene.onAtelier;
+      button.textContent=t(grant.remaining?'Идти к ателье':'Генерация использована');button.disabled=grant.remaining===0||!this.scene.goToAtelier;
       card.append(title,origin,offer,remaining,button);host.append(card);
     }
   }
