@@ -1,3 +1,4 @@
+import { SEATS } from '../shared/world';
 import { StreetView } from './streetView';
 import type Phaser from 'phaser';
 import { t } from '../i18n';
@@ -220,7 +221,7 @@ export class StreetRoofStairs {
 
 export class RooftopRenderer {
   readonly mapCanvas: HTMLCanvasElement;
-  constructor(scene: Phaser.Scene, leave: () => void,enterToilet:()=>void=()=>{}) {
+  constructor(scene: Phaser.Scene, leave: () => void,enterToilet:()=>void=()=>{},sitBench:(seats:readonly string[])=>void=()=>{}) {
     const lang = t('КРЫША КАЗИНО'), groundKey = 'casino-roof-ground-' + lang;
     const base = texture(scene, groundKey, ROOF.width, ROOF.height, ground);
     scene.add.image(0, 0, groundKey).setOrigin(0).setDepth(0);
@@ -228,7 +229,8 @@ export class RooftopRenderer {
     const map = this.mapCanvas.getContext('2d')!; map.drawImage(base, 0, 0);
     const prop = (key: string, x: number, y: number, w: number, h: number, paint: (c: Paint) => void) => {
       const art = texture(scene, key, w, h, paint);
-      scene.add.image(x, y, key).setOrigin(0, 1).setDepth(y); map.drawImage(art, x, y - h, w, h);
+      const image = scene.add.image(x, y, key).setOrigin(0, 1).setDepth(y); map.drawImage(art, x, y - h, w, h);
+      return image;
     };
     prop('casino-roof-hatch-' + lang, ROOF.hatch.x, 580, 180, 170, hatch);
     const toilet=ROOF_TOILET;
@@ -236,7 +238,12 @@ export class RooftopRenderer {
     prop('casino-roof-toilet-step-v1',toilet.step.x,toilet.step.y+toilet.step.h,60,24,paintRoofToiletStep);
     addServiceWindowZone(scene,toilet.click,toilet.step.y+toilet.step.h,enterToilet);
     for (const v of ROOF.vents) prop('casino-roof-vent-' + v.w, v.x, v.y + v.h, v.w, v.h + 32, c => vent(c, v.w, v.h));
-    for (const b of ROOF.benches) prop('casino-roof-bench', b.x, b.y + b.h, 190, 74, bench);
+    // Seated visitors sit in front of the backrest, so the bench sorts by its seat line.
+    ROOF.benches.forEach((b, index) => {
+      prop('casino-roof-bench', b.x, b.y + b.h, 190, 74, bench).setDepth(b.y + b.h - 24);
+      const seats = SEATS.filter(seat => seat.id.startsWith(`roof-bench-${index}-`)).map(seat => seat.id);
+      scene.add.zone(b.x + b.w / 2, b.y + b.h - 30, b.w, 70).setDepth(b.y + b.h + 40).setInteractive({ useHandCursor: true }).on('pointerdown', () => sitBench(seats));
+    });
     prop('casino-roof-antenna', ROOF.antenna.x, ROOF.antenna.y + ROOF.antenna.h, 100, 148, antenna);
     const stairs = scene.add.graphics().setDepth(.1);
     stairs.fillStyle(0x394a58).fillRect(477, 580, 106, 53);

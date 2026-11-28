@@ -49,6 +49,16 @@ import { NpcTimeline } from '../network/NpcTimeline';
 import { RoomDetails } from './roomDetails';
 import { StreetView, streetDirection, type StreetSide } from './streetView';
 import { StreetRenderer } from './StreetRenderer';
+import { StreetPlay, FLAT_VIEW, type PlayView, type StreetPlayActor, type StreetPlayHooks, type SnowballFlight } from './StreetPlay';
+import { RoofFireworks } from './RoofFireworks';
+import { StreetAtmosphere } from './StreetAtmosphere';
+import { isSnowHall, nearFireworks, ROOF_FIREWORKS, type FireworkEvent } from '../shared/streetPlay';
+import { StreetPhoto } from './StreetPhoto';
+import { ToiletPlay } from './ToiletPlay';
+import { EmoteLayer, type EmoteActor, type EmoteNpc } from './EmoteLayer';
+import { dealerForGame } from '../shared/cardTables';
+import { cubicleOfSeat, type ToiletActEvent } from '../shared/toiletPlay';
+import type { SnowmanView } from '../shared/streetPlay';
 import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,ROOF_STAIR_EPSILON,advanceRoofStairStep,moveRoofStairs,roofStairOptions,nearRoofStairBase } from '../shared/rooftop';
 import { RooftopRenderer } from './RooftopRenderer';
 import { STREET } from '../shared/street';
@@ -84,6 +94,16 @@ export class RoomScene extends Phaser.Scene {
   private hallObjects = new Map<HallId, Phaser.GameObjects.GameObject[]>();
   private hallDetails = new Map<HallId, RoomDetails>();
   private street?: StreetRenderer;
+  private streetPlay?: StreetPlay;
+  private roofPlay?: StreetPlay;
+  private roofFireworks?: RoofFireworks;
+  private roofAtmosphere?: StreetAtmosphere;
+  private streetPhoto?: StreetPhoto;
+  private toiletPlay?: ToiletPlay;
+  private emotes?: EmoteLayer;
+  private toiletSelfie?: StreetPhoto;
+  private streetPlayArrival?: { point: Point; arrive: () => void };
+  private streetSnowmen: SnowmanView[] = [];
   private streetView=new StreetView();
   private streetKeyboardSide?:StreetSide;
   private lastStreetKeys='';
@@ -191,17 +211,30 @@ export class RoomScene extends Phaser.Scene {
     for(const hall of Object.keys(HALLS) as HallId[]){
       const before=new Set(this.children.list);this.hall=hall;
       if(hall==='street'){
-        this.street=new StreetRenderer(this,()=>this.approachFloor('arcade'),id=>this.approachStreetResident(id),point=>this.useRoofStairs(point),this.streetView,this.hallObjects,()=>this.useStairWindow(true));
+        // While aiming a snowball, a click on a door, person, stair or bench is the target, not a walk.
+        const unlessAiming=<T extends unknown[]>(action:(...args:T)=>void)=>(...args:T)=>{if(!this.streetPlay?.isAiming)action(...args);};
+        this.street=new StreetRenderer(this,unlessAiming(()=>this.approachFloor('arcade')),unlessAiming((id:StreetResidentId)=>this.approachStreetResident(id)),unlessAiming((point:Point)=>this.useRoofStairs(point)),this.streetView,this.hallObjects,unlessAiming(()=>this.useStairWindow(true)),unlessAiming((seats:readonly string[])=>this.approachStreetBench(seats)),()=>this.takeStreetPhoto());
+        this.streetPhoto=new StreetPhoto(this,()=>this.takeStreetPhoto());
+        this.streetPlay=new StreetPlay(this,this.snowHooks(point=>this.street?.snowLanded(point)));
+        this.streetPlay.setSnowmen(this.streetSnowmen);
         this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
         continue;
       }
       if(hall==='roof'){
-        this.rooftop=new RooftopRenderer(this,()=>this.approachFloor('street'),()=>this.approachFloor('toilet'));
+        const unlessAimingOnRoof=<T extends unknown[]>(action:(...args:T)=>void)=>(...args:T)=>{if(!this.roofPlay?.isAiming)action(...args);};
+        this.rooftop=new RooftopRenderer(this,unlessAimingOnRoof(()=>this.approachFloor('street')),unlessAimingOnRoof(()=>this.approachFloor('toilet')),unlessAimingOnRoof((seats:readonly string[])=>this.approachStreetBench(seats)));
+        const launch=()=>{this.network?.street?.('firework');};
+        this.roofPlay=new StreetPlay(this,this.snowHooks(()=>{}),{hall:'roof',kiosk:false,roll:false,extra:{id:'roof-firework',label:()=>translateText('Запустить фейерверк · E'),visible:self=>nearFireworks(self),run:launch}});
+        this.roofAtmosphere=new StreetAtmosphere(this,{lights:false,pigeons:false});
+        this.roofFireworks=new RoofFireworks(this,unlessAimingOnRoof(()=>{if(this.locked||this.typing||this.switching)return;this.pendingCabinet=null;this.pendingLounge='street-play';this.streetPlayArrival={point:ROOF_FIREWORKS.approach,arrive:launch};this.goTo(ROOF_FIREWORKS.approach);}));
         this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
         continue;
       }
       if(hall==='toilet'){
         this.toilet=new ToiletRenderer(this,()=>this.approachFloor('roof'),this.rooftop?.mapCanvas,()=>this.approachFloor('github'),()=>this.approachToiletMerchant());
+        const snow=this.snowHooks(()=>{});
+        this.toiletPlay=new ToiletPlay(this,{send:type=>snow.send(type),approach:snow.approach,sit:seat=>this.approachSeat(seat),stand:()=>this.stand(),selfie:()=>this.takeMirrorSelfie(),online:snow.online});
+        this.toiletSelfie=new StreetPhoto(this,()=>this.takeMirrorSelfie(),'mirror');
         this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
         continue;
       }
@@ -227,8 +260,11 @@ export class RoomScene extends Phaser.Scene {
     this.input.keyboard!.on('keyup',(event:KeyboardEvent)=>this.heldWindowKeys.delete(event.keyCode));
     this.input.keyboard!.on('keydown',(event:KeyboardEvent)=>{if(!event.repeat)this.heldWindowKeys.delete(event.keyCode);});
     this.input.keyboard!.on('keydown-E', (event:KeyboardEvent) => {if(!event.repeat)this.interact();});
+    this.input.keyboard!.on('keydown-F', (event:KeyboardEvent) => {if(!event.repeat&&!this.locked&&!this.typing&&!this.switching)this.snowPlay()?.throwForward();});
     this.input.keyboard!.on('keydown-SPACE', (event:KeyboardEvent) => {if(!event.repeat)this.interact();});
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer, objects: Phaser.GameObjects.GameObject[]) => {
+      const aiming=this.snowPlay();
+      if (aiming?.isAiming&&!this.locked&&!this.typing&&!pointer.rightButtonDown()) { aiming.aimAt(this.hall==='street'?this.streetView.world({x:pointer.worldX,y:pointer.worldY}):{x:pointer.worldX,y:pointer.worldY}); return; }
       if (this.locked || this.typing || objects.length || pointer.rightButtonDown()) return;
       this.pendingCabinet = null; this.pendingLounge = null;
       this.goTo(this.hall==='street'?this.streetView.world({x:pointer.worldX,y:pointer.worldY}):{x:pointer.worldX,y:pointer.worldY});
@@ -308,6 +344,9 @@ export class RoomScene extends Phaser.Scene {
       if(object.input)object.input.enabled=id===hall;
     }
     this.street?.setActive(hall==='street');
+    this.streetPlay?.setActive(hall==='street');
+    this.emotes?.setActive();
+    this.roofPlay?.setActive(hall==='roof');this.toiletPlay?.setActive(hall==='toilet');this.roofFireworks?.setActive(hall==='roof');
     this.near=null;this.lastNear='';this.onNear(null);gameAudio.setHall(hall);this.onHall(hall);
     if(this.player)this.resizeView();
   }
@@ -572,11 +611,14 @@ export class RoomScene extends Phaser.Scene {
   interact() {
     if (this.locked || this.typing || this.switching) return;
     if(this.hall==='roof'&&Math.hypot(this.player.x-ROOF_TOILET.entry.x,this.player.y-ROOF_TOILET.entry.y)<110){this.approachFloor('toilet');return;}
+    if(this.hall==='roof'&&!this.isHuggingCat()&&this.roofPlay?.interact()){this.pendingLounge=null;return;}
     if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_WINDOW.entry.x,this.player.y-TOILET_WINDOW.entry.y)<110){this.approachFloor('roof');return;}
     if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_HALL_DOOR.entry.x,this.player.y-TOILET_HALL_DOOR.entry.y)<80){this.approachFloor('github');return;}
     if(this.hall==='toilet'&&!this.isHuggingCat()&&Math.hypot(this.player.x-TOILET_MERCHANT.x,this.player.y-TOILET_MERCHANT.y)<=TOILET_MERCHANT.interactionRadius){this.approachToiletMerchant();return;}
+    if(this.hall==='toilet'&&!this.isHuggingCat()&&this.toiletPlay?.interact()){this.pendingLounge=null;return;}
     if(this.hall==='street'&&(this.player.stairStep??0)>0)return;
     if(this.hall==='street'&&!this.isHuggingCat()&&Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<55){this.approachFloor('roof');return;}
+    if(this.hall==='street'&&!this.isHuggingCat()&&this.streetPlay?.interact()){this.pendingLounge=null;return;}
     if(this.hall==='street'&&!this.isHuggingCat()&&this.street?.interact(this.player)){this.pendingLounge=null;this.finishMovement(()=>this.network?.stop());return;}
     if (!this.isHuggingCat() && atElevator(this.player)) { this.openElevator(); return; }
     const nearbyPlayer=[...this.remotePlayers.values()].map(p=>p.target).filter(p=>p.connected&&p.hall===this.hall&&!p.playing&&!p.activity)
@@ -625,6 +667,53 @@ export class RoomScene extends Phaser.Scene {
     const music=this.add.text(x+50,y+12,'♪',{fontFamily:'serif',fontSize:'18px',color:'#d6efac'}).setDepth(y+90);
     this.pianoEffects.add(glow);this.pianoEffects.add(music);
     this.tweens.add({targets:music,y:y-15,x:x+60,alpha:0,duration:700,onComplete:()=>{music.destroy();this.pianoEffects.delete(music);}});
+  }
+  approachStreetBench(seats: readonly string[]) {
+    if (!isSnowHall(this.hall)||this.player.seat) return;
+    const occupied = new Set([...this.remotePlayers.values()].map(p=>p.target.seat));
+    const id = seats.find(seat=>!occupied.has(seat));
+    if (id) this.approachSeat(id); else this.onNotice(translateText('На этой скамейке все места заняты.'));
+  }
+  takeStreetPhoto() {
+    if (this.hall!=='street'||this.overview||(this.player.stairStep??0)>0) return;
+    const camera=this.cameras.main,sprite=this.player.sprite;
+    const center={x:(sprite.x-camera.worldView.x)*camera.zoom+camera.x,y:(sprite.y-40-camera.worldView.y)*camera.zoom+camera.y};
+    this.streetPhoto?.take(center,this.player.label?.text.split('\n')[0].split(' · ')[0]||translateText('Игрок'),this.reducedMotion);
+  }
+  setStreetSnowmen(list: SnowmanView[]) { this.streetSnowmen = list; this.streetPlay?.setSnowmen(list); }
+  streetSnowball(event: SnowballFlight) { if (this.hall!==(event.hall??'street')) return; (this.hall==='roof'?this.roofPlay:this.streetPlay)?.snowball(event); }
+  toiletAct(event: ToiletActEvent) { if (this.hall==='toilet') this.toiletPlay?.act(event); }
+  takeMirrorSelfie() {
+    if (this.hall!=='toilet'||this.overview) return;
+    const camera=this.cameras.main,sprite=this.player.sprite;
+    const center={x:(sprite.x-camera.worldView.x)*camera.zoom+camera.x,y:(sprite.y-40-camera.worldView.y)*camera.zoom+camera.y};
+    this.toiletSelfie?.take(center,this.player.label?.text.split('\n')[0].split(' · ')[0]||translateText('Игрок'),this.reducedMotion);
+  }
+  roofFirework(event: FireworkEvent) { if (this.hall==='roof') this.roofFireworks?.show(event); }
+  private snowPlay() { return this.hall==='street'?this.streetPlay:this.hall==='roof'?this.roofPlay:undefined; }
+  private snowHooks(landed: (point: Point) => void): StreetPlayHooks {
+    return {
+      send:(type,value)=>this.network?.street?.(type,value)??false,
+      approach:(point,arrive)=>{ if(this.locked||this.typing||this.switching||this.isHuggingCat())return; this.pendingCabinet=null;this.pendingLounge='street-play';this.streetPlayArrival={point,arrive};this.goTo(point); },
+      landed,
+      focus:()=>this.game.canvas.focus({preventScroll:true}),
+      stand:()=>this.stand(),
+      online:()=>Boolean(this.network),
+    };
+  }
+  private updateSnowPlay(play: StreetPlay, view: PlayView, delta: number) {
+    const self = this.networkSelf, now = Date.now();
+    const actors: StreetPlayActor[] = [];
+    const add = (id: string, actor: { sprite: Phaser.GameObjects.Sprite; seat: string; facing: string }, view?: { snowballs?: number; snowRoll?: number; snowHitUntil?: number }) => {
+      if (!view) return;
+      actors.push({ id, x: actor.sprite.x, y: actor.sprite.y, depth: actor.sprite.depth, visible: actor.sprite.visible, facing: this.streetView.facing(actor.facing as Facing), seated: Boolean(actor.seat),
+        snowballs: view.snowballs ?? 0, snowRoll: view.snowRoll ?? 0, snowHit: (view.snowHitUntil ?? 0) > now });
+    };
+    add(this.selfId || 'local-player', this.player, self);
+    for (const [id, remote] of this.remotePlayers) if (remote.target.hall === this.hall) add(id, remote.actor, remote.target);
+    const me = self ? { x: this.player.x, y: this.player.y, hall: this.hall, facing: this.player.facing, stairStep: this.player.stairStep, seat: this.player.seat, action: this.player.action, playing: self.playing,
+      snowballs: self.snowballs ?? 0, snowRoll: self.snowRoll ?? 0, snowFight: Boolean(self.snowFight) } : undefined;
+    play.update(view, this.overview, delta, this.reducedMotion, me, actors);
   }
   approachSeat(id: string) {
     if (this.locked || this.isHuggingCat() || this.typing) return;
@@ -847,6 +936,7 @@ export class RoomScene extends Phaser.Scene {
       sit: seat => { this.clickTargets.cancel(); this.finishMovement(() => commands.sit(seat)); },
       stand: () => { this.clickTargets.cancel(); this.finishMovement(commands.stand); },
       drink: drink => { this.clickTargets.cancel(); this.finishMovement(() => commands.drink(drink)); },
+      street: (type, value) => { if (!commands.street) return false; if (type === 'snow-throw' || type === 'snow-fight' || type === 'emote') return commands.street(type, value); this.clickTargets.cancel(); this.finishMovement(() => commands.street?.(type, value)); return true; },
       recover: commands.recover, stairWindow: commands.stairWindow, elevator: commands.elevator, cat: commands.cat, miraAttention: commands.miraAttention, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
     };
     this.networkSelf = undefined;
@@ -960,7 +1050,7 @@ export class RoomScene extends Phaser.Scene {
     else { this.afterMovement = undefined; action(); }
   }
   getReducedMotion() { return this.reducedMotion; }
-  getState() { const c=this.cameras.main;return { stairNavigation:{path:this.player.path.map(p=>({...p})),pending:this.pendingLounge,waiting:!!this.afterMovement,heldKeys:[...this.heldWindowKeys]}, stairStep:this.networkSelf?.stairStep??this.player.stairStep??0,stairDirection:this.networkSelf?.stairDirection??this.player.stairDirection??1, cat: this.catView, street:this.hall==='street'?this.street?.getState():null, world:this.hall==='toilet'?{width:TOILET.width,height:TOILET.height,bounds:TOILET.bounds}:{...WORLD,bounds:BOUNDS},toilet:this.hall==='toilet'?this.toilet?.getState():null,guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width*this.scale.zoom,height:c.height*this.scale.zoom,zoom:c.zoom*this.scale.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, buildingOccluded:this.hall==='street'&&(this.player.stairStep??0)===0&&this.streetView.occluded(this.player), labelVisible:this.player.label?.visible, renderVisible:this.player.sprite.visible, renderBounds:this.player.sprite.getBounds(), halo:{x:this.halo.x,y:this.halo.y,depth:this.halo.depth,visible:this.halo.visible}, renderDepth:this.player.sprite.depth, renderX: this.player.sprite.x, renderY: this.player.sprite.y, renderScaleX: this.player.sprite.scaleX, renderScaleY: this.player.sprite.scaleY, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, label: actor.label?.text, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
+  getState() { const c=this.cameras.main;return { stairNavigation:{path:this.player.path.map(p=>({...p})),pending:this.pendingLounge,waiting:!!this.afterMovement,heldKeys:[...this.heldWindowKeys]}, stairStep:this.networkSelf?.stairStep??this.player.stairStep??0,stairDirection:this.networkSelf?.stairDirection??this.player.stairDirection??1, cat: this.catView, emotes:this.emotes?.getState(), street:this.hall==='street'&&this.street?{...this.street.getState(),play:this.streetPlay?.getState(),photo:this.streetPhoto?.getState()}:null, roof:this.hall==='roof'?{play:this.roofPlay?.getState(),fireworks:this.roofFireworks?.getState()}:null, world:this.hall==='toilet'?{width:TOILET.width,height:TOILET.height,bounds:TOILET.bounds}:{...WORLD,bounds:BOUNDS},toilet:this.hall==='toilet'?{...this.toilet?.getState(),play:this.toiletPlay?.getState(),selfie:this.toiletSelfie?.getState()}:null,guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width*this.scale.zoom,height:c.height*this.scale.zoom,zoom:c.zoom*this.scale.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, buildingOccluded:this.hall==='street'&&(this.player.stairStep??0)===0&&this.streetView.occluded(this.player), labelVisible:this.player.label?.visible, renderVisible:this.player.sprite.visible, renderBounds:this.player.sprite.getBounds(), halo:{x:this.halo.x,y:this.halo.y,depth:this.halo.depth,visible:this.halo.visible}, renderDepth:this.player.sprite.depth, renderX: this.player.sprite.x, renderY: this.player.sprite.y, renderScaleX: this.player.sprite.scaleX, renderScaleY: this.player.sprite.scaleY, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, label: actor.label?.text, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
   update(time: number, delta: number) {
     if (!this.player) return;
     if(this.hall==='street'&&this.streetView.configure(this.player,this.overview))this.resizeView();
@@ -980,11 +1070,17 @@ export class RoomScene extends Phaser.Scene {
     }
     if(!this.network&&!this.locked&&!this.isHuggingCat()&&!this.typing&&inHallDoor(this.player))this.changeHall(hallLinkAt(this.player)!.target);
     this.details?.update(time);
-    if(this.hall==='toilet')this.toilet?.update([this.player,...[...this.remotePlayers.values()].map(p=>p.actor)],delta,this.reducedMotion,!this.locked&&!this.typing&&!this.switching&&!this.isHuggingCat());
+    if(this.hall==='toilet'){
+      const locks=[this.player.seat,...[...this.remotePlayers.values()].filter(p=>p.target.hall==='toilet').map(p=>p.target.seat)].map(seat=>cubicleOfSeat(seat??'')).filter((id):id is number=>id!==undefined);
+      this.toilet?.update([this.player,...[...this.remotePlayers.values()].map(p=>p.actor)],delta,this.reducedMotion,!this.locked&&!this.typing&&!this.switching&&!this.isHuggingCat(),locks);
+      this.toiletPlay?.update(delta,this.overview,this.reducedMotion,this.networkSelf?{x:this.player.x,y:this.player.y,hall:this.hall,seat:this.player.seat,playing:this.networkSelf.playing,action:this.player.action}:undefined);
+    }
     if(this.hall==='street'&&(this.player.stairStep??0)>0&&this.pendingLounge?.startsWith('street:'))this.pendingLounge=null;
     const streetTarget=this.hall==='street'&&this.pendingLounge?.startsWith('street:')?this.pendingLounge.slice(7) as StreetResidentId:undefined;
     if(this.streetApproach?.id!==streetTarget){this.streetApproach=undefined;this.streetApproachCompleting=false;}
     if(this.hall==='street')this.street?.update(this.player,this.overview,delta,this.reducedMotion,streetTarget);
+    if(this.hall==='street'&&this.streetPlay)this.updateSnowPlay(this.streetPlay,this.streetView,delta);
+    if(this.hall==='roof'&&this.roofPlay){this.updateSnowPlay(this.roofPlay,FLAT_VIEW,delta);this.roofAtmosphere?.update(FLAT_VIEW,this.overview,delta,this.reducedMotion,[]);this.roofFireworks?.update(delta,this.overview,this.reducedMotion,p=>Math.hypot(p.x-this.player.x,p.y-this.player.y)<220);}
     if(this.hall==='street'&&!this.overview)this.cameras.main.setFollowOffset(0,Math.min(140,Math.max(60,this.cameras.main.height/this.cameras.main.zoom*.18)));
     if (this.hall === 'github') this.cardTables?.update(time);
     if(this.hall==='arcade')this.bar.update(this.player.action==='drink'||[...this.remotePlayers.values()].some(p=>p.target.action==='drink'),this.reducedMotion,this.guard.barConversation(),delta/1000,Boolean(this.network),npcRenderAt);
@@ -1111,6 +1207,11 @@ export class RoomScene extends Phaser.Scene {
             this.finishMovement(()=>{this.pendingLounge=null;this.streetApproachCompleting=false;this.network?.stop();if(this.hall==='street')this.street?.interact(this.player,target.id);});
           }
         }
+        else if(this.pendingLounge==='street-play'){
+          const arrival=this.streetPlayArrival;
+          if(!arrival||!(isSnowHall(this.hall)||this.hall==='toilet')){this.pendingLounge=null;this.streetPlayArrival=undefined;}
+          else if(Math.hypot(this.player.x-arrival.point.x,this.player.y-arrival.point.y)<14){this.pendingLounge=null;this.streetPlayArrival=undefined;this.player.path=[];this.finishMovement(()=>{this.network?.stop();arrival.arrive();});}
+        }
         else if(this.pendingLounge.startsWith('activity:')){
           const id=this.pendingLounge.slice(9) as ActivityId,entry=ACTIVITIES[id].entry;
           if(Math.hypot(this.player.x-entry.x,this.player.y-entry.y)<20){this.pendingLounge=null;this.player.path=[];this.network?.stop();this.onActivity(id);}
@@ -1158,6 +1259,20 @@ export class RoomScene extends Phaser.Scene {
       this.animateActor(actor,time,view.moving&&moved);
       if(view.mood==='playing'&&!view.moving&&!this.reducedMotion)actor.sprite.setAngle(Math.sin(time/400+actor.phase)*1.5);
     }
+    this.updateEmotes();
+  }
+  private updateEmotes() {
+    if (!this.emotes) this.emotes = new EmoteLayer(this, id => this.network?.street?.('emote', id) ?? false, () => !this.locked && !this.typing && !this.switching && Boolean(this.network));
+    const actors: EmoteActor[] = [];
+    const self = this.networkSelf;
+    if (self) actors.push({ id: this.selfId, sprite: this.player.sprite, label: this.player.label, seated: Boolean(this.player.seat), emote: self.emote ?? '', emoteUntil: self.emoteUntil ?? 0, visible: this.player.sprite.visible });
+    for (const [id, { actor, target }] of this.remotePlayers) if (target.hall === this.hall) actors.push({ id, sprite: actor.sprite, label: actor.label, seated: Boolean(actor.seat), emote: target.emote ?? '', emoteUntil: target.emoteUntil ?? 0, visible: actor.sprite.visible });
+    // Who answers on this floor: Mira at the bar, the salon dealers, and the floor-2 game tables.
+    const npcs: EmoteNpc[] = [];
+    if (this.hall === 'arcade') { const mira = this.bar?.getState(); if (mira) npcs.push({ id: 'mira', anchor: { x: mira.x, y: mira.y - 100 }, near: { x: mira.x, y: mira.y + 60 }, depth: mira.y }); }
+    if (this.hall === 'github') for (const c of cabinetsInHall('github')) if (dealerForGame(c.id)) npcs.push({ id: 'dealer-' + c.id, anchor: { x: c.x, y: c.y - 182 }, near: { x: c.x, y: c.y + 70 }, depth: c.y });
+    const tables = this.hall === 'tables' ? (Object.keys(ACTIVITIES) as ActivityId[]).filter(id => activityHall(id) === 'tables').map(id => { const a = ACTIVITIES[id] as { entry: Point; bounds?: { x: number; y: number; w: number; h: number } }; const b = a.bounds; return { id, anchor: b ? { x: b.x + b.w / 2, y: b.y } : { x: a.entry.x, y: a.entry.y - 120 }, near: a.entry }; }) : [];
+    this.emotes.update(actors, this.overview, this.reducedMotion, Boolean(this.network), { selfId: this.selfId, npcs, tables });
   }
   private move(actor: Actor, dx: number, dy: number) {
     const before = { x: actor.x, y: actor.y };

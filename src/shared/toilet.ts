@@ -61,8 +61,8 @@ export const toiletSinkApproaches=[0,1].map(i=>({x:TOILET.counter.x+TOILET.count
 export const toiletCubicleApproaches=TOILET.cubicles.map(p=>({x:p.x+p.w/2,y:p.y+p.h+42}));
 export const toiletCubicleStanding=TOILET.cubicles.filter(p=>p.id!==OCCUPIED_TOILET_CUBICLE).map(p=>({id:p.id,x:p.x+p.w/2,y:p.y+p.h-24}));
 
-export function toiletCubicleOpen(id:number,people:readonly {x:number;y:number}[]){
+export function toiletCubicleOpen(id:number,people:readonly {x:number;y:number}[],locked:readonly number[]=[]){
   const p=TOILET.cubicles.find(p=>p.id===id);
-  return !!p&&id!==OCCUPIED_TOILET_CUBICLE&&people.some(person=>
+  return !!p&&id!==OCCUPIED_TOILET_CUBICLE&&!locked.includes(id)&&people.some(person=>
     Math.hypot(person.x-p.x-50,person.y-p.y-140)<82||person.x>p.x&&person.x<p.x+p.w&&person.y>p.y&&person.y<p.y+p.h);
 }

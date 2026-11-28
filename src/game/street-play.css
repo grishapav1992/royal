@@ -1,0 +1,32 @@
+.street-play-bar{position:absolute;z-index:6;left:14px;top:var(--street-play-top,60px);display:flex;flex-wrap:wrap;gap:6px;max-width:calc(100% - 220px);pointer-events:none}
+.street-play-bar[hidden],.street-play-bar [hidden]{display:none}
+.street-play-bar button{pointer-events:auto;min-height:34px;padding:7px 12px;border:2px solid #c39b58;border-radius:18px;background:#302632f5;color:#f5dfba;font:600 13px Arial,sans-serif;box-shadow:0 3px 8px #15121b40;cursor:pointer}
+.street-play-bar button:not(.snow-fight){background:#f2dfb5;color:#382c2f;border-width:1px}
+.street-play-bar button[aria-pressed=true]:not(.snow-fight){background:#f6cf58}
+.street-play-bar .snow-fight[aria-pressed=false]{color:#c4baa9;border-color:#6d5a62}
+.street-play-bar button:focus-visible,.street-kiosk button:focus-visible{outline:3px solid #f6cf58;outline-offset:2px}
+.street-kiosk-actions{flex-wrap:wrap}
+canvas.street-aiming{cursor:crosshair}
+.room-panel[data-overview=true] .street-play-bar,.room-panel[data-overview=true] .street-kiosk{display:none}
+@media(max-width:600px){.street-play-bar{left:8px;max-width:calc(100% - 140px);gap:4px}.street-play-bar button{min-height:32px;padding:6px 10px;font-size:12px}}
+.street-postcard{position:absolute;inset:0;z-index:9;display:grid;place-items:center;padding:12px;background:#15121b8c}
+.street-postcard[hidden],.street-photo-flash[hidden]{display:none}
+.street-postcard-card{width:min(560px,100%);box-sizing:border-box;padding:12px;background:#fffaf0;border:2px solid #c39b58;border-radius:10px;box-shadow:0 10px 28px #15121b66;transform:rotate(-1deg)}
+.street-postcard-card img{display:block;width:100%;height:auto;border-radius:4px}
+.street-postcard-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.street-postcard-actions button{min-height:38px;padding:8px 14px;border:1px solid #c39b58;border-radius:5px;background:#f2dfb5;color:#382c2f;font:600 13px Arial,sans-serif;cursor:pointer}
+.street-postcard-actions button:first-child{background:#f6cf58;font-weight:700}
+.street-postcard-actions button:last-child{background:#463a46;color:#f5dfba}
+.street-postcard-actions button:focus-visible{outline:3px solid #7a1f3a;outline-offset:2px}
+.street-photo-flash{position:absolute;inset:0;z-index:8;background:#fff;opacity:0;pointer-events:none}
+.street-photo-flash-run{animation:street-photo-flash .42s ease-out}
+@keyframes street-photo-flash{0%{opacity:.85}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.street-postcard-card{transform:none}}
+.emote-bar{position:absolute;z-index:6;right:14px;bottom:14px;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.emote-bar[hidden],.emote-row[hidden]{display:none}
+.emote-bar>button{min-height:34px;padding:7px 12px;border:2px solid #c39b58;border-radius:18px;background:#302632f5;color:#f5dfba;font:600 13px Arial,sans-serif;box-shadow:0 3px 8px #15121b40;cursor:pointer}
+.emote-row{display:flex;gap:4px;padding:5px;border:1px solid #c39b58;border-radius:20px;background:#302632f5;box-shadow:0 3px 8px #15121b40}
+.emote-row button{width:38px;height:38px;border:0;border-radius:50%;background:#f2dfb5;font-size:19px;line-height:1;cursor:pointer}
+.emote-bar button:focus-visible{outline:3px solid #f6cf58;outline-offset:2px}
+.room-panel[data-overview=true] .emote-bar{display:none}
+@media(max-width:600px){.emote-bar{right:8px;bottom:8px}.emote-row button{width:34px;height:34px;font-size:17px}}

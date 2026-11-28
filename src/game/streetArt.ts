@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import { STREET } from '../shared/street';
+import { STREET_KIOSK } from '../shared/streetPlay';
 import { STREET_CARS } from './StreetLife';
 import { STREET_SERVICE_PROPS } from './streetDetails';
 import { t } from '../i18n';
@@ -178,6 +179,8 @@ export function paintStreetMap(c:Paint){
   for(const p of STREET.lamps)box(c,p.x-12,p.y-10,24,20,'#ffe17d',ink,4,2);
   for(const p of STREET.benches.filter(p=>p.y>500))bench(c,p.x,p.y);
   paintParking(c);
+  // Hot drinks kiosk: wooden booth with the burgundy and cream awning seen from above.
+  {const o=STREET_KIOSK.obstacle;box(c,o.x,o.y,o.w,o.h,'#8a5a3c',ink,3,4);for(let i=0;i<8;i++)box(c,o.x+i*o.w/8,o.y,o.w/8,18,i%2?cream:'#7a1f3a',ink,0);box(c,o.x,o.y,o.w,18,'transparent',ink,2);}
   for(const prop of STREET_SERVICE_PROPS){c.save();c.translate(prop.x-prop.width/2,prop.y-prop.height);paintServiceProp(c,prop.id,true);c.restore();}
   c.save();c.setLineDash([20,18]);c.strokeStyle='#5faaa4';c.lineWidth=4;c.beginPath();
   STREET.loop.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.closePath();c.stroke();c.restore();
