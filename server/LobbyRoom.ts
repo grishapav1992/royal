@@ -91,6 +91,10 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (sanction && sanction.until > Date.now()) return { id: randomUUID(), sanctionId: sanction.id, until: sanction.until };
     },
     capture: (id, pursuit) => this.confirmCapture(id, pursuit),
+    disguised: id => {
+      const access = this.access.get(id), check = access?.equippedSkinId && access.disguises?.get(access.equippedSkinId);
+      return !!access?.active && !!access.sanction && access.sanction.until > Date.now() && !!check && check.usable === true;
+    },
   });
   private dispatchViolation(client: Client, player: Player, pursuit: ClubPursuit, reason: ClubViolation) {
     const access = this.access.get(client.sessionId);

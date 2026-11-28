@@ -191,3 +191,41 @@ test('a stale capture unlocks the player and drops the pursuit without an escort
   assert.deepEqual(finished, []);
   assert.equal(guards.pursue('guest', repeat), true);
 });
+
+test('a lost target is followed to the last sighting, searched there and only then released', () => {
+  const { guards, guard, player, captures, finished } = fixture();
+  assert.equal(guards.pursue('guest', initial), true);
+  guards.tick(.05);
+  const lastSighting = { x: player.x, y: player.y };
+  player.x = 1100;
+  const lines = new Set<string>();
+  let reachedSighting = false, seconds = 0;
+  for (let i = 0; i < 400 && guard.target; i++) {
+    guards.tick(.05); seconds += .05;
+    if (guard.speech) lines.add(guard.speech);
+    if (guard.target && Math.hypot(guard.x - lastSighting.x, guard.y - lastSighting.y) <= GUARD_CONTACT_RADIUS) reachedSighting = true;
+  }
+  assert.equal(guard.target, '');
+  assert(reachedSighting, 'the guard walks to the place where the player was last seen');
+  assert(seconds >= 3, 'the guard searches before giving up');
+  assert(lines.has('Где-то здесь был…'));
+  assert.equal(guard.speech, 'Ушёл. Ещё встретимся.');
+  assert.equal(player.security, '');
+  assert.deepEqual(captures, []);
+  assert.deepEqual(finished, []);
+});
+
+test('a target seen again during the search is pursued and captured', () => {
+  const { guards, guard, player, captures } = fixture();
+  assert.equal(guards.pursue('guest', initial), true);
+  guards.tick(.05);
+  const lastSighting = { x: player.x, y: player.y };
+  player.x = 1100;
+  tickUntil(guards, () => guard.speech === 'Где-то здесь был…', 'the guard starts searching at the last sighting');
+  Object.assign(player, { x: lastSighting.x + 80, y: lastSighting.y });
+  assert(walkable(player.x, player.y, hallObstacles(player.hall)));
+  guards.tick(.05);
+  assert.equal(guard.speech, 'Вот ты где!');
+  tickUntil(guards, () => captures.length > 0, 'the renewed pursuit reaches contact');
+  assert.equal(captures[0].id, 'guest');
+});

@@ -9,26 +9,39 @@ import { GUARD_CONTACT_RADIUS } from '../src/shared/guardCollision';
 import { ROOF } from '../src/shared/rooftop';
 import { TOILET } from '../src/shared/toilet';
 import { STREET } from '../src/shared/street';
+import { GUARD_TRAIL_LINES, pickRemark } from './guardRemarks';
 
 const SIGHT_RANGE = 260;
 const LOST_AFTER_SECONDS = 2.5;
 const SEARCH_AFTER_VIOLATION_SECONDS = 12;
 const REPATH_SECONDS = .25;
 const ESCORT_STALL_SECONDS = 2;
+// A lost target is followed to the last sighting, where the guard looks around before giving up.
+const TRAIL_SECONDS = 8;
+const LOOK_AROUND_SECONDS = 3;
+const LOOK_TURN_SECONDS = .75;
+const LOOK_AROUND: Facing[] = ['left', 'up', 'right', 'down'];
+const SPEECH_SECONDS = 3.5;
+const REMARK_RANGE = 150;
+const REMARK_COOLDOWN_SECONDS = 20;
+const REMARK_PLAYER_SECONDS = 120;
 const VIEW_DIRECTION: Record<Facing, Point> = {
   down: { x: 0, y: 1 }, up: { x: 0, y: -1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 },
 };
 type Chase = {
   pursuit: ClubPursuit; hall: string; player: PlayerBody; lastKnown: Point;
   unseen: number; sighted: boolean; repath: number; pending: boolean; caught: boolean; escortStall: number;
+  looking?: number; lostSaid?: boolean;
 };
 type Job = { id: string; decision: SecurityDecision; chase?: Chase };
 type Enforcement = {
   marked: (id: string) => ClubPursuit | undefined;
   capture: (id: string, pursuit: ClubPursuit) => Promise<SecurityDecision | null>;
+  disguised?: (id: string) => boolean;
 };
 type Resume = {elapsed:number;phase:string;progress:number;facing:string;target:string;speech:string;reply:string;routine:string};
-type Duty = { guard: Guard; queue: Job[]; job?: Job; resume?:Resume; path: Point[]; elapsed: number; stops: Record<HallId, GuardStop[]>; remaining: number; transfer?: HallId; transferArrival?: ConnectedHallDoor; transferFrom?: HallId; visit?: GuardStop; duration: number; conversation: number; lastConversation: number };
+type Duty = { guard: Guard; queue: Job[]; job?: Job; resume?:Resume; path: Point[]; elapsed: number; stops: Record<HallId, GuardStop[]>; remaining: number; transfer?: HallId; transferArrival?: ConnectedHallDoor; transferFrom?: HallId; visit?: GuardStop; duration: number; conversation: number; lastConversation: number;
+  clock: number; spoken?: string; speechUntil: number; nextRemark: number; remarked: Map<string, number>; lastRemark?: string; remarkTarget?: string };
 export class Guards {
   private duties: Duty[] = [];
   private touching=new Set<string>();
@@ -39,7 +52,7 @@ export class Guards {
     state.guards.set('security', guard);
     this.duties.push({ guard, queue: [], path: [], elapsed: 0,
       stops:{arcade:[...GUARD_STOPS.arcade],tables:[...GUARD_STOPS.tables],github:[...GUARD_STOPS.github],street:[...GUARD_STOPS.street],roof:[...GUARD_STOPS.roof],toilet:[...GUARD_STOPS.toilet]}, remaining:3,
-      duration:0, conversation:0, lastConversation:-1 });
+      duration:0, conversation:0, lastConversation:-1, clock:0, speechUntil:0, nextRemark:0, remarked:new Map() });
   }
 
   contact(id:string) {
@@ -166,15 +179,26 @@ export class Guards {
   }
   private follow(d: Duty, job: Job, chase: Chase, dt: number): boolean {
     if (this.tryCapture(d, job, chase)) return false;
-    if (this.sees(d.guard, chase.player, false)) {
+    const g = d.guard;
+    if (this.sees(g, chase.player, false)) {
+      if (chase.lostSaid || chase.looking !== undefined) this.say(d, GUARD_TRAIL_LINES.found);
       chase.lastKnown = { x: chase.player.x, y: chase.player.y };
       chase.unseen = 0;
       chase.sighted = true;
+      chase.looking = undefined;
+      chase.lostSaid = false;
     } else {
       chase.unseen += dt;
-      const searching = !chase.sighted && Math.hypot(d.guard.x - chase.lastKnown.x, d.guard.y - chase.lastKnown.y) > GUARD_CONTACT_RADIUS;
-      const limit = searching ? SEARCH_AFTER_VIOLATION_SECONDS : LOST_AFTER_SECONDS;
-      if (chase.unseen >= limit) { this.release(d); return false; }
+      if (Math.hypot(g.x - chase.lastKnown.x, g.y - chase.lastKnown.y) <= GUARD_CONTACT_RADIUS) {
+        if (chase.looking === undefined) { chase.looking = 0; this.say(d, GUARD_TRAIL_LINES.search); }
+        chase.looking += dt;
+        g.facing = LOOK_AROUND[Math.floor(chase.looking / LOOK_TURN_SECONDS) % LOOK_AROUND.length];
+        if (chase.looking >= LOOK_AROUND_SECONDS) { this.giveUp(d); return false; }
+      } else if (chase.sighted && !chase.lostSaid && chase.unseen >= LOST_AFTER_SECONDS) {
+        chase.lostSaid = true;
+        this.say(d, GUARD_TRAIL_LINES.lost);
+      }
+      if (chase.unseen >= (chase.sighted ? TRAIL_SECONDS : SEARCH_AFTER_VIOLATION_SECONDS)) { this.giveUp(d); return false; }
     }
     chase.repath -= dt;
     if (chase.repath <= 0) {
@@ -185,6 +209,36 @@ export class Guards {
       chase.repath = REPATH_SECONDS;
     }
     return true;
+  }
+  private giveUp(d: Duty) {
+    this.release(d);
+    this.say(d, GUARD_TRAIL_LINES.gone);
+  }
+  private say(d: Duty, text: string, seconds = SPEECH_SECONDS) {
+    d.guard.speech = text; d.spoken = text; d.speechUntil = d.clock + seconds; d.remarkTarget = undefined;
+  }
+  // A short greeting turns the guard toward one nearby guest. Each guest hears at most one line per two minutes.
+  private remark(d: Duty) {
+    const g = d.guard;
+    if (d.spoken) {
+      const target = d.remarkTarget && this.state.players.get(d.remarkTarget);
+      if (target && target.connected && target.hall === g.hall) g.facing = movementFacing(target.x - g.x, target.y - g.y, g.facing as Facing);
+      else d.remarkTarget = undefined;
+      return;
+    }
+    if (d.clock < d.nextRemark) return;
+    for (const [id, at] of d.remarked) if (d.clock - at >= REMARK_PLAYER_SECONDS) d.remarked.delete(id);
+    const obstacles = hallObstacles(g.hall);
+    const [nearest] = [...this.state.players].filter(([id, p]) => p.connected && !p.security && p.hall === g.hall && !d.remarked.has(id)
+      && Math.hypot(p.x - g.x, p.y - g.y) <= REMARK_RANGE && guardLineClear(g, p, obstacles))
+      .sort(([, a], [, b]) => Math.hypot(a.x - g.x, a.y - g.y) - Math.hypot(b.x - g.x, b.y - g.y));
+    if (!nearest) return;
+    const [id, player] = nearest;
+    const kind = this.enforcement?.disguised?.(id) ? 'disguised' : player.soberAt > Date.now() ? 'drunk' : 'greeting';
+    const line = pickRemark(kind, this.random, d.lastRemark);
+    this.say(d, line);
+    d.lastRemark = line; d.remarkTarget = id; d.remarked.set(id, d.clock); d.nextRemark = d.clock + REMARK_COOLDOWN_SECONDS;
+    g.facing = movementFacing(player.x - g.x, player.y - g.y, g.facing as Facing);
   }
   private phase(d: Duty, phase: string) { d.guard.phase = phase; d.guard.progress = 0; d.guard.reply = ''; d.elapsed = 0; }
   private route(d: Duty, goal: Point) {
@@ -228,6 +282,7 @@ export class Guards {
       const scan=Math.floor(d.elapsed/3)%3;
       g.facing=scan===1&&nearby?movementFacing(nearby.x-g.x,nearby.y-g.y,visit.facing):scan===2?(visit.facing==='left'?'right':'left'):visit.facing;
     } else if(g.phase==='window')g.facing=d.elapsed>d.duration-2?'down':visit.facing;
+    if(g.phase!=='chat')this.remark(d);
     if(d.elapsed>=d.duration)this.nextVisit(d);
   }
   private transfer(d: Duty, hall: HallId) {
@@ -277,6 +332,11 @@ export class Guards {
     for(const id of this.touching){const p=this.state.players.get(id),g=this.duties[0].guard;if(!p||p.hall!==g.hall||Math.hypot(p.x-g.x,p.y-g.y)>GUARD_CONTACT_RADIUS+10)this.touching.delete(id);}
     for (const d of this.duties) {
       const g = d.guard;
+      d.clock += dt;
+      if (d.spoken && d.clock >= d.speechUntil) {
+        if (g.speech === d.spoken) g.speech = '';
+        d.spoken = undefined; d.remarkTarget = undefined;
+      }
       if (!d.job && !d.queue.length) this.look(d);
       if (!d.job && d.queue.length) {
         d.job = d.queue.shift()!;
