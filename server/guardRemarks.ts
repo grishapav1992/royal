@@ -11,6 +11,8 @@ export const GUARD_TRAIL_LINES = {
   search: 'Где-то здесь был…',
   found: 'Вот ты где!',
   gone: 'Ушёл. Ещё встретимся.',
+  radio: 'Вызываю подмогу.',
+  arriving: 'Иду на помощь.',
 } as const;
 
 export function pickRemark(kind: GuardRemarkKind, random: () => number, previous?: string): string {

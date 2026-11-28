@@ -1,3 +1,4 @@
+import { vault } from './obstacleKinds';
 import type { Obstacle } from '../game/navigation';
 
 export const OCCUPIED_TOILET_CUBICLE = 1;
@@ -46,7 +47,7 @@ export const CARD_TOILET_DOOR = {
 export const TOILET_OBSTACLES:Obstacle[]=[
   {x:0,y:0,w:5000,h:244},{x:0,y:0,w:84,h:1300},
   {x:716,y:0,w:5000,h:1300},{x:0,y:536,w:5000,h:1300},
-  TOILET.step,TOILET.counter,TOILET.bin,TOILET.radiator,
+  TOILET.step,TOILET.counter,vault(TOILET.bin),TOILET.radiator,
   TOILET_MERCHANT.body,
   ...TOILET.cubicles.flatMap(p=>[
     {x:p.x,y:p.y,w:p.w,h:8},{x:p.x,y:p.y,w:8,h:p.h},{x:p.x+p.w-8,y:p.y,w:8,h:p.h},

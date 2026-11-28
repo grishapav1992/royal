@@ -5,6 +5,8 @@ import type { Facing, MovementInput } from './movement';
 import { FURNITURE, furnitureBounds, BAR_SOLID, BAR_SERVICE, barPoint, PLANTS, plantBounds } from './furniture';
 import { ACTIVITIES } from './activities';
 import { CABINETS, cabinetsInHall, cabinetBounds } from './cabinets';
+import { isCardGame } from './cardTables';
+import { vault, under } from './obstacleKinds';
 import type { GameReaction } from './cabinetSeating';
 import type { CatAction } from './cat';
 import type { MiraAttention } from './miraRoutine';
@@ -117,16 +119,18 @@ export const inHallDoor = (p: {x:number;y:number;hall:string}) => {
 export const otherHall = (hall:string): HallId => hall==='toilet'?'roof':hall==='roof'?'street':hall==='arcade'||hall==='github'?'tables':'arcade';
 export const activityHall = (id: string): HallId => id === 'piano' ? 'arcade' : ['durak','transfer-durak','crazy-eights'].includes(id) ? 'github' : 'tables';
 export const hallObstacles = (hall?: string): Obstacle[] => hall === 'toilet' ? TOILET_OBSTACLES : hall === 'roof' ? ROOF_OBSTACLES : hall === 'street' ? STREET_OBSTACLES : hall === 'arcade' ? ARCADE_OBSTACLES : hall === 'tables' ? TABLE_OBSTACLES : hall === 'github' ? GITHUB_OBSTACLES : ROOM_OBSTACLES;
-const GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds), ACTIVITIES.durak.bounds, ACTIVITIES['transfer-durak'].bounds, ACTIVITIES['crazy-eights'].bounds];
+// Jumps clear cabinets and low furniture, slides pass under game tables. See obstacleKinds.
+const cabinetObstacle = (cabinet: typeof CABINETS[number]) => (isCardGame(cabinet.id) ? under : vault)(cabinetBounds(cabinet));
+const GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetObstacle), under(ACTIVITIES.durak.bounds), under(ACTIVITIES['transfer-durak'].bounds), under(ACTIVITIES['crazy-eights'].bounds)];
 const ARCADE_OBSTACLES = [
   ...clubObstacles('arcade'),
-  ...cabinetsInHall('arcade').map(cabinetBounds),
-  BAR_SOLID, ACTIVITIES.piano.bounds, CAT_CARE.scratcher.bounds,
+  ...cabinetsInHall('arcade').map(cabinetObstacle),
+  BAR_SOLID, ACTIVITIES.piano.bounds, vault(CAT_CARE.scratcher.bounds),
 ];
 const TABLE_OBSTACLES = [
   ...clubObstacles('tables'),
-  ...cabinetsInHall('tables').map(cabinetBounds),
-  furnitureBounds(FURNITURE.pool), furnitureBounds(FURNITURE.table), ACTIVITIES.hockey.bounds, ACTIVITIES['mortal-kombat'].bounds, ACTIVITIES['tsu-e-fa'].bounds, ...PLANTS.map(plantBounds),
+  ...cabinetsInHall('tables').map(cabinetObstacle),
+  under(furnitureBounds(FURNITURE.pool)), under(furnitureBounds(FURNITURE.table)), under(ACTIVITIES.hockey.bounds), vault(ACTIVITIES['mortal-kombat'].bounds), under(ACTIVITIES['tsu-e-fa'].bounds), ...PLANTS.map(plant=>vault(plantBounds(plant))),
 ];
 export const DRINKS = [
   { id: 'lemonade', name: translateText('Лимонад'), description: translateText('Лимон, мята и пузырьки · без алкоголя'), color: '#d6ed88', strength: 0 },
@@ -140,6 +144,6 @@ export const DRINKS = [
 export const ALL_DRINKS = [...DRINKS, ...KIOSK_ONLY_DRINKS] as const;
 export const atBar = (p: { x: number; y: number }) => p.x >= BAR_SERVICE.x && p.x <= BAR_SERVICE.x+BAR_SERVICE.w && p.y >= BAR_SERVICE.y && p.y <= BAR_SERVICE.y+BAR_SERVICE.h;
 export type PlayerAction = 'idle' | 'sit' | 'drink';
-export type PlayerView = { emote?: string; emoteUntil?: number; snowballs?: number; snowFight?: boolean; snowHitUntil?: number; snowRoll?: number; stairStep?: number;stairDirection?:number; security?: string; level?: number; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
+export type PlayerView = { leapDebt?: number; leapSerial?: number; leapKind?: string; leapFromX?: number; leapFromY?: number; emote?: string; emoteUntil?: number; snowballs?: number; snowFight?: boolean; snowHitUntil?: number; snowRoll?: number; stairStep?: number;stairDirection?:number; security?: string; level?: number; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
 export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string; visitId?: number };
 export type NetworkCommands = { street?: (type: string, value?: unknown) => boolean; recover?: () => Promise<boolean>; miraAttention?: (phase: MiraAttention) => void; stairWindow?: () => void; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };

@@ -41,6 +41,8 @@ import { preloadRoyalBarArt } from './royalBarArt';
 import { drawActivities } from './activityArt';
 import { ACTIVITIES, type ActivityId } from '../shared/activities';
 import { applyMovementInput,movementFacing } from '../shared/movement';
+import { CLIENT_LEAP_COOLDOWN_MS, leapDuration, type LeapKind } from '../shared/leap';
+import { LeapControls } from './LeapControls';
 import { addDrink, getIntoxication, intoxicatedMovement, MAX_SOBER_TIME_MS } from '../shared/intoxication';
 import { MovementPrediction, advanceClickMovement } from '../network/MovementPrediction';
 import { ClickTargetScheduler } from '../network/ClickTargetScheduler';
@@ -86,7 +88,9 @@ function updatePlayerLabel(label: Phaser.GameObjects.Text | undefined, player: P
   label.setText(status ? `${name} · ${translateText('ур.')} ${player.level}\n${status.symbol} ${status.title}` : name);
 }
 
-type Actor = { stairStep?:number;stairDirection?:number; hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; moving: boolean; lastStep: number; motion: CharacterMotion; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
+type Actor = { stairStep?:number;stairDirection?:number; hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; moving: boolean; lastStep: number; motion: CharacterMotion; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number;
+  leapDebt?: number; leapSerial?: number; leapKind?: string; leapFromX?: number; leapFromY?: number; leapShown?: number;
+  leap?: { kind: string; fromX: number; fromY: number; toX: number; toY: number; start: number; duration: number; dust: number } };
 export class RoomScene extends Phaser.Scene {
   player!: Actor;
   hall: HallId = 'arcade';
@@ -162,6 +166,8 @@ export class RoomScene extends Phaser.Scene {
   private cancelCabinetAdmission?: () => void;
   private predictionClock = performance.now();
   private correction = { x: 0, y: 0 };
+  private pendingLeap?: LeapKind;
+  private leapReadyAt = 0;
   private details?: RoomDetails;
   private bar!: Bar;
   private atelier?: TailorRenderer;
@@ -261,7 +267,10 @@ export class RoomScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown',(event:KeyboardEvent)=>{if(!event.repeat)this.heldWindowKeys.delete(event.keyCode);});
     this.input.keyboard!.on('keydown-E', (event:KeyboardEvent) => {if(!event.repeat)this.interact();});
     this.input.keyboard!.on('keydown-F', (event:KeyboardEvent) => {if(!event.repeat&&!this.locked&&!this.typing&&!this.switching)this.snowPlay()?.throwForward();});
-    this.input.keyboard!.on('keydown-SPACE', (event:KeyboardEvent) => {if(!event.repeat)this.interact();});
+    // Space jumps and Shift + C slides; interaction stays on E and clicks.
+    this.input.keyboard!.on('keydown-SPACE', (event:KeyboardEvent) => {if(!event.repeat)this.requestLeap('jump');});
+    this.input.keyboard!.on('keydown-C', (event:KeyboardEvent) => {if(!event.repeat&&(event.shiftKey||this.keys.SHIFT!.isDown))this.requestLeap('slide');});
+    new LeapControls(this, kind => this.requestLeap(kind));
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer, objects: Phaser.GameObjects.GameObject[]) => {
       const aiming=this.snowPlay();
       if (aiming?.isAiming&&!this.locked&&!this.typing&&!pointer.rightButtonDown()) { aiming.aimAt(this.hall==='street'?this.streetView.world({x:pointer.worldX,y:pointer.worldY}):{x:pointer.worldX,y:pointer.worldY}); return; }
@@ -606,6 +615,13 @@ export class RoomScene extends Phaser.Scene {
     Object.assign(this.player, dock.arrival, { hall: target, facing: dock.facing, moving: false });
     this.animateActor(this.player, this.time.now, false);
     this.syncGuests(this.guestViews);
+    return true;
+  }
+  /** Queues a jump or slide for the next movement step. Returns false when the character cannot leap now. */
+  requestLeap(kind: LeapKind) {
+    if (this.locked || this.typing || this.switching || this.overview || this.isHuggingCat() || this.player.cabinet || this.networkSelf?.playing
+      || this.player.seat || this.player.action === 'drink' || (this.player.stairStep ?? 0) > 0 || performance.now() < this.leapReadyAt) return false;
+    this.pendingLeap = kind;
     return true;
   }
   interact() {
@@ -955,14 +971,16 @@ export class RoomScene extends Phaser.Scene {
         const previousHall=this.hall;
         this.clickTargets.reset();
         this.prediction.reset();this.afterMovement=undefined;this.correction={x:0,y:0};this.showHall(self.hall);this.switching=false;
-        Object.assign(this.player,{x:self.x,y:self.y,hall:self.hall,seat:self.seat,action:self.action,drink:self.drink,actionUntil:self.actionUntil});
+        Object.assign(this.player,{x:self.x,y:self.y,hall:self.hall,seat:self.seat,action:self.action,drink:self.drink,actionUntil:self.actionUntil,leapDebt:self.leapDebt??0});
         this.player.path=[];this.pendingCabinet=null;this.pendingLounge=null;
         this.beginWindowArrival(previousHall,self.hall);
       }
       const firstState = !this.networkSelf;
       if (firstState) { this.player.x = self.x; this.player.y = self.y; }
       this.networkSelf = self;
-      if(!this.prediction.active){this.player.stairStep=self.stairStep??0;this.player.stairDirection=self.stairDirection??1;}
+      if(!this.prediction.active){this.player.stairStep=self.stairStep??0;this.player.stairDirection=self.stairDirection??1;this.player.leapDebt=self.leapDebt??0;}
+      // The first snapshot and hall changes adopt the server leap count without replaying an old leap.
+      if (firstState || this.player.leapShown === undefined) { this.player.leapSerial = self.leapSerial ?? 0; this.player.leapShown = this.player.leapSerial; }
       if (firstState && this.pendingLounge === 'bar') this.goTo(BAR_APPROACH);
       this.player.soberAt = self.soberAt;
       this.player.cabinet = self.cabinet ?? ''; this.player.gameReaction = self.gameReaction ?? ''; this.player.gameReactionUntil = self.gameReactionUntil ?? 0;
@@ -973,6 +991,7 @@ export class RoomScene extends Phaser.Scene {
         else this.correction = { x: 0, y: 0 };
         this.player.x = next.x; this.player.y = next.y; this.player.facing = next.facing; this.player.stairStep=next.stairStep??0;this.player.stairDirection=next.stairDirection??1;
         this.player.seat = next.seat; this.player.action = next.action; this.player.drink = next.drink; this.player.actionUntil = next.actionUntil;
+        Object.assign(this.player, { leapDebt: next.leapDebt, leapSerial: next.leapSerial, leapKind: next.leapKind, leapFromX: next.leapFromX, leapFromY: next.leapFromY });
         // Refill the send window even when keys are released or a dialog has focus.
         this.flushPrediction();
         if (!this.prediction.active) {
@@ -1019,6 +1038,12 @@ export class RoomScene extends Phaser.Scene {
       actor.skin = target.skin;
     }
     const factor = Math.min(1, dt * 18);
+    if ((target.leapSerial ?? 0) !== actor.leapSerial) {
+      const seen = actor.leapSerial !== undefined;
+      actor.leapSerial = target.leapSerial ?? 0;
+      // The landing is authoritative: snap to it and let the leap animation carry the drawing.
+      if (seen && target.leapKind) { this.startLeap(actor, target.leapKind, actor.x, actor.y, target.x, target.y, time); actor.x = target.x; actor.y = target.y; }
+    }
     actor.x += (target.x - actor.x) * factor; actor.y += (target.y - actor.y) * factor;
     actor.stairStep=target.stairStep??0;actor.stairDirection=target.stairDirection??1;
     actor.facing = target.facing; actor.seat = target.seat; actor.action = target.action; actor.drink = target.drink; actor.actionUntil = target.actionUntil; actor.soberAt = target.soberAt;
@@ -1118,6 +1143,18 @@ export class RoomScene extends Phaser.Scene {
       if(dy<0&&canWalkThroughStairWindow(this.player)){this.useStairWindow(true);dx=dy=0;}
       if(dx||dy)this.roofClickTarget=undefined;
       const sprint = this.keys.SHIFT!.isDown;
+      if (this.pendingLeap) {
+        const kind = this.pendingLeap, before = this.player.leapSerial ?? 0, destination = this.player.path.at(-1);
+        this.pendingLeap = undefined;
+        // A slide is a sprinting move, so the touch button implies the sprint.
+        if (this.network && this.networkSelf) { this.prediction.step(this.player, dx, dy, 0, sprint || kind === 'slide', this.guard.getState(), false, kind); this.flushPrediction(); }
+        else if (!this.network) applyMovementInput(this.player, { seq: 0, x: dx, y: dy, ms: 0, sprint: sprint || kind === 'slide', leap: kind });
+        if ((this.player.leapSerial ?? 0) !== before) {
+          this.leapReadyAt = now + CLIENT_LEAP_COOLDOWN_MS;
+          // A click route continues from the landing instead of walking back over the obstacle.
+          if (destination) this.player.path = findPath(this.player, destination, this.obstacles);
+        }
+      }
       if (dx || dy) this.approachingCat=false;
       if (this.approachingCat && time >= this.catApproachAt) {
         this.catApproachAt=time+750;
@@ -1307,7 +1344,19 @@ export class RoomScene extends Phaser.Scene {
     }
     return moved;
   }
+  private startLeap(actor: Actor, kind: string, fromX: number, fromY: number, toX: number, toY: number, time: number) {
+    const distance = Math.hypot(toX - fromX, toY - fromY);
+    const duration = this.reducedMotion ? Math.min(160, leapDuration(distance)) : Math.max(140, leapDuration(distance));
+    actor.leap = { kind, fromX, fromY, toX, toY, start: time, duration, dust: 0 };
+    const near = Math.max(.1, 1 - Math.hypot(actor.x - this.player.x, actor.y - this.player.y) / 650);
+    gameAudio.effect(kind === 'slide' ? 'slide' : 'jump', near);
+  }
   private animateActor(actor: Actor, time: number, moving: boolean) {
+    if (actor === this.player) {
+      const serial = actor.leapSerial ?? 0, shown = actor.leapShown ?? 0;
+      if (serial > shown && actor.leapKind) this.startLeap(actor, actor.leapKind, actor.leapFromX ?? actor.x, actor.leapFromY ?? actor.y, actor.x, actor.y, time);
+      actor.leapShown = serial;
+    }
     const exterior=this.hall==='street';
     const verticalClimb=exterior&&(actor.stairStep??0)>0&&(actor.facing==='up'||actor.facing==='down')&&!this.overview;
     const facing=verticalClimb?actor.facing:exterior?this.streetView.facing(actor.facing):actor.facing;
@@ -1318,6 +1367,21 @@ export class RoomScene extends Phaser.Scene {
     const mode = gameMode || (actor.action==='drink' ? (actor.seat?'sitdrink':'drink') : actor.seat ? 'sit' : moving ? 'walk' : 'idle');
     const key = `${actor.sprite.texture.key}-${mode}-${facing}`;
     const world={x:actor.x+(actor===this.player?this.correction.x:0),y:actor.y+(actor===this.player?this.correction.y:0)};
+    // A leap is drawn from its take-off to the landing: an arc for a jump, a low lean for a slide.
+    let lift = 0, crouch = 0, lean = 0;
+    if (actor.leap) {
+      const leap = actor.leap, t = Phaser.Math.Clamp((time - leap.start) / leap.duration, 0, 1);
+      const travel = leap.kind === 'slide' ? Phaser.Math.Easing.Quadratic.Out(t) : t;
+      world.x += (leap.fromX - leap.toX) * (1 - travel); world.y += (leap.fromY - leap.toY) * (1 - travel);
+      if (!this.reducedMotion) {
+        if (leap.kind === 'jump') lift = Math.sin(t * Math.PI) * 28;
+        else { crouch = t < .8 ? 1 : (1 - t) / .2; lean = -Math.sign(leap.toX - leap.fromX) * 14 * crouch; }
+      }
+      if (t >= 1) {
+        actor.leap = undefined;
+        gameAudio.effect('land', Math.max(.1, 1 - Math.hypot(actor.x - this.player.x, actor.y - this.player.y) / 650));
+      }
+    }
     let windowProgress=1;
     if(actor===this.player&&this.windowArrival){
       windowProgress=Phaser.Math.Clamp((time-this.windowArrival.startedAt)/this.windowArrival.duration,0,1);
@@ -1338,7 +1402,7 @@ export class RoomScene extends Phaser.Scene {
     const motion = advanceCharacterMotion(actor.motion, { mode: mode === 'walk' ? 'walk' : mode === 'idle' || mode === 'sit' ? 'rest' : 'action', distance: travel, time, normalSpeed: PLAYER_SPEED });
     const rest = characterRestScale(actor.motion, time, actor.phase, this.reducedMotion);
     const scaleX = characterScaleX(actor.sprite.frame), scaleY = characterScaleY(actor.appearance, scaleX);
-    actor.sprite.setScale(scaleX * rest.x, scaleY * rest.y);
+    actor.sprite.setScale(scaleX * rest.x * (1 + .08 * crouch), scaleY * rest.y * (1 - .3 * crouch));
     if(windowProgress<1)actor.sprite.setScale(scaleX,scaleY*(.72+.28*windowProgress));
     const anim = actor.sprite.anims;
     if (mode === 'walk') {
@@ -1361,18 +1425,24 @@ export class RoomScene extends Phaser.Scene {
     const sitting = actor.cabinet && !this.reducedMotion ? Math.max(0, 1 - (time - actor.seatedAt) / 360) : 0;
     const onStairs=actor.hall==='street'&&(actor.stairStep??0)>0;
     const depth=exterior?this.streetView.depth(world,onStairs):y;
-    actor.sprite.setPosition(x, y - Math.sin(sitting * Math.PI) * 5).setDepth(depth);
+    actor.sprite.setPosition(x, y - lift - Math.sin(sitting * Math.PI) * 5).setDepth(depth);
     const drunk = getIntoxication(actor.soberAt);
     const sway = this.reducedMotion ? 0 : Math.sin(time / (moving ? 190 : 650) + actor.phase) * drunk.level * (moving ? 7 : 3);
-    actor.sprite.setAngle(sway);
+    actor.sprite.setAngle(sway + lean);
+    if (crouch > .5 && actor.leap && time - actor.leap.dust > 55) {
+      actor.leap.dust = time;
+      const puff = this.add.ellipse(x - Math.sign(actor.leap.toX - actor.leap.fromX) * 10, y - 2, 9, 4, 0xd9d2c3, .32).setDepth(depth - .5);
+      this.tweens.add({ targets: puff, alpha: 0, scaleX: 2.2, scaleY: 1.6, duration: 420, onComplete: () => puff.destroy() });
+    }
     actor.blush.clear().setPosition(x, y).setScale(rest.x, rest.y).setDepth(depth + .1).setAngle(sway).setVisible(visible&&drunk.stage > 0 && facing !== 'up');
     if (drunk.stage && actor.facing !== 'up') {
       actor.blush.fillStyle(0xd34140, .12 + drunk.stage * .1);
       for (const cheek of facing === 'down' ? [-9, 9] : facing === 'left' ? [-5] : [5]) actor.blush.fillEllipse(cheek, -38, 8, 4);
     }
     const shadowScale = mode === 'walk' && !this.reducedMotion && /-[1245]$/.test(String(actor.sprite.frame.name)) ? .94 : 1;
-    actor.shadow.setPosition(x, y - 1).setDepth(depth - 1).setScale(shadowScale * rest.x, shadowScale);
-    actor.label?.setPosition(x, y - (actor.seat?72:83)).setDepth(depth+1);
+    const airborne = 1 - lift / 70;
+    actor.shadow.setPosition(x, y - 1).setDepth(depth - 1).setScale(shadowScale * rest.x * airborne, shadowScale * airborne);
+    actor.label?.setPosition(x, y - lift - (actor.seat?72:83)).setDepth(depth+1);
     if (actor.label?.text.includes('\n')) actor.label.setY(actor.label.y - 6);
     if(windowProgress<1){actor.label?.setVisible(false);actor.shadow.setVisible(false);}
     if (motion.landing) {

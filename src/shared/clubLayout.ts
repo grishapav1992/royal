@@ -1,6 +1,7 @@
 import { t as translateText } from '../i18n/index';
 import type { HallId } from './world';
 import type { Obstacle } from '../game/navigation';
+import { vault } from './obstacleKinds';
 
 export type ClubZone = { name: string; x: number; y: number; w: number; h: number; color: number };
 // Frame the occupied first-floor area without changing the other floors' world bounds.
@@ -55,7 +56,7 @@ export const loungeBounds = (lounge: Lounge): Obstacle => ({x:lounge.x-94,y:loun
 export const clubObstacles = (hall: HallId): Obstacle[] => [
   ...(hall==='arcade'?LUELON_NEW_ZONE_OBSTACLES:[]),
   ...clubColumns(hall).map(x=>({x:x-19,y:670,w:38,h:63})),
-  ...LOUNGES.filter(lounge=>lounge.hall===hall).map(loungeBounds),
-  ...LOUNGES.filter(lounge=>lounge.hall===hall).map(lounge=>({x:lounge.x-47,y:lounge.y+76,w:94,h:36})),
-  ...clubPlants(hall).map(plant=>({x:plant.x-18,y:plant.y-32,w:36,h:26})),
+  ...LOUNGES.filter(lounge=>lounge.hall===hall).map(lounge=>vault(loungeBounds(lounge))),
+  ...LOUNGES.filter(lounge=>lounge.hall===hall).map(lounge=>vault({x:lounge.x-47,y:lounge.y+76,w:94,h:36})),
+  ...clubPlants(hall).map(plant=>vault({x:plant.x-18,y:plant.y-32,w:36,h:26})),
 ];

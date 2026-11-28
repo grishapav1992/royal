@@ -2,7 +2,7 @@ import { t as translateText } from '../i18n/index';
 import { CasinoAudio } from './CasinoAudio';
 import { TableAudio, type TableSoundSet } from './TableAudio';
 import {SlotAudio,SLOT_AUDIO_GAMES,type SlotCue,type SlotAudioGame} from './SlotAudio';
-export type Sound='step'|'cabinet'|'start'|'bounce'|'block'|'laser'|'explosion'|'coin'|'maze'|'crash'|'win'|'lose'|'cue'|'hit'|'rail'|'pocket'|'goal'|'foul';
+export type Sound='jump'|'slide'|'land'|'step'|'cabinet'|'start'|'bounce'|'block'|'laser'|'explosion'|'coin'|'maze'|'crash'|'win'|'lose'|'cue'|'hit'|'rail'|'pocket'|'goal'|'foul';
 export type AudioPreferences={muted:boolean;volume:number;casinoEnabled:boolean};
 export class GameAudio {
   context?:AudioContext;
@@ -126,6 +126,10 @@ export class GameAudio {
     const v=Math.min(1,Math.max(0,level))*(this.game&&kind==='step'?.22:1)*(this.slotDucks.size&&kind==='step'?.22:1);
     if(set&&this.tables?.play(set,kind,v))return;
     if(kind==='step'){this.noise(.065,.11*v,240,this.roomOutput);this.tone(92,55,.075,.055*v,'sine',0,this.roomOutput);}
+    // Leaps share the footstep room bus: a short push-off, a cloth swoosh and a firmer landing.
+    else if(kind==='jump'){this.noise(.05,.09*v,320,this.roomOutput);this.tone(150,260,.12,.05*v,'sine',0,this.roomOutput);}
+    else if(kind==='slide'){this.noise(.3,.12*v,900,this.roomOutput);}
+    else if(kind==='land'){this.noise(.08,.16*v,200,this.roomOutput);this.tone(80,44,.1,.08*v,'sine',0,this.roomOutput);}
     else if(kind==='cabinet'||kind==='coin'||kind==='win'||kind==='start')this.casino?.play(kind,v);
     else if(kind==='laser')this.tone(1200,180,.09,.045*v,'triangle');
     else if(kind==='crash'||kind==='explosion'){this.noise(.28,.34*v,430);this.tone(90,32,.3,.12*v);}

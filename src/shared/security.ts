@@ -17,6 +17,8 @@ export type ClubFineResponse = ClubFineResult & ClubFineStatus;
 export type ClubPursuit = { id: string; sanctionId: string; until: number; reason?: ClubViolation };
 export type ClubCaptureDecision = SecurityDecision & { pursuitId: string };
 export type GuardView = {
+  /** The state key: the house guard is 'security', the radio backup has its own id. */
+  id?: string;
   hall: HallId; x: number; y: number; facing: string; phase: string;
   target: string; progress: number; speech: string;
   routine: string; reply: string;

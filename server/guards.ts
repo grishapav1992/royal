@@ -9,6 +9,7 @@ import { GUARD_CONTACT_RADIUS } from '../src/shared/guardCollision';
 import { ROOF } from '../src/shared/rooftop';
 import { TOILET } from '../src/shared/toilet';
 import { STREET } from '../src/shared/street';
+import { PLAYER_SPRINT_SPEED } from '../src/shared/world';
 import { GUARD_TRAIL_LINES, pickRemark } from './guardRemarks';
 
 const SIGHT_RANGE = 260;
@@ -25,6 +26,11 @@ const SPEECH_SECONDS = 3.5;
 const REMARK_RANGE = 150;
 const REMARK_COOLDOWN_SECONDS = 20;
 const REMARK_PLAYER_SECONDS = 120;
+// Slightly faster than a sprinting player: escapes come from leaps over furniture the guard walks around.
+export const GUARD_CHASE_SPEED = PLAYER_SPRINT_SPEED * 1.05;
+// A second guard answers a radio call and goes off duty after half a minute without work.
+export const REINFORCEMENT_ID = 'security-2';
+const REINFORCEMENT_IDLE_SECONDS = 30;
 const VIEW_DIRECTION: Record<Facing, Point> = {
   down: { x: 0, y: 1 }, up: { x: 0, y: -1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 },
 };
@@ -40,24 +46,35 @@ type Enforcement = {
   disguised?: (id: string) => boolean;
 };
 type Resume = {elapsed:number;phase:string;progress:number;facing:string;target:string;speech:string;reply:string;routine:string};
-type Duty = { guard: Guard; queue: Job[]; job?: Job; resume?:Resume; path: Point[]; elapsed: number; stops: Record<HallId, GuardStop[]>; remaining: number; transfer?: HallId; transferArrival?: ConnectedHallDoor; transferFrom?: HallId; visit?: GuardStop; duration: number; conversation: number; lastConversation: number;
+type Duty = { id: string; reinforcement?: boolean; idleSince?: number; leaving?: boolean; guard: Guard; queue: Job[]; job?: Job; resume?:Resume; path: Point[]; elapsed: number; stops: Record<HallId, GuardStop[]>; remaining: number; transfer?: HallId; transferArrival?: ConnectedHallDoor; transferFrom?: HallId; visit?: GuardStop; duration: number; conversation: number; lastConversation: number;
   clock: number; spoken?: string; speechUntil: number; nextRemark: number; remarked: Map<string, number>; lastRemark?: string; remarkTarget?: string };
 export class Guards {
   private duties: Duty[] = [];
   private touching=new Set<string>();
   constructor(private state: LobbyState, private finish: (id: string, decision: SecurityDecision) => void,
     private random = Math.random, private onBump:(id:string)=>number=()=>1, private enforcement?: Enforcement) {
-    const guard = new Guard();
     // The map key identifies the person, while hall changes only at a doorway.
-    state.guards.set('security', guard);
-    this.duties.push({ guard, queue: [], path: [], elapsed: 0,
-      stops:{arcade:[...GUARD_STOPS.arcade],tables:[...GUARD_STOPS.tables],github:[...GUARD_STOPS.github],street:[...GUARD_STOPS.street],roof:[...GUARD_STOPS.roof],toilet:[...GUARD_STOPS.toilet]}, remaining:3,
-      duration:0, conversation:0, lastConversation:-1, clock:0, speechUntil:0, nextRemark:0, remarked:new Map() });
+    this.duties.push(this.duty('security', new Guard()));
+  }
+  private duty(id: string, guard: Guard, reinforcement = false): Duty {
+    this.state.guards.set(id, guard);
+    // Only the house guard chats with Mira at the bar.
+    const stops = (hall: HallId) => GUARD_STOPS[hall].filter(stop => !reinforcement || stop.activity !== 'chat');
+    return { id, reinforcement, guard, queue: [], path: [], elapsed: 0,
+      stops:{arcade:stops('arcade'),tables:stops('tables'),github:stops('github'),street:stops('street'),roof:stops('roof'),toilet:stops('toilet')}, remaining:3,
+      duration:0, conversation:0, lastConversation:-1, clock:0, speechUntil:0, nextRemark:0, remarked:new Map() };
+  }
+  private near(d: Duty, p: PlayerBody, margin: number) {
+    const g = d.guard;
+    return p.hall === g.hall && g.phase !== 'door' && Math.hypot(p.x - g.x, p.y - g.y) <= GUARD_CONTACT_RADIUS + margin;
   }
 
   contact(id:string) {
-    const p=this.state.players.get(id),d=this.duties[0],g=d.guard;
-    if(!p?.connected||p.security||p.hall!==g.hall||g.phase==='door'||this.touching.has(id)||Math.hypot(p.x-g.x,p.y-g.y)>GUARD_CONTACT_RADIUS+12)return;
+    const p=this.state.players.get(id);
+    if(!p?.connected||p.security||this.touching.has(id))return;
+    const d=this.duties.find(duty=>this.near(duty,p,12));
+    if(!d)return;
+    const g=d.guard;
     if (d.job?.chase && d.job.id === id) return;
     if (!guardLineClear(g, p, hallObstacles(g.hall))) return;
     this.touching.add(id);
@@ -106,10 +123,20 @@ export class Guards {
     p.security = decision.kind; p.moving = false;
     this.duties[0].queue.push({ id, decision });
   }
-  pursue(id: string, pursuit: ClubPursuit): boolean {
-    const p = this.state.players.get(id), d = this.duties[0];
+  /**
+   * A free guard on the player's floor takes the pursuit. Otherwise the house guard radios for the
+   * second guard, who comes in from that floor's door. With both busy, the shortest queue waits.
+   */
+  pursue(id: string, pursuit: ClubPursuit, preferred?: Duty): boolean {
+    const p = this.state.players.get(id);
     if (!this.enforcement || !p?.connected || p.security || !isCasinoFloor(p.hall) || pursuit.until <= Date.now()
-      || d.job?.id === id || d.queue.some(job => job.id === id)) return false;
+      || this.duties.some(duty => duty.job?.id === id || duty.queue.some(job => job.id === id))) return false;
+    const free = (duty: Duty) => !duty.job && !duty.queue.length && !duty.leaving;
+    const d = (preferred && free(preferred) ? preferred : undefined)
+      ?? this.duties.find(duty => free(duty) && duty.guard.hall === p.hall)
+      ?? this.summon(p.hall as HallId)
+      ?? this.duties.find(free)
+      ?? this.duties.filter(duty => !duty.leaving).reduce((best, duty) => duty.queue.length < best.queue.length ? duty : best);
     d.queue.push({
       id, decision: { kind: 'ejecting', until: pursuit.until, reason: pursuit.reason },
       chase: { pursuit, hall: p.hall, player: p, lastKnown: { x: p.x, y: p.y }, unseen: 0,
@@ -118,10 +145,32 @@ export class Guards {
     return true;
   }
   cancelPursuit(id: string, sanctionId?: string) {
-    const d = this.duties[0];
     const matches = (job: Job) => job.id === id && job.chase && (sanctionId === undefined || job.chase.pursuit.sanctionId === sanctionId);
-    d.queue = d.queue.filter(job => !matches(job));
-    if (d.job && matches(d.job) && d.job.chase && !d.job.chase.pending && !d.job.chase.caught) this.release(d);
+    for (const d of this.duties) {
+      d.queue = d.queue.filter(job => !matches(job));
+      if (d.job && matches(d.job) && d.job.chase && !d.job.chase.pending && !d.job.chase.caught) this.release(d);
+    }
+  }
+  /** The exit a guard uses to leave a floor: the street from the first floor, the stairs elsewhere. */
+  private exitHall(hall: HallId): HallId { return hall === 'arcade' ? 'street' : otherHall(hall); }
+  private summon(hall: HallId): Duty | undefined {
+    if (this.duties.some(duty => duty.reinforcement)) return;
+    const exit = this.exitHall(hall), arrival = hallLinks(exit).find(link => link.target === hall)?.arrival;
+    const guard = new Guard();
+    guard.hall = hall;
+    if (arrival) { guard.x = arrival.entry.x; guard.y = arrival.entry.y; guard.facing = arrival.facing; }
+    const d = this.duty(REINFORCEMENT_ID, guard, true);
+    this.duties.push(d);
+    if (arrival) this.route(d, arrival.arrival);
+    this.phase(d, 'enter');
+    d.idleSince = d.clock;
+    this.say(this.duties[0], GUARD_TRAIL_LINES.radio);
+    this.say(d, GUARD_TRAIL_LINES.arriving);
+    return d;
+  }
+  private retire(d: Duty) {
+    this.duties = this.duties.filter(duty => duty !== d);
+    this.state.guards.delete(d.id);
   }
   private release(d: Duty, unlock = true) {
     const job = d.job;
@@ -148,7 +197,7 @@ export class Guards {
     for (const [id, player] of this.state.players) {
       if (!player.connected || player.security || player.hall !== g.hall) continue;
       const pursuit = this.enforcement.marked(id);
-      if (pursuit && this.sees(g, player, true) && this.pursue(id, pursuit)) return;
+      if (pursuit && this.sees(g, player, true) && this.pursue(id, pursuit, d)) return;
     }
   }
   private validChase(job: Job, chase: Chase): boolean {
@@ -251,7 +300,7 @@ export class Guards {
     if (!d.remaining) { this.transfer(d,d.guard.hall==='tables'&&d.transferFrom==='arcade'?'github':otherHall(d.guard.hall)); return; }
     const hall=d.guard.hall as HallId;
     if (!d.stops[hall].length) {
-      const deck=[...GUARD_STOPS[hall]];
+      const deck=GUARD_STOPS[hall].filter(stop=>!d.reinforcement||stop.activity!=='chat');
       for(let i=deck.length-1;i>0;i--){const j=Math.floor(this.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
       if(deck[0].id===d.visit?.id)deck.push(deck.shift()!);
       d.stops[hall]=deck;
@@ -329,16 +378,23 @@ export class Guards {
       : 'Спам в чате. На выход.';
   }
   tick(dt: number) {
-    for(const id of this.touching){const p=this.state.players.get(id),g=this.duties[0].guard;if(!p||p.hall!==g.hall||Math.hypot(p.x-g.x,p.y-g.y)>GUARD_CONTACT_RADIUS+10)this.touching.delete(id);}
-    for (const d of this.duties) {
+    for(const id of this.touching){const p=this.state.players.get(id);if(!p||!this.duties.some(d=>this.near(d,p,10)))this.touching.delete(id);}
+    for (const d of [...this.duties]) {
       const g = d.guard;
       d.clock += dt;
+      if (d.reinforcement) {
+        if (d.job || d.queue.length) d.idleSince = d.clock;
+        else if (!d.leaving && d.clock - (d.idleSince ?? d.clock) >= REINFORCEMENT_IDLE_SECONDS && !['door', 'transit', 'enter', 'bump'].includes(g.phase)) {
+          d.leaving = true; this.transfer(d, this.exitHall(g.hall as HallId));
+        }
+      }
       if (d.spoken && d.clock >= d.speechUntil) {
         if (g.speech === d.spoken) g.speech = '';
         d.spoken = undefined; d.remarkTarget = undefined;
       }
-      if (!d.job && !d.queue.length) this.look(d);
-      if (!d.job && d.queue.length) {
+      if (!d.job && !d.queue.length && !d.leaving) this.look(d);
+      // A guard finishes walking in through a door before taking the next job.
+      if (!d.job && d.queue.length && g.phase !== 'enter') {
         d.job = d.queue.shift()!;
         const p = this.state.players.get(d.job.id);
         if (!p || (d.job.chase && !this.validChase(d.job, d.job.chase))) { this.release(d); continue; }
@@ -363,7 +419,7 @@ export class Guards {
       d.elapsed += dt;
       if (['approach', 'carry', 'return', 'patrol', 'transit', 'enter'].includes(g.phase)) {
         const beforeX = g.x, beforeY = g.y;
-        let distance = dt * (g.phase === 'carry' ? 150 : g.phase==='patrol'||g.phase==='return'||(['transit','enter'].includes(g.phase)&&!d.job)?85:220);
+        let distance = dt * (g.phase === 'carry' ? 150 : g.phase==='patrol'||g.phase==='return'||(['transit','enter'].includes(g.phase)&&!d.job)?85:GUARD_CHASE_SPEED);
         while (distance > 0 && d.path.length) {
           const point = d.path[0], dx = point.x - g.x, dy = point.y - g.y, length = Math.hypot(dx, dy);
           if (length < .01) { d.path.shift(); continue; }
@@ -406,6 +462,7 @@ export class Guards {
       } else if(g.phase==='door') {
         g.progress=Math.min(1,d.elapsed/.45);
         if(d.elapsed>=.45) {
+          if (d.leaving) { this.retire(d); continue; }
           g.hall=d.transfer!;const door=d.transferArrival??HALL_DOORS[d.transfer!];
           g.x=door.entry.x;g.y=door.entry.y;g.facing=door.facing;
           this.route(d,door.arrival);this.phase(d,'enter');
