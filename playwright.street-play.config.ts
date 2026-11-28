@@ -4,7 +4,7 @@ const web=`http://127.0.0.1:${webPort}`,api=`http://127.0.0.1:${apiPort}`;
 
 // Street play only: snowballs, snowmen, benches, kiosk, postcard and evening in the connected host.
 export default defineConfig({
-  testDir: './tests', testMatch: ['street-play.spec.ts','roof-play.spec.ts'], timeout: 240000, workers: 1,
+  testDir: './tests', testMatch: ['street-play.spec.ts','roof-play.spec.ts','toilet-play.spec.ts','floors-play.spec.ts'], timeout: 240000, workers: 1,
   use: { baseURL: web, channel: 'chrome', trace: 'off' },
   projects: [
     { name: 'desktop', use: { viewport: { width: 1440, height: 1000 } } },

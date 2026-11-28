@@ -146,6 +146,7 @@ export class SocialUI {
       players: (players, selfId) => this.updatePlayers(players, selfId),
       snowball: event => this.scene.streetSnowball(event),
       firework: event => this.scene.roofFirework(event),
+      toiletAct: event => this.scene.toiletAct(event),
       snowmen: snowmen => this.scene.setStreetSnowmen(snowmen),
       chatVisit: visit => {
         this.chatReady = true;

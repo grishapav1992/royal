@@ -126,6 +126,8 @@ export class ToiletRenderer{
   private base:HTMLCanvasElement;
   private doors:Phaser.GameObjects.Graphics;
   private open=[false,false,false];
+  private locked:number[]=[];
+  private drawnLocks=0;
   private resident:Phaser.Textures.CanvasTexture;
   private elapsed=0;
   private lastFrame=-1;
@@ -153,7 +155,7 @@ export class ToiletRenderer{
       const open=this.open[i];
       g.fillStyle(0x713c4c).lineStyle(1,0x302f35);
       if(open){g.fillRect(p.x+9,p.y+72,4,64).strokeRect(p.x+9,p.y+72,4,64);g.fillStyle(0xc9aa70).fillRect(p.x+13,p.y+77,3,2);}
-      else{g.fillRect(p.x+18,p.y+134,64,4).strokeRect(p.x+18,p.y+134,64,4);g.fillStyle(0xc9aa70).fillRect(p.x+71,p.y+134,6,2);g.fillStyle(p.id===OCCUPIED_TOILET_CUBICLE?0xc95b51:0xa7bc90).fillCircle(p.x+88,p.y+136,1.8);}
+      else{g.fillRect(p.x+18,p.y+134,64,4).strokeRect(p.x+18,p.y+134,64,4);g.fillStyle(0xc9aa70).fillRect(p.x+71,p.y+134,6,2);g.fillStyle(p.id===OCCUPIED_TOILET_CUBICLE||this.locked.includes(p.id)?0xc95b51:0xa7bc90).fillCircle(p.x+88,p.y+136,p.id===OCCUPIED_TOILET_CUBICLE?1.8:2.6);}
     });
     this.drawMap();
   }
@@ -165,10 +167,11 @@ export class ToiletRenderer{
   private drawResident(){
     const c=this.resident.context;c.clearRect(0,0,300,420);c.save();c.scale(3,3);paintToiletResident(c,this.pose);c.restore();this.resident.refresh();this.drawMap();
   }
-  update(people:readonly {x:number;y:number;moving?:boolean}[],delta=0,reducedMotion=false,available=true){
+  update(people:readonly {x:number;y:number;moving?:boolean}[],delta=0,reducedMotion=false,available=true,locked:readonly number[]=[]){
     if(people[0]&&this.merchant.update(delta,people[0],reducedMotion,available))this.drawMap();
-    const open=TOILET.cubicles.map(p=>toiletCubicleOpen(p.id,people));
-    if(open.some((value,i)=>value!==this.open[i])){this.open=open;this.drawDoors();}
+    const open=TOILET.cubicles.map(p=>toiletCubicleOpen(p.id,people,locked));
+    this.locked=[...locked];
+    if(open.some((value,i)=>value!==this.open[i])||locked.length!==this.drawnLocks){this.open=open;this.drawnLocks=locked.length;this.drawDoors();}
     if(reducedMotion!==this.reducedMotion){this.reducedMotion=reducedMotion;if(reducedMotion)this.elapsed=0;this.lastFrame=-1;}
     if(!reducedMotion)this.elapsed+=Math.min(100,Math.max(0,delta));
     const frame=reducedMotion?0:Math.floor(this.elapsed*12/1000);

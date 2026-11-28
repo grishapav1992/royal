@@ -38,6 +38,8 @@ import type { DrinkingState } from './intoxicationStore';
 import { STREET } from '../src/shared/street';
 import { atStreetKiosk, KIOSK_DRINK_IDS } from '../src/shared/streetPlay';
 import { StreetSnow } from './streetSnow';
+import { EMOTE_COOLDOWN_MS, emoteDuration, isEmote } from '../src/shared/emotes';
+import { DRYER_COOLDOWN_MS, TOILET_LINES, WASH_COOLDOWN_MS, WASH_SOBER_MS, nearDryer, nearSink, type ToiletActEvent } from '../src/shared/toiletPlay';
 
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; chatVersion?: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -59,6 +61,9 @@ const CABINET_PLAY_DISTANCE = 90;
 export class LobbyRoom extends Room<{ state: LobbyState }> {
   state = new LobbyState();
   private snow = new StreetSnow(this.state, event => this.sendToHall(event.hall, 'snowball', event), event => this.sendToHall('roof', 'firework', event));
+  private washedAt = new Map<string, number>();
+  private emotedAt = new Map<string, number>();
+  private driedAt = new Map<string, number>();
   private sendToHall(hall: string, type: string, value: unknown) {
     for (const client of this.clients) { const p = this.state.players.get(client.sessionId); if (p?.connected && p.hall === hall) client.send(type, value); }
   }
@@ -302,7 +307,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);this.cat.tick(dt);this.snow.tick();hallElapsed+=dt;
       while(hallElapsed>=.05){this.tick(.05);hallElapsed-=.05;}
     }, 1000/60);
-    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator','stair-window','snow-pick','snow-roll','snow-drop','firework']);
+    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator','stair-window','snow-pick','snow-roll','snow-drop','firework','wash','dry']);
     const hugBlockedActions = new Set([...movementActions,'inputs','cabinet-reaction']);
     const listen = (type: string, handler: (client: Client, value: any) => void | Promise<void>) => this.onMessage(type, (client, value) => {
       const apply = () => {
@@ -450,6 +455,30 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     listen('snow-throw', (client, value: unknown) => { const p = this.state.players.get(client.sessionId); if (p) this.snow.throw(client.sessionId, p, value); });
     listen('snow-roll', client => { const p = this.state.players.get(client.sessionId); if (p) { this.stop(client.sessionId); snowNotice(client, this.snow.roll(client.sessionId, p)); } });
     listen('firework', client => { const p = this.state.players.get(client.sessionId); if (!p) return; const result = this.snow.firework(client.sessionId, p); if (typeof result === 'string') client.send('notice', result); });
+    listen('emote', (client, id: unknown) => {
+      const p = this.state.players.get(client.sessionId), now = Date.now();
+      if (!p || !isEmote(id) || p.playing || (p.hall === 'street' && p.stairStep) || now < (this.emotedAt.get(client.sessionId) ?? -Infinity) + EMOTE_COOLDOWN_MS) return;
+      this.emotedAt.set(client.sessionId, now);
+      p.emote = id; p.emoteUntil = now + emoteDuration(id);
+    });
+    listen('dry', client => {
+      const p = this.state.players.get(client.sessionId), now = Date.now();
+      if (!p || p.seat || p.playing || p.action === 'drink' || !nearDryer(p) || now < (this.driedAt.get(client.sessionId) ?? -Infinity) + DRYER_COOLDOWN_MS) return;
+      this.driedAt.set(client.sessionId, now);
+      this.sendToHall('toilet', 'toilet-act', { kind: 'dry', sink: -1, by: client.sessionId } satisfies ToiletActEvent);
+    });
+    listen('wash', async client => {
+      const p = this.state.players.get(client.sessionId), now = Date.now(), sink = p ? nearSink(p) : -1;
+      if (!p || sink < 0 || p.seat || p.playing || p.action === 'drink') return;
+      if (now < (this.washedAt.get(client.sessionId) ?? -Infinity) + WASH_COOLDOWN_MS) { client.send('notice', TOILET_LINES.wait); return; }
+      this.washedAt.set(client.sessionId, now);
+      this.stop(client.sessionId); p.facing = 'up';
+      this.sendToHall('toilet', 'toilet-act', { kind: 'wash', sink, by: client.sessionId } satisfies ToiletActEvent);
+      const accountId = (client.auth as RoomAuth).account.id, before = p.soberAt > now;
+      const drinking = await accounts.drinking.sober(accountId, WASH_SOBER_MS, now);
+      if (this.state.players.get(client.sessionId) === p) { p.soberAt = drinking.soberAt; const access = this.access.get(client.sessionId); if (access) access.drinking = drinking; }
+      client.send('notice', before ? TOILET_LINES.washed : TOILET_LINES.fresh);
+    });
     listen('snow-drop', client => { const p = this.state.players.get(client.sessionId); if (p) { this.stop(client.sessionId); snowNotice(client, this.snow.drop(client.sessionId, p)); } });
     listen('sit', (client, id: unknown) => {
       const p = this.state.players.get(client.sessionId), seat = SEATS.find(s => s.id === id);
@@ -747,7 +776,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.roomChat.leave(client.sessionId);
     this.releaseCabinet(client.sessionId);
     const p = this.state.players.get(client.sessionId);
-    this.snow.leave(client.sessionId); this.state.players.delete(client.sessionId); this.controls.delete(client.sessionId); this.access.delete(client.sessionId);this.activityProtocols.delete(client.sessionId);
+    this.snow.leave(client.sessionId); this.washedAt.delete(client.sessionId); this.emotedAt.delete(client.sessionId); this.driedAt.delete(client.sessionId); this.state.players.delete(client.sessionId); this.controls.delete(client.sessionId); this.access.delete(client.sessionId);this.activityProtocols.delete(client.sessionId);
     if (p) this.system(p.hall, p.name+' покидает зал');
   }
   private cancelChat(client: Client) {
@@ -951,6 +980,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if(this.enterDoor(id))continue;
       const c = this.controls.get(id)!;
       if (p.gameReaction && Date.now() >= p.gameReactionUntil) { p.gameReaction = ''; p.gameReactionUntil = 0; }
+      if (p.emote && (Date.now() >= p.emoteUntil || (p.emote === 'dance' && p.moving))) { p.emote = ''; p.emoteUntil = 0; }
       if (p.action === 'drink' && Date.now() >= p.actionUntil) { p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0; }
       if (p.security || !p.connected || p.playing || this.cat.isHugging(id)) { p.moving = false; continue; }
       if (!p.seat && !p.activity && !walkable(p.x, p.y, hallObstacles(p.hall)) && this.recoverPlayer(id)) continue;

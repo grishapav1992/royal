@@ -14,6 +14,8 @@ export const Player = schema({
   level: t.uint8().default(1),
   // Street snow play: held snowballs, opt-in to player hits, snow on clothes and a ball being rolled.
   snowballs: t.uint8().default(0), snowFight: t.boolean().default(false), snowHitUntil: t.number().default(0), snowRoll: t.number().default(0),
+  // A short social gesture seen by the whole hall.
+  emote: t.string().default(''), emoteUntil: t.number().default(0),
 }, 'RoyalPlayer');
 export type Player = SchemaType<typeof Player>;
 export const Guest = schema({

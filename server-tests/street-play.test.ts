@@ -188,3 +188,66 @@ test('roof snowballs stay on the roof, rolling stays on the street and rockets k
   assert(typeof snow.firework('a', a, 3000 + ROOF_FIREWORKS.cooldownMs) === 'object'); assert.equal(rockets.length, 2);
   c.hall = 'street'; Object.assign(c, ROOF_FIREWORKS.approach); assert.equal(snow.firework('c', c, 1e9), undefined, 'only from the roof');
 });
+
+import { TOILET } from '../src/shared/toilet';
+import { toiletCubicleOpen } from '../src/shared/toilet';
+import { HAND_DRYER, TOILET_SINKS, TOILET_CUBICLE_SEATS, WASH_SOBER_MS, nearDryer, nearSink } from '../src/shared/toiletPlay';
+
+test('restroom sinks, dryer and free cubicles are reachable and a seated visitor keeps the door shut', () => {
+  const obstacles = hallObstacles('toilet'), seats = SEATS.filter(s => s.hall === 'toilet');
+  assert.equal(seats.length, 2);
+  for (const target of [HAND_DRYER.approach, ...TOILET_SINKS, ...seats.map(s => s.entry)]) {
+    assert(walkable(target.x, target.y, obstacles, 12), JSON.stringify(target));
+    assert(findPath(TOILET.spawn, target, obstacles).length, JSON.stringify(target));
+  }
+  for (const seat of seats) assert(Math.hypot(seat.x - seat.entry.x, seat.y - seat.entry.y) <= 60);
+  assert(nearDryer({ hall: 'toilet', ...HAND_DRYER.approach })); assert.equal(nearSink({ hall: 'toilet', ...TOILET_SINKS[1] }), 1);
+  const cubicle = TOILET_CUBICLE_SEATS[0], visitor = { x: cubicle.entry.x, y: cubicle.entry.y };
+  assert(toiletCubicleOpen(cubicle.cubicle, [visitor]));
+  assert(!toiletCubicleOpen(cubicle.cubicle, [visitor], [cubicle.cubicle]), 'locked while someone sits inside');
+});
+
+test('washing at the sink takes five minutes off the drinking timer, never below sober', async context => {
+  const session = await accounts.login(`restroom-${crypto.randomUUID()}@example.test`, 'Restroom-password-42!'); await accounts.select(session.account.id, 0);
+  const notices: unknown[] = [], acts: unknown[] = [];
+  const client: any = { sessionId: 'restroom-test', auth: await accounts.session(session.token), send(type: string, value: unknown) { if (type === 'notice') notices.push(value); if (type === 'toilet-act') acts.push(value); }, leave() {} };
+  const room = new LobbyRoom(), handlers = new Map<string, (client: any, data: unknown) => unknown>();
+  context.mock.method(room, 'onMessage', (name: string, callback: any) => { handlers.set(name, callback); });
+  context.mock.method(room, 'setPatchRate', () => {}); context.mock.method(room, 'setSimulationInterval', () => {}); context.mock.method(room, 'broadcast', () => {}); context.mock.method(room.clock, 'setInterval', () => ({ clear() {} }));
+  room.onCreate(); await room.onJoin(client, {}, client.auth);
+  (room.clients as any).push(client); // hall events go to connected clients
+  try {
+    const p = room.state.players.get(client.sessionId)!;
+    const drunk = await accounts.drinking.consume(session.account.id, 'whisky');
+    Object.assign(p, { hall: 'toilet', ...TOILET_SINKS[0] });
+    await handlers.get('wash')!(client, undefined);
+    const after = await accounts.drinking.read(session.account.id);
+    assert(Math.abs(drunk.soberAt - WASH_SOBER_MS - after.soberAt) < 2000, `${drunk.soberAt} ${after.soberAt}`);
+    assert.equal(p.soberAt, after.soberAt); assert.equal(acts.length, 1); assert.match(String(notices.at(-1)), /минус пять минут/);
+    await handlers.get('wash')!(client, undefined);
+    assert.equal((await accounts.drinking.read(session.account.id)).soberAt, after.soberAt, 'cooldown');
+    Object.assign(p, HAND_DRYER.approach); handlers.get('dry')!(client, undefined); assert.equal(acts.length, 2);
+    const seat = SEATS.find(s => s.hall === 'toilet')!; Object.assign(p, seat.entry);
+    handlers.get('sit')!(client, seat.id); assert.equal(p.seat, seat.id);
+  } finally { room.onDispose(); room.clock.clear(); await accounts.logout(session.token); }
+});
+
+import { EMOTE_COOLDOWN_MS } from '../src/shared/emotes';
+
+test('emotes: valid gestures only, a short pause, and a dance stops when the dancer walks', async context => {
+  const session = await accounts.login(`emote-${crypto.randomUUID()}@example.test`, 'Emote-password-42!'); await accounts.select(session.account.id, 0);
+  const client: any = { sessionId: 'emote-test', auth: await accounts.session(session.token), send() {}, leave() {} };
+  const room = new LobbyRoom(), handlers = new Map<string, (client: any, data: unknown) => unknown>();
+  context.mock.method(room, 'onMessage', (name: string, callback: any) => { handlers.set(name, callback); });
+  context.mock.method(room, 'setPatchRate', () => {}); context.mock.method(room, 'setSimulationInterval', () => {}); context.mock.method(room, 'broadcast', () => {}); context.mock.method(room.clock, 'setInterval', () => ({ clear() {} }));
+  room.onCreate(); await room.onJoin(client, {}, client.auth);
+  try {
+    const p = room.state.players.get(client.sessionId)!;
+    handlers.get('emote')!(client, 'shout'); assert.equal(p.emote, '');
+    handlers.get('emote')!(client, 'wave'); assert.equal(p.emote, 'wave'); assert(p.emoteUntil > Date.now());
+    handlers.get('emote')!(client, 'clap'); assert.equal(p.emote, 'wave', 'pause between gestures');
+    context.mock.timers.enable({ apis: ['Date'], now: Date.now() + EMOTE_COOLDOWN_MS + 10 });
+    handlers.get('emote')!(client, 'dance'); assert.equal(p.emote, 'dance');
+    p.moving = true; Reflect.get(room, 'tick').call(room, .05); assert.equal(p.emote, '', 'walking away ends the dance');
+  } finally { context.mock.timers.reset(); room.onDispose(); room.clock.clear(); await accounts.logout(session.token); }
+});

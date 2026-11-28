@@ -14,15 +14,18 @@ import { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIR
 import { TOILET,TOILET_OBSTACLES,ROOF_TOILET,TOILET_WINDOW,TOILET_HALL_DOOR,CARD_TOILET_DOOR } from './toilet';
 import {STAIR_WINDOW,atStairWindow,atCardWindow} from './stairWindow';
 import { KIOSK_ONLY_DRINKS } from './streetPlay';
+import { TOILET_CUBICLE_SEATS } from './toiletPlay';
 export const PLAYER_SPEED = 155;
 export const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;
 export const ROOM_CAPACITY = 30;
 export const NPC_SPAWNS = [[350,300],[875,610],[365,531],[711,563],[100,350]] as const;
-export type Seat = { hall?: HallId; id: string; kind: 'sofa' | 'bar' | 'bench'; x: number; y: number; entry: { x: number; y: number }; facing: Facing };
+export type Seat = { hall?: HallId; id: string; kind: 'sofa' | 'bar' | 'bench' | 'cubicle'; x: number; y: number; entry: { x: number; y: number }; facing: Facing };
 export const SEATS: readonly Seat[] = [
   ...[49,134,214].map((x,i)=>({id:'bar-'+i,hall:'arcade' as const,kind:'bar' as const,...barPoint(x,211),entry:barPoint(x,253),facing:'up' as const})),
   ...LOUNGES.filter(lounge=>lounge.hall==='arcade').map((lounge,i)=>({id:i===0?'arcade-lounge':'arcade-lounge-'+(i+1),hall:lounge.hall,kind:'sofa' as const,x:lounge.x-30,y:lounge.y+10,entry:{x:lounge.x-30,y:lounge.y+40},facing:'down' as const})),
   ...(['tables','github'] as const).map(hall=>({id:hall+'-lounge',hall,kind:'sofa' as const,x:320,y:910,entry:{x:320,y:950},facing:'down' as const})),
+  // Free restroom cubicles: the visitor sits in front of the bowl, the door closes for others.
+  ...TOILET_CUBICLE_SEATS.map(seat=>({id:seat.id,hall:'toilet' as const,kind:'cubicle' as const,x:seat.x,y:seat.y,entry:seat.entry,facing:'down' as const})),
   // Roof benches seat three as well, in front of their backrest.
   ...ROOF.benches.flatMap((bench,b)=>[-55,0,55].map((dx,i)=>({id:`roof-bench-${b}-${i}`,hall:'roof' as const,kind:'bench' as const,x:bench.x+bench.w/2+dx,y:bench.y+bench.h-20,entry:{x:bench.x+bench.w/2+dx,y:bench.y+bench.h+40},facing:'down' as const}))),
   // Front street benches seat three; the seat sits in front of the backrest, the entry on the sidewalk.
@@ -137,6 +140,6 @@ export const DRINKS = [
 export const ALL_DRINKS = [...DRINKS, ...KIOSK_ONLY_DRINKS] as const;
 export const atBar = (p: { x: number; y: number }) => p.x >= BAR_SERVICE.x && p.x <= BAR_SERVICE.x+BAR_SERVICE.w && p.y >= BAR_SERVICE.y && p.y <= BAR_SERVICE.y+BAR_SERVICE.h;
 export type PlayerAction = 'idle' | 'sit' | 'drink';
-export type PlayerView = { snowballs?: number; snowFight?: boolean; snowHitUntil?: number; snowRoll?: number; stairStep?: number;stairDirection?:number; security?: string; level?: number; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
+export type PlayerView = { emote?: string; emoteUntil?: number; snowballs?: number; snowFight?: boolean; snowHitUntil?: number; snowRoll?: number; stairStep?: number;stairDirection?:number; security?: string; level?: number; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
 export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string; visitId?: number };
 export type NetworkCommands = { street?: (type: string, value?: unknown) => boolean; recover?: () => Promise<boolean>; miraAttention?: (phase: MiraAttention) => void; stairWindow?: () => void; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };

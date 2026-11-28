@@ -3,6 +3,10 @@ import { t, language } from '../i18n';
 import './street-play.css';
 
 const COOLDOWN_MS = 4000;
+const CARDS = {
+  street: { id: 'street-postcard', label: 'Открытка с улицы «Рояля»', alt: 'Открытка: ты у входа в казино «Рояль»', title: 'Привет с улицы «Рояля»!', credit: 'снимал турист Лёня', file: 'royal-postcard.png' },
+  mirror: { id: 'toilet-selfie', label: 'Селфи в зеркале «Рояля»', alt: 'Селфи: ты у зеркала в туалете «Рояля»', title: 'Селфи в зеркале «Рояля»', credit: 'снято в зеркале туалета', file: 'royal-mirror-selfie.png' },
+} as const;
 
 /**
  * Tourist Lyonya's postcard: a snapshot of the real street render around the player,
@@ -19,11 +23,13 @@ export class StreetPhoto {
   private takenAt = 0;
   private open = false;
   private escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && this.open) { this.hide(); event.preventDefault(); } };
-  constructor(private scene: Phaser.Scene, private retake: () => void) {
-    this.dialog.className = 'street-postcard'; this.dialog.hidden = true; this.dialog.id = 'street-postcard';
-    this.dialog.setAttribute('role', 'dialog'); this.dialog.setAttribute('aria-label', t('Открытка с улицы «Рояля»'));
+  private card: typeof CARDS[keyof typeof CARDS];
+  constructor(private scene: Phaser.Scene, private retake: () => void, kind: keyof typeof CARDS = 'street') {
+    this.card = CARDS[kind];
+    this.dialog.className = 'street-postcard'; this.dialog.hidden = true; this.dialog.id = this.card.id;
+    this.dialog.setAttribute('role', 'dialog'); this.dialog.setAttribute('aria-label', t(this.card.label));
     const card = document.createElement('div'); card.className = 'street-postcard-card';
-    this.image.alt = t('Открытка: ты у входа в казино «Рояль»');
+    this.image.alt = t(this.card.alt);
     const actions = document.createElement('div'); actions.className = 'street-postcard-actions';
     for (const button of [this.save, this.again, this.close]) { button.type = 'button'; actions.append(button); }
     this.save.textContent = t('Сохранить открытку'); this.again.textContent = t('Переснять'); this.close.textContent = t('Закрыть');
@@ -68,10 +74,10 @@ export class StreetPhoto {
     c.drawImage(shot, pad, pad);
     c.strokeStyle = '#c39b58'; c.lineWidth = 2; c.strokeRect(pad - 1, pad - 1, shot.width + 2, shot.height + 2);
     c.fillStyle = '#7a1f3a'; c.font = 'bold 22px Georgia, serif'; c.textBaseline = 'middle';
-    c.fillText(t('Привет с улицы «Рояля»!'), pad + 4, pad + shot.height + caption / 2 - 8);
+    c.fillText(t(this.card.title), pad + 4, pad + shot.height + caption / 2 - 8);
     c.fillStyle = '#7d6a5c'; c.font = '13px Arial, sans-serif';
     const date = new Date().toLocaleDateString(language === 'en' ? 'en-GB' : 'ru-RU', { day: 'numeric', month: 'long' });
-    c.fillText(`${playerName} · ${t('снимал турист Лёня')} · ${date}`, pad + 4, pad + shot.height + caption / 2 + 16);
+    c.fillText(`${playerName} · ${t(this.card.credit)} · ${date}`, pad + 4, pad + shot.height + caption / 2 + 16);
     card.toBlob(blob => {
       if (!blob) return;
       if (this.url) URL.revokeObjectURL(this.url);
@@ -81,7 +87,7 @@ export class StreetPhoto {
   }
   private download() {
     if (!this.url) return;
-    const link = document.createElement('a'); link.href = this.url; link.download = 'royal-postcard.png';
+    const link = document.createElement('a'); link.href = this.url; link.download = this.card.file;
     document.body.append(link); link.click(); link.remove();
   }
   hide() { if (!this.open) return; this.open = false; this.dialog.hidden = true; this.scene.game.canvas.focus({ preventScroll: true }); }

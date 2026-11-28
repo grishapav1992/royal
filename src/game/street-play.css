@@ -22,3 +22,11 @@ canvas.street-aiming{cursor:crosshair}
 .street-photo-flash-run{animation:street-photo-flash .42s ease-out}
 @keyframes street-photo-flash{0%{opacity:.85}100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.street-postcard-card{transform:none}}
+.emote-bar{position:absolute;z-index:6;right:14px;bottom:14px;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.emote-bar[hidden],.emote-row[hidden]{display:none}
+.emote-bar>button{min-height:34px;padding:7px 12px;border:2px solid #c39b58;border-radius:18px;background:#302632f5;color:#f5dfba;font:600 13px Arial,sans-serif;box-shadow:0 3px 8px #15121b40;cursor:pointer}
+.emote-row{display:flex;gap:4px;padding:5px;border:1px solid #c39b58;border-radius:20px;background:#302632f5;box-shadow:0 3px 8px #15121b40}
+.emote-row button{width:38px;height:38px;border:0;border-radius:50%;background:#f2dfb5;font-size:19px;line-height:1;cursor:pointer}
+.emote-bar button:focus-visible{outline:3px solid #f6cf58;outline-offset:2px}
+.room-panel[data-overview=true] .emote-bar{display:none}
+@media(max-width:600px){.emote-bar{right:8px;bottom:8px}.emote-row button{width:34px;height:34px;font-size:17px}}

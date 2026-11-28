@@ -72,6 +72,7 @@ export class ClubHost implements PlayerControls {
   setStreetSnowmen(value: Parameters<RoomScene['setStreetSnowmen']>[0]) { this.snapshots.snowmen = value; this.world?.setStreetSnowmen(value); }
   streetSnowball(value: Parameters<RoomScene['streetSnowball']>[0]) { this.world?.streetSnowball(value); }
   roofFirework(value: Parameters<RoomScene['roofFirework']>[0]) { this.world?.roofFirework(value); }
+  toiletAct(value: Parameters<RoomScene['toiletAct']>[0]) { this.world?.toiletAct(value); }
   finishMovement(action: () => void) { if (this.world) this.world.finishMovement(action); else action(); }
   cancelMovement() { this.world?.cancelMovement(); this.commands?.stop(); }
   onElevatorCancel() { this.world?.onElevatorCancel(); }
