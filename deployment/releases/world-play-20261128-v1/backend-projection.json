@@ -90,16 +90,28 @@
       ]
     },
     "server/caribbeanCrew.ts": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "commit": "e63341f774db47aee5a05255c0771aa058543dc4",
       "path": "server/caribbeanCrew.ts",
-      "baseSha256": "97166b981ab702c04ea93399d21341e95c678105c65d388d95c270568bb1a7b0",
-      "sha256": "97166b981ab702c04ea93399d21341e95c678105c65d388d95c270568bb1a7b0"
+      "baseSha256": "ad266481d390d45059badf3c38c64a4d7772814db297bfb8e79dc953fbdb8d01",
+      "sha256": "ad266481d390d45059badf3c38c64a4d7772814db297bfb8e79dc953fbdb8d01"
     },
     "server/caribbeanCrewRoutes.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
       "path": "server/caribbeanCrewRoutes.ts",
       "baseSha256": "47e6a323810bfa73705fa8148a37ded86001aa62269d88dd37fd938b7baf22a8",
       "sha256": "47e6a323810bfa73705fa8148a37ded86001aa62269d88dd37fd938b7baf22a8"
+    },
+    "server/caribbeanVoyage.ts": {
+      "commit": "e63341f774db47aee5a05255c0771aa058543dc4",
+      "path": "server/caribbeanVoyage.ts",
+      "baseSha256": "2b1eb211a4e228d39fae6de34c3f4782224e9934c0ebea9342f24cfec7f97127",
+      "sha256": "2b1eb211a4e228d39fae6de34c3f4782224e9934c0ebea9342f24cfec7f97127"
+    },
+    "server/caribbeanVoyageRoutes.ts": {
+      "commit": "e63341f774db47aee5a05255c0771aa058543dc4",
+      "path": "server/caribbeanVoyageRoutes.ts",
+      "baseSha256": "f0e546191a6ee276bfad46ef90a1fd04f90ff0cce0df3e909e4e02007561fce8",
+      "sha256": "f0e546191a6ee276bfad46ef90a1fd04f90ff0cce0df3e909e4e02007561fce8"
     },
     "server/casinoApiPro.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
@@ -693,7 +705,7 @@
       "commit": "e3f532b1d4ef8113afe0f257425760320e913f29",
       "path": "server/index.ts",
       "baseSha256": "a9ef4ffe7ad0b78756f2ba3d5382f0ad47c87cbb6c0bf3f4e141947c539ec3aa",
-      "sha256": "02e2172890c541e672675171f898244e019d525f65df10341f5d79df8c55c777",
+      "sha256": "8cde02c85ad940313378e50c023dd751829d8ca9f87c54073b25b6745bfccfa9",
       "patches": [
         {
           "from": "import { installFlagToteRoutes } from './flagToteRoutes';\nimport { installDemoWallet } from './demoWalletRoutes';\nimport { installClubFineRoutes } from './clubFineRoutes';\nimport { installProgression } from './progressionRoutes';\n",
@@ -718,6 +730,14 @@
         {
           "from": "    installStarSpinCollection(app);\n",
           "to": "    installStarSpinCollection(app);\n    installCosmicCrew(app);\n"
+        },
+        {
+          "from": "import {installCosmicCrew} from './cosmicCrewRoutes';\n",
+          "to": "import {installCosmicCrew} from './cosmicCrewRoutes';\nimport {installCaribbeanVoyage} from './caribbeanVoyageRoutes';\n"
+        },
+        {
+          "from": "    installCosmicCrew(app);\n",
+          "to": "    installCosmicCrew(app);\n    installCaribbeanVoyage(app);\n"
         }
       ]
     },
@@ -1180,6 +1200,12 @@
       "path": "src/shared/caribbeanTreasuresMath.ts",
       "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
       "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/caribbeanVoyage.ts": {
+      "commit": "e63341f774db47aee5a05255c0771aa058543dc4",
+      "path": "src/shared/caribbeanVoyage.ts",
+      "baseSha256": "1031cc39563c00c6b4a4be68341138da30d81d285d09b2a1d6dffe3f4ac166bb",
+      "sha256": "1031cc39563c00c6b4a4be68341138da30d81d285d09b2a1d6dffe3f4ac166bb"
     },
     "src/shared/casinoBatchVariants.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
@@ -1758,10 +1784,10 @@
       "sha256": "49c241391d49b34e463186ca8a073e6a3bf3aa3d1de56830db4a6a4caea05946"
     },
     "src/shared/toilet.ts": {
-      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
+      "commit": "f19115184dc986d5f44235d7f0c57408c83d7a62",
       "path": "src/shared/toilet.ts",
-      "baseSha256": "7254f1c0da2d0d383e411aad49c948aa2e1ce7b0ec5e5832a967aa946b0f5b07",
-      "sha256": "7254f1c0da2d0d383e411aad49c948aa2e1ce7b0ec5e5832a967aa946b0f5b07"
+      "baseSha256": "a1546c273c588f2c4ec5f87b20d3041c7ce7b09038e08b28ec2640bf521e0392",
+      "sha256": "a1546c273c588f2c4ec5f87b20d3041c7ce7b09038e08b28ec2640bf521e0392"
     },
     "src/shared/tsuDuel.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
