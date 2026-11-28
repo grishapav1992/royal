@@ -1,5 +1,6 @@
 import type { Obstacle, Point } from '../game/navigation';
 import { WORLD } from './clubGeometry';
+import { STREET_KIOSK } from './streetPlay';
 
 // The exterior footprint is independent of the number of casino floors.
 export const STREET = {
@@ -21,6 +22,7 @@ export const STREET_OBSTACLES: Obstacle[] = [
   ...STREET.trees.map(p=>({x:p.x-17,y:p.y-10,w:34,h:30})),
   ...STREET.lamps.map(p=>({x:p.x-16,y:p.y,w:32,h:9})),
   ...[-126,126].map(offset=>({x:STREET.entrance.x+offset-28,y:906,w:56,h:28})),
+  STREET_KIOSK.obstacle,
 ];
 
 export const STREET_DOOR = {

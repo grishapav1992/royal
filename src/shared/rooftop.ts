@@ -1,6 +1,7 @@
 import type { Obstacle, Point } from '../game/navigation';
 import { WORLD } from './clubGeometry';
 import { ROOF_TOILET } from './toilet';
+import { ROOF_FIREWORKS } from './streetPlay';
 
 // Roof access is a location, independent of the casino's numbered floors.
 export const ROOF = {
@@ -178,4 +179,5 @@ export const ROOF_OBSTACLES: Obstacle[] = [
   { x: 2070, y: 0, w: WORLD.width - 2070, h: ROOF.height },
   { x: 0, y: 1170, w: WORLD.width, h: ROOF.height - 1170 },
   ROOF.hatch, ...ROOF.vents, ...ROOF.benches, ROOF.antenna, ROOF_TOILET.body, ROOF_TOILET.step,
+  ROOF_FIREWORKS.obstacle,
 ];

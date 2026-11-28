@@ -17,6 +17,7 @@ export class ClubHost implements PlayerControls {
     cat?: Parameters<RoomScene['syncCat']>[0];
     guards?: Parameters<RoomScene['syncGuards']>[0];
     mira?: Parameters<RoomScene['syncMira']>[0];
+    snowmen?: Parameters<RoomScene['setStreetSnowmen']>[0];
   } = {};
   onAtelier: RoomScene['onAtelier'] = () => {};
   onToiletMerchant: RoomScene['onToiletMerchant'] = () => {};
@@ -39,6 +40,7 @@ export class ClubHost implements PlayerControls {
     if (this.snapshots.guards) world.syncGuards(this.snapshots.guards);
     if (this.snapshots.cat) world.syncCat(this.snapshots.cat);
     if (this.snapshots.mira) world.syncMira(this.snapshots.mira);
+    if (this.snapshots.snowmen) world.setStreetSnowmen(this.snapshots.snowmen);
     if (this.selfId) world.syncPlayers(this.players, this.selfId);
     world.setSecurity(this.security);
     world.setLocked(this.locked || this.presentation === 'casino');
@@ -66,6 +68,10 @@ export class ClubHost implements PlayerControls {
   syncGuards(value: Parameters<RoomScene['syncGuards']>[0]) { this.snapshots.guards = value; this.world?.syncGuards(value); }
   syncCat(value: Parameters<RoomScene['syncCat']>[0]) { this.snapshots.cat = value; this.world?.syncCat(value); }
   syncMira(value: Parameters<RoomScene['syncMira']>[0]) { this.snapshots.mira = value; this.world?.syncMira(value); }
+  setStreetSnowmen(value: Parameters<RoomScene['setStreetSnowmen']>[0]) { this.snapshots.snowmen = value; this.world?.setStreetSnowmen(value); }
+  streetSnowball(value: Parameters<RoomScene['streetSnowball']>[0]) { this.world?.streetSnowball(value); }
+  roofFirework(value: Parameters<RoomScene['roofFirework']>[0]) { this.world?.roofFirework(value); }
+  toiletAct(value: Parameters<RoomScene['toiletAct']>[0]) { this.world?.toiletAct(value); }
   finishMovement(action: () => void) { if (this.world) this.world.finishMovement(action); else action(); }
   cancelMovement() { this.world?.cancelMovement(); this.commands?.stop(); }
   onElevatorCancel() { this.world?.onElevatorCancel(); }

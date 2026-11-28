@@ -1,6 +1,6 @@
 import type { PostgresDatabase } from './database';
 import { addDrink, getIntoxication } from '../src/shared/intoxication';
-import { DRINKS } from '../src/shared/world';
+import { ALL_DRINKS } from '../src/shared/world';
 
 export type DrinkingState = { soberAt: number; lastDrink: string; lastDrinkAt: number };
 
@@ -21,9 +21,23 @@ export class IntoxicationStore {
     const remaining = getIntoxication(Number(row.sober_at), now).remainingMs;
     return { soberAt: remaining ? now + remaining : 0, lastDrink: String(row.last_drink), lastDrinkAt: Number(row.last_drink_at) };
   }
+  /** Cold water at the restroom sink: shortens the remaining intoxication, never below sober. */
+  async sober(accountId: string, ms: number, now = Date.now()): Promise<DrinkingState> {
+    await this.ready;
+    const state = await this.db.transaction(async () => {
+      const current = await this.read(accountId, now);
+      if (!current.soberAt) return current;
+      const soberAt = Math.max(0, Math.min(current.soberAt, current.soberAt - Math.max(0, ms)));
+      const next = { ...current, soberAt: soberAt > now ? soberAt : 0 };
+      await this.db.prepare('UPDATE player_drinking SET sober_at=? WHERE account_id=?').run(next.soberAt, accountId);
+      return next;
+    }, { lockKey: 'account:' + accountId });
+    await this.changed?.(accountId, state);
+    return state;
+  }
   async consume(accountId: string, drinkId: string, now = Date.now()): Promise<DrinkingState> {
     await this.ready;
-    const drink = DRINKS.find(item => item.id === drinkId);
+    const drink = ALL_DRINKS.find(item => item.id === drinkId);
     if (!drink) throw new Error('Unknown drink');
     const state = await this.db.transaction(async () => {
     const soberAt = addDrink((await this.read(accountId, now)).soberAt, drink.strength, now);

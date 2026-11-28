@@ -12,6 +12,9 @@ import { savedSession, savedRoom, rememberSession, forgetSession } from './sessi
 import { configureReconnection, lobbyMatchmakingFetch } from './reconnection';
 import { LOBBY_RECOVERY_WINDOW_MS } from '../shared/lobbyConnection';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
+import { parseSnowmanParts, type FireworkEvent, type SnowmanView } from '../shared/streetPlay';
+import type { ToiletActEvent } from '../shared/toiletPlay';
+import type { SnowballFlight } from '../game/StreetPlay';
 import { isChatLocation, ROOM_CHAT_PROTOCOL, type ChatRequest, type ChatResult, type ChatVisit } from '../shared/chat';
 import type { PvpSnapshot } from '../shared/pvp';
 import type { PlayerRecoveryResult } from '../shared/playerRecovery';
@@ -51,6 +54,10 @@ export class LobbyClient {
     players: (players: PlayerView[], selfId: string) => void;
     chat: (message: ChatMessage) => void;
     chatVisit?: (visit: ChatVisit | null) => void;
+    snowball?: (event: SnowballFlight) => void;
+    firework?: (event: FireworkEvent) => void;
+    toiletAct?: (event: ToiletActEvent) => void;
+    snowmen?: (snowmen: SnowmanView[]) => void;
     delivery?: (result: ChatResult) => void;
     pvp?:(value:PvpSnapshot)=>void;
     pvpResult?:(value:{requestId:string;error:string;rejected:boolean})=>void;
@@ -142,6 +149,15 @@ export class LobbyClient {
         }
       });
       onMessage('chat', message => this.events.chat(message as ChatMessage));
+      onMessage('snowball', (event: SnowballFlight) => {
+        if (event && Number.isFinite(event.sx) && Number.isFinite(event.sy) && Number.isFinite(event.tx) && Number.isFinite(event.ty) && Number.isFinite(event.flightMs) && Array.isArray(event.hits)) this.events.snowball?.(event);
+      });
+      onMessage('toilet-act', (event: ToiletActEvent) => {
+        if (event && (event.kind === 'wash' || event.kind === 'dry') && Number.isInteger(event.sink)) this.events.toiletAct?.(event);
+      });
+      onMessage('firework', (event: FireworkEvent) => {
+        if (event && Number.isFinite(event.x) && Number.isFinite(event.y) && Number.isFinite(event.hue)) this.events.firework?.(event);
+      });
       onMessage('chat-visit', (visit: ChatVisit | null) => {
         if (visit === null || (visit && Number.isSafeInteger(visit.id) && visit.id > 0 && isChatLocation(visit.hall))) {
           this.events.chatVisit?.(visit);
@@ -199,7 +215,7 @@ export class LobbyClient {
         this.events.npcTime(state.serverNow, state.guestsAt);
         const players: PlayerView[] = [];
         const serverNow = state.serverNow || Date.now(), localNow = Date.now();
-        state.players?.forEach((p, id) => players.push({ id, level: p.level, security: p.security, hall: p.hall as PlayerView['hall'], hallRevision: p.hallRevision, name: p.name, x: p.x, y: p.y, skin: p.skin, appearance: p.appearance, facing: p.facing as PlayerView['facing'], moving: p.moving, connected: p.connected, playing: p.playing, cabinet: p.cabinet, gameReaction: p.gameReaction, gameReactionUntil: p.gameReactionUntil > serverNow ? localNow + p.gameReactionUntil - serverNow : 0, activity: p.activity, ears: p.ears, seat: p.seat, action: p.action as PlayerView['action'], drink: p.drink, actionUntil: p.actionUntil, soberAt: p.soberAt > serverNow ? localNow + p.soberAt - serverNow : 0, inputSeq: p.inputSeq, stairStep:p.stairStep ?? 0,stairDirection:p.stairDirection ?? 1 }));
+        state.players?.forEach((p, id) => players.push({ id, level: p.level, security: p.security, hall: p.hall as PlayerView['hall'], hallRevision: p.hallRevision, name: p.name, x: p.x, y: p.y, skin: p.skin, appearance: p.appearance, facing: p.facing as PlayerView['facing'], moving: p.moving, connected: p.connected, playing: p.playing, cabinet: p.cabinet, gameReaction: p.gameReaction, gameReactionUntil: p.gameReactionUntil > serverNow ? localNow + p.gameReactionUntil - serverNow : 0, activity: p.activity, ears: p.ears, seat: p.seat, action: p.action as PlayerView['action'], drink: p.drink, actionUntil: p.actionUntil, soberAt: p.soberAt > serverNow ? localNow + p.soberAt - serverNow : 0, inputSeq: p.inputSeq, stairStep:p.stairStep ?? 0,stairDirection:p.stairDirection ?? 1, snowballs: p.snowballs ?? 0, snowFight: Boolean(p.snowFight), snowHitUntil: (p.snowHitUntil ?? 0) > serverNow ? localNow + p.snowHitUntil - serverNow : 0, snowRoll: p.snowRoll ?? 0, emote: p.emote ?? '', emoteUntil: (p.emoteUntil ?? 0) > serverNow ? localNow + p.emoteUntil - serverNow : 0 }));
         const self=players.find(p=>p.id===room.sessionId);
         this.revision=self?.hallRevision??0;this.hall=self?.hall;
         const guards: GuardView[] = []; state.guards?.forEach(g => guards.push({hall:g.hall as GuardView['hall'],x:g.x,y:g.y,facing:g.facing,phase:g.phase,target:g.target,progress:g.progress,speech:g.speech,routine:g.routine,reply:g.reply}));
@@ -210,6 +226,8 @@ export class LobbyClient {
         const guests:AmbientGuestView[]=[];
         state.guests?.forEach(guest=>guests.push({id:guest.id,name:guest.name,hall:guest.hall as AmbientGuestView['hall'],x:guest.x,y:guest.y,skin:guest.skin,facing:guest.facing as AmbientGuestView['facing'],moving:guest.moving,mood:guest.mood as AmbientGuestView['mood'],drink:guest.drink,seat:guest.seat,destination:guest.destination}));
         this.events.guests(guests);
+        const snowmen: SnowmanView[] = []; state.snowmen?.forEach((s, id) => snowmen.push({ id, x: s.x, y: s.y, parts: parseSnowmanParts(s.parts), builder: s.builder, complete: s.complete, meltAt: s.meltAt }));
+        this.events.snowmen?.(snowmen);
         if (state.cat) this.events.cat?.({ hall: state.cat.hall as CatView['hall'], x: state.cat.x, y: state.cat.y, facing: state.cat.facing as CatView['facing'], mood: state.cat.mood as CatView['mood'], moving: state.cat.moving, onPillow: state.cat.onPillow, onBar: state.cat.onBar, carriedBy: state.cat.carriedBy, targetId: state.cat.targetId, progress: state.cat.progress, hugCooldown:state.cat.hugCooldown, surfaceId:state.cat.surfaceId, jumpingDown:state.cat.jumpingDown });
         if (state.mira) this.events.mira({ x: state.mira.x, y: state.mira.y, facing: state.mira.facing as MiraView['facing'], action: state.mira.action as MiraView['action'], progress: state.mira.progress });
       });
