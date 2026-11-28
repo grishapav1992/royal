@@ -1,0 +1,45 @@
+{
+  "activeBefore": [
+    "panda-dragon-preview",
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge"
+  ],
+  "host": {
+    "src/game/miraAnimation.ts": "e15dfbd4fb92a7130ffda68b234634b511c15a5ac172e498591a82d6e9a2dd1f",
+    "src/game/MiraRig.ts": "cb3d9c8f5197e13587f5f5bd80ca47767547c92bd816f692a38fd67202f2094a",
+    "src/shared/miraRoutine.ts": "408f6e2daf570a2e112b0c581b73650c3e33e7a676749b39751a651febb4de0d",
+    "src/ui/MiraChat.ts": "83fe24af02059e6daf18572b582f9dfb817205ec42e5a1f0af0393c91c420284",
+    "src/ui/MiraPortrait.ts": "e24697685b61ae205479aa50d8fdbb3f0bce306933d20cff0b83e7d5a17ebb43"
+  },
+  "backend": {
+    "server/bartender.ts": "801d2e2b57ec2b3cf6d6a2f0c6cd3958607360636edd0182136cb5ec1263dfc8",
+    "src/shared/miraRoutine.ts": "408f6e2daf570a2e112b0c581b73650c3e33e7a676749b39751a651febb4de0d"
+  },
+  "backendBuildInputs": {
+    "package.json": "69b61b2bd2717c3b201f3bdb290ff32be76afc29cf10a1707b8cddbf2902fa17",
+    "src/i18n/en.ts": "8f3990b31f85037221688e4d906d41225ad5649a62f5c98834ce55bbec6e65c7",
+    "tsconfig.json": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+    "src/i18n/progressionEn.ts": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4",
+    "src/i18n/volcanicPlinkoEn.ts": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
+  },
+  "media": {
+    "public/assets/royal-bar/v3/mira-extra-28.png": "28312e329f89b8c61447530e6af81a382e584c0a5d553fd0341cc14e80ab71b6"
+  }
+}

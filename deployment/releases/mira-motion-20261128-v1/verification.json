@@ -1,0 +1,95 @@
+{
+  "release": "mira-motion-20261128-v1",
+  "sourceCommit": "ee2c58cc413bb3e0b45077aa1eb98bb60aec7089",
+  "baseCommit": "5b7170be367ae44c340b4f2bf5e149ab3142315b",
+  "publishedAt": "2026-11-28T14:16:58+03:00",
+  "image": "sha256:17f63bc47a406af3f6a86e61177c266493ec77830ab4e7fa87be02f777d6d713",
+  "rollbackImage": {
+    "tag": "royal-game:before-mira-motion-20261128-v1",
+    "id": "sha256:7e6fb29b62ebdbe71e42a6e5c68741ac830ecaca526c952d53bd32dbe9b9791b"
+  },
+  "backup": {
+    "path": "/opt/royal-backups/mira-motion-20261128-v1",
+    "sourceArchive": {
+      "bytes": 16585,
+      "sha256": "e9daaf73317240580491d73837c5f565aa3b424aa021edbc5696ae2a8140a2ef"
+    },
+    "financialDump": {
+      "bytes": 56714556,
+      "sha256": "30d96ed3a28300c21f1f11f481a59e3b2573aa45d584703600150d0619c60f74",
+      "databaseRestored": false
+    }
+  },
+  "changedSources": {
+    "src/game/miraAnimation.ts": "e15dfbd4fb92a7130ffda68b234634b511c15a5ac172e498591a82d6e9a2dd1f",
+    "src/game/MiraRig.ts": "cb3d9c8f5197e13587f5f5bd80ca47767547c92bd816f692a38fd67202f2094a",
+    "src/shared/miraRoutine.ts": "408f6e2daf570a2e112b0c581b73650c3e33e7a676749b39751a651febb4de0d",
+    "src/ui/MiraChat.ts": "83fe24af02059e6daf18572b582f9dfb817205ec42e5a1f0af0393c91c420284",
+    "src/ui/MiraPortrait.ts": "e24697685b61ae205479aa50d8fdbb3f0bce306933d20cff0b83e7d5a17ebb43",
+    "server/bartender.ts": "801d2e2b57ec2b3cf6d6a2f0c6cd3958607360636edd0182136cb5ec1263dfc8",
+    "public/assets/royal-bar/v3/mira-extra-28.png": "28312e329f89b8c61447530e6af81a382e584c0a5d553fd0341cc14e80ab71b6"
+  },
+  "clientDelta": {
+    "assets/ActivitiesUI-EQxObPbg.js": "04411ee84f3b4f2deccd2b73267b880d2476fa657e5f8979b1ac0a7893703a37",
+    "assets/ClubWorld-CRPahQgt.js": "cf2754d6bcbde5c2ca390b9afedf931166a9b760d44d7fafa311865b62863c74",
+    "assets/GameHostRuntime-C9xhxoxy.js": "9178ddd79c88d7d39bf6bf9650274f7b47b499f65d29b494f57f2b64378bab76",
+    "assets/index-C-nIcrhg.js": "df1eb15174eb4b021da0694ad8f64c633ff1405f095844eaeb379b34d9efc50a",
+    "assets/main-4mKC-mrv.js": "f3e1435e266bcd2ce3c2603be242ba3f8d82c132bca2d5ab862e69eb089d5e4c",
+    "assets/phaser-DY7cYvZ4.js": "b2009690bd2282554322347421498fa8dda819b5c80ae1cb83c865011c720a9d",
+    "assets/playerLevelStatus-CAIIsMLL.js": "16b15fd3fbb4d7a51cefe14a3ad3ec1273ff3e65b369a88b4e14483891a841ad",
+    "assets/PvpUI-0Z2mGFaG.js": "d357442c22f37b6ce72371c897605c6619fcf89496d5ce4394ae3de95243cf13",
+    "index.html": "a9b2519d54963c8fa3ab02b60e66e56da010e9a6af02c00ac0b826fcf14dd382",
+    "assets/royal-bar/v3/mira-extra-28.png": "28312e329f89b8c61447530e6af81a382e584c0a5d553fd0341cc14e80ab71b6"
+  },
+  "backend": {
+    "before": "f29d4aa0a291396a25d27779964a4e9838ed5f26c5b1963f6504db721cf746f0",
+    "after": "b52e1fc25c9aac5b0f5023c3f63d0fef7935691124a980baa19005f4805e9a79",
+    "diff": "only Mira routine, bartender attention and the projection comment (46 diff lines)"
+  },
+  "media": {
+    "assets/royal-bar/v3/mira-extra-28.png": "28312e329f89b8c61447530e6af81a382e584c0a5d553fd0341cc14e80ab71b6"
+  },
+  "catalogue": {
+    "activeGames": 20,
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "checks": {
+    "build": "release:prepare passed (RTP 39 profiles and 21 stake policies, types, modules, host, backend, reconciliation, payments); release:verify -- --github verified",
+    "serverTests": "28 Mira server tests (mira-animation, mira-presentation, bartender, npc-optimization) passed",
+    "walletTests": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts: 19 passed",
+    "installerTests": {
+      "file": "deployment/releases/skin-offers-20261105-v2/test_deploy.py",
+      "passed": 15,
+      "platform": "macOS, not Linux",
+      "payloadValidation": "mira deploy.py validate accepted the payload and rejected a foreign client file"
+    },
+    "devHost": "12 browser tests on the local host with chat and disposable PostgreSQL passed",
+    "exactBytes": "built backend serving the built client with disposable PostgreSQL: 12 Mira browser tests passed (mira, royal-bar, bar-entry, mira-responsive, mira-life, mira-occlusion shared routine)",
+    "notRun": "mira-occlusion audit poses need the royalMiraAudit hook, which the client never had",
+    "upload": "33 payload files matched by SHA-256 on the server, no macOS metadata files",
+    "public": {
+      "healthz": 200,
+      "clientFilesMatchedOverHttps": 10,
+      "oldSheets": "200",
+      "backendInContainer": "b52e1fc25c9aac5b0f5023c3f63d0fef7935691124a980baa19005f4805e9a79",
+      "offlineMiraTest": "passed",
+      "newFramesPlayed": [
+        "polish:extra",
+        "idle:extra"
+      ]
+    },
+    "snapshot": "before and after differ only in the 7 sources, 11 program files and the recreated game container; modules, catalogue, contract, protected programs, settings, mounts and other services unchanged",
+    "maintenance": {
+      "status": "completed",
+      "durationSeconds": 78.47,
+      "timer": "enabled, active",
+      "health": "healthy",
+      "availableBytes": 10647977984
+    }
+  },
+  "notVerified": [
+    "production accounts and real Mira replies",
+    "Safari and real phones"
+  ]
+}

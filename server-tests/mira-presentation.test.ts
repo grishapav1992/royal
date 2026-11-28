@@ -17,7 +17,7 @@ test('an uninterrupted shift reaches seated rest after the first job and complet
 
 test('Mira rounds the left end of the bar in both directions and holds the front seat',()=>{
   const r=new MiraRoutine(), path:MiraView[]=[];
-  for(let tick=0;tick<500;tick++){
+  for(let tick=0;tick<900;tick++){
     r.tick(.05);path.push({...r.state});
     if(path.some(p=>p.action==='stand-up')&&r.state.action==='walk'&&r.state.x===MIRA_HOME.x&&r.state.y===MIRA_HOME.y)break;
   }
@@ -26,7 +26,8 @@ test('Mira rounds the left end of the bar in both directions and holds the front
   assert.deepEqual(phases,['walk','sit-down','sit','stand-up','walk']);
   assert.deepEqual({x:path.at(-1)!.x,y:path.at(-1)!.y},MIRA_HOME);
   const seated=path.filter(p=>p.action==='sit');
-  assert.ok(seated.length>=36&&seated.length<=40);
+  // Ten seconds of seated rest at 20 ticks per second.
+  assert.ok(seated.length>=198&&seated.length<=202,String(seated.length));
   assert.ok(seated.every(p=>p.x===MIRA_SEAT.x&&p.y===MIRA_SEAT.y));
   const crossings=path.filter((p,i)=>i>0&&(p.y>MIRA_COUNTER_FRONT_Y)!==(path[i-1].y>MIRA_COUNTER_FRONT_Y));
   assert.equal(crossings.length,2);

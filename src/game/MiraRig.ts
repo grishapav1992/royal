@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import {BAR_POSITION} from '../shared/furniture';
 import {MIRA_COUNTER_FRONT_Y,type MiraView} from '../shared/miraRoutine';
-import {isMiraPouring,MIRA_ATLASES,sampleMiraFrame,type MiraAtlas,type MiraFrame} from './miraAnimation';
+import {isMiraPouring,MIRA_ATLASES,MIRA_EXTRA_WORK_FRAMES,sampleMiraFrame,type MiraAtlas,type MiraFrame} from './miraAnimation';
 import {ROYAL_BAR_DEPTH} from './royalBarLayers';
 
 type Rect={x:number;y:number;width:number;height:number};
@@ -48,6 +48,8 @@ export class MiraRig {
   constructor(private scene:Phaser.Scene){
     this.frames=Object.fromEntries((Object.keys(MIRA_ATLASES) as MiraAtlas[]).map(key=>[key,registerAtlas(scene,key)])) as Record<MiraAtlas,PaintedFrame[]>;
     for(const frame of this.frames.wipe)frame.scale=this.frames.work[0].scale;
+    // New frames were painted over work and reaction poses and keep the scale of their source sheet.
+    this.frames.extra.forEach((frame,index)=>{frame.scale=(index<MIRA_EXTRA_WORK_FRAMES?this.frames.work:this.frames.react)[0].scale;});
     for(const key of ['mira-illustrated-body','mira-illustrated-front'])if(scene.textures.exists(key))scene.textures.remove(key);
     this.bodyTexture=scene.textures.createCanvas('mira-illustrated-body',SIZE.width*SIZE.resolution,SIZE.height*SIZE.resolution)!;
     this.frontTexture=scene.textures.createCanvas('mira-illustrated-front',SIZE.width*SIZE.resolution,SIZE.height*SIZE.resolution)!;
@@ -84,7 +86,7 @@ export class MiraRig {
     draw(this.bodyTexture,false);draw(this.frontTexture,true);
   }
   getState(){
-    return {artVersion:3,animationMethod:'painted-sequences',renderX:this.body.x,renderY:this.body.y,
+    return {artVersion:4,animationMethod:'painted-sequences',renderX:this.body.x,renderY:this.body.y,
       clip:this.sample?.clip,atlas:this.sample?.atlas,frame:this.sample?.frame,paintedBounds:{...this.bounds},bodyDepth:this.body.depth,foregroundDepth:this.foreground.depth,
       pouring:isMiraPouring(this.sample)};
   }

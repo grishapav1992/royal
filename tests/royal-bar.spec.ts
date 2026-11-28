@@ -53,7 +53,7 @@ test('seated rest, layered contact and localized bar are usable at real desktop 
   test.setTimeout(65000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('/?offline=1');await page.locator('#loading').waitFor({state:'detached'});
   await expect.poll(async()=>(await state(page))?.mira?.action,{timeout:50000,intervals:[500]}).toBe('sit');
-  const rest=(await state(page)).mira;expect(rest.seatAmount).toBe(1);expect(rest.artVersion).toBe(3);
+  const rest=(await state(page)).mira;expect(rest.seatAmount).toBe(1);expect(rest.artVersion).toBe(4);
   expect(rest.animationMethod).toBe('painted-sequences');expect(rest.atlas).toBe('seat');expect(rest.frame).toBeGreaterThanOrEqual(24);expect(rest.frame).toBeLessThanOrEqual(47);
   expect(rest.paintedBounds.y).toBeGreaterThan(365);expect(rest.paintedBounds.y).toBeLessThan(400);
   expect(rest.paintedBounds.y+rest.paintedBounds.height).toBeGreaterThan(480);

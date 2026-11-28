@@ -9,7 +9,7 @@ const compiledHost=process.env.MIRA_AUDIT_COMPILED==='1';
 const state=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getState());
 const settle=(page:Page)=>page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
 async function ready(page:Page){
-  await page.waitForFunction(requireAudit=>{try{return (window as any).royalDemo.getState().mira.artVersion===3&&(!requireAudit||Boolean((window as any).royalMiraAudit));}catch{return false;}},!compiledHost,{timeout:45000});
+  await page.waitForFunction(requireAudit=>{try{return (window as any).royalDemo.getState().mira.artVersion===4&&(!requireAudit||Boolean((window as any).royalMiraAudit));}catch{return false;}},!compiledHost,{timeout:45000});
   await page.locator('#loading').waitFor({state:'detached'});
 }
 function inside(x:number,y:number,polygon:readonly(readonly number[])[]){
@@ -85,7 +85,7 @@ for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${v
 
 async function guest(browser:Browser,baseURL:string,viewport:{width:number;height:number},room?:string,video=false){
   const context=await browser.newContext({baseURL,viewport,...(video?{recordVideo:{dir:work+'videos',size:{width:1280,height:900}}}:{})});
-  expect((await context.request.post('/api/auth/login',{data:{email:`mira-layer-${crypto.randomUUID()}@example.test`,password:crypto.randomUUID()}})).ok()).toBe(true);
+  expect((await context.request.post('/api/auth/login',{data:{email:`mira-layer-${crypto.randomUUID()}@example.test`,password:'Mira-harness-check-123!'}})).ok()).toBe(true);
   expect((await context.request.post('/api/auth/character',{data:{skin:0,name:'Гость бара'}})).ok()).toBe(true);
   const page=await context.newPage();await page.route('**/api/npc/mira',route=>route.fulfill({json:route.request().method()==='GET'?{turns:[{role:'assistant',content:'Ну? Чем удивишь?'}]}:{reply:'Я слушаю. Сначала расскажи про свой вечер, а затем я приготовлю тебе что-нибудь освежающее.',emotion:'smile'}}));
   await page.goto(room?'/?mode=club&room='+room:'/?mode=club');await selectEntryMode(page);await ready(page);
@@ -106,7 +106,7 @@ test('real shared routine seats Mira, rises for dialogue and serves with a late 
     await a.page.screenshot({path:work+'natural-shared-seat.png'});
     await a.page.evaluate(()=>{(window as any).observedMira=[];setInterval(()=>{(window as any).observedMira.push((window as any).royalDemo.getState().mira.action);},50);});
     await a.page.locator('#visit-bar').click();await expect(a.page.locator('#bar-dialog')).toBeVisible({timeout:20000});
-    await expect.poll(async()=>(await state(a.page)).mira.action).toBe('listen');
+    await expect.poll(async()=>(await state(a.page)).mira.action,{timeout:15000}).toBe('listen');
     const seen=await a.page.evaluate(()=>(window as any).observedMira as string[]);
     for(const action of ['stand-up','walk','greet','listen'])expect(seen).toContain(action);
     const b=await guest(browser,baseURL!,{width:390,height:844},room);contexts.push(b.context);b.page.on('pageerror',e=>errors.push(e.message));
