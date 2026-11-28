@@ -1,0 +1,109 @@
+{
+  "published": true,
+  "preparedImage": "sha256:7e6fb29b62ebdbe71e42a6e5c68741ac830ecaca526c952d53bd32dbe9b9791b",
+  "runningImage": "sha256:7e6fb29b62ebdbe71e42a6e5c68741ac830ecaca526c952d53bd32dbe9b9791b",
+  "containerRestarted": true,
+  "sourceCommit": "5b7170be367ae44c340b4f2bf5e149ab3142315b",
+  "changedSources": 4,
+  "clientDeltaFiles": 10,
+  "configurationsAndMountsPreserved": true,
+  "gameDataPreserved": true,
+  "backendDeltaFiles": 0,
+  "otherBackendProgramsAndModulesPreserved": true,
+  "oldAssetsPreserved": true,
+  "otherPersistentServicesPreserved": 10,
+  "baseCommit": "287f69a3f5638f1a035f8648ee8eb2298f8be276",
+  "featureCommits": {
+    "dialogue": "c1fdfcb7d99a8c92493a8588631d1355bbd86d7a",
+    "testsAndLowLayouts": "bbd3f1ec1a3d4d2b211e313770f04574f8495297",
+    "mainIntegration": "c452cfe7e052aff8db2a44652fcfeae7ee27e534"
+  },
+  "rollbackImage": "sha256:9d117d3a7c66143943775e87d04e0714d6bb41f640601ea4f803c3c59d029a57",
+  "rollbackTag": "royal-game:before-mira-dialog-20261127-v1",
+  "backup": "/opt/royal-backups/mira-dialog-20261127-v1",
+  "sourceArchive": {
+    "bytes": 145467,
+    "sha256": "e4136aa4923e2d4970009160663385e123d670c86f11a940aeaaca1071ac0ddc"
+  },
+  "financialBackupSha256": "5b8128ef9466e890e202e13102c04f2ab0f58546aa8adeb5c89063540513ee58",
+  "databaseRestored": false,
+  "releaseManifestSha256": "673170ed077fb81c814168985110622b3004594a00bd1a6629ead6ed8cb12e0a",
+  "receiptSha256": "99eb0760a5c814e108d279fbed79c4f4d463d5a8d874a911dd930453ca57758b",
+  "hostProjectionSha256": "05dd135556fadd8080978868251d37cb54744c7a55a7cc5ba03e76fbd375306a",
+  "enTranslationPatchedOverProduction": true,
+  "activeModulePointersUnchanged": true,
+  "moduleHostContractUnchanged": true,
+  "protectedProgramsUnchanged": true,
+  "realMoneyFlagsUnchanged": true,
+  "activeCatalogue": 20,
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 84.76,
+    "freeBytesAfter": 10782670848,
+    "hourlyTimer": "enabled, active",
+    "containerHealth": "healthy"
+  },
+  "checks": {
+    "applicationBuild": {
+      "rtp": true,
+      "typecheck": true,
+      "modules": true,
+      "host": true,
+      "backend": true,
+      "reconciliation": true,
+      "payments": true
+    },
+    "githubVerified": true,
+    "serverTests": {
+      "passed": 35,
+      "files": [
+        "game-wallet",
+        "wallet-account",
+        "mira",
+        "mira-drinks",
+        "mira-presentation",
+        "mira-memory",
+        "mira-languages"
+      ]
+    },
+    "installerTests": {
+      "passed": 15,
+      "file": "deployment/releases/skin-offers-20261105-v2/test_deploy.py",
+      "platform": "macOS, not Linux"
+    },
+    "browser": {
+      "devHost": {
+        "fixture": "Local host from main with chat, temporary PostgreSQL and the local backend",
+        "passed": 10,
+        "files": [
+          "mira.spec",
+          "mira-responsive.spec",
+          "royal-bar.spec",
+          "bar-entry.spec"
+        ]
+      },
+      "exactDist": {
+        "fixture": "Exact prepared dist served by the local game server on one origin, as in production, with temporary PostgreSQL",
+        "passed": 9,
+        "failed": [
+          "royal-bar.spec seated rest bounds: production RoomScene.ts differs from main (94 projection patches); this release does not change it"
+        ]
+      },
+      "screenshots": "1440x1000, 1280x720, 390x844, 667x375: thread, typing, pause ring, thinking, drinks, history, memory panel"
+    },
+    "public": {
+      "healthz": 200,
+      "sha256Matched": 10,
+      "oldAssetsServed": true
+    }
+  },
+  "notRun": [
+    "Production accounts and Mira provider replies",
+    "Safari and real phones",
+    "Spec files that fail to load on Node 25 because of a JSON import attribute (intoxication, skin-studio, mira-occlusion, mira-intoxication-layout and others)",
+    "startup-loading.spec, stale since the entry chooser"
+  ]
+}

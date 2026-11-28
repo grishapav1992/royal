@@ -1,19 +1,25 @@
 import { test, expect, type Page } from '@playwright/test';
 import { build } from 'esbuild';
+import { selectEntryMode } from './entry-mode';
 
 const dialogueHarness = build({ entryPoints: ['src/ui/MiraChat.ts'], bundle: true, write: false, format: 'iife', globalName: 'MiraChatTest', platform: 'browser' });
 
 async function mountDialogue(page: Page) {
-  await page.route('**/api/auth/me', route => route.fulfill({ json: { account: null } }));
   await page.route('**/api/npc/mira', route => route.fulfill({ json: route.request().method() === 'GET'
     ? { turns: [{ role: 'assistant', content: 'Тебе вино? Угощаю.' }], drinkOffer: 'wine' }
     : { reply: 'Слышу тебя.', drinkOffer: 'wine' } }));
+  // A disposable account opens the real online room with chat; the harness replaces the bar dialogue inside that room panel.
+  const request = page.context().request;
+  expect((await request.post('/api/auth/login', { data: { email: `mira-harness-${crypto.randomUUID()}@example.test`, password: 'Mira-harness-check-123!' } })).ok()).toBe(true);
+  expect((await request.post('/api/auth/character', { data: { skin: 0 } })).ok()).toBe(true);
   await page.goto('/');
-  await page.locator('#loading').waitFor({ state: 'detached' });
-  await expect(page.locator('#chat-panel')).toBeVisible();
+  await selectEntryMode(page);
+  await expect(page.locator('#chat-panel')).toBeVisible({ timeout: 30000 });
+  // Mount only after the account has loaded: its royal-account event resets any open Mira dialogue to the greeting.
+  await expect.poll(() => page.evaluate(() => (window as any).royalDemo?.getNetworkState()?.status), { timeout: 30000 }).toBe('connected');
   await page.addScriptTag({ content: (await dialogueHarness).outputFiles[0].text });
   await page.evaluate(() => {
-    document.querySelector<HTMLDialogElement>('#join-dialog')!.close();
+    document.querySelector<HTMLDialogElement>('#join-dialog')?.close();
     const previous = document.querySelector<HTMLDialogElement>('#bar-dialog')!;
     previous.close(); previous.remove();
     const { MiraChat } = (window as any).MiraChatTest;
@@ -50,7 +56,7 @@ test('short landscape dialogue keeps the composer, offer and drink menu usable',
     await expectInsideDialogue(page, '.mira-answer input');
     await expectInsideDialogue(page, '.mira-answer button');
     await expectInsideDialogue(page, '.mira-leave');
-    const offer = page.locator('.mira-drink-offer button');
+    const offer = page.locator('.mira-drink-offer .mira-drink-take');
     await expect(offer).toBeVisible();
     await offer.scrollIntoViewIfNeeded(); await offer.click({ timeout: 4000 });
     await expect.poll(() => page.evaluate(() => (window as any).miraFixture.calls.at(-1))).toBe('wine');
@@ -88,7 +94,7 @@ test('short landscape dialogue keeps the composer, offer and drink menu usable',
 test('drink animation waits for accepted room state and rejects a failed command', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await mountDialogue(page);
-  const offer = page.locator('.mira-drink-offer button'), player = page.locator('.mira-player');
+  const offer = page.locator('.mira-drink-offer .mira-drink-take'), player = page.locator('.mira-player');
   await page.evaluate(() => { (window as any).miraFixture.accepted = false; });
   await offer.click();
   await expect(player).not.toHaveClass(/is-drinking/);

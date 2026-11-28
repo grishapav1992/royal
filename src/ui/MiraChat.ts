@@ -16,6 +16,9 @@ export type MiraChatOptions = {
   onAttention?: (phase: MiraAttention) => void;
 };
 
+/** Server pause after a stuck conversation; used only to draw the remaining share of the ring. */
+const MIRA_PAUSE_MS = 45000;
+
 export class MiraChat {
   private log = document.createElement('div');
   private history = document.createElement('div');
@@ -29,8 +32,19 @@ export class MiraChat {
   private status = document.createElement('p');
   private chosen = document.createElement('p');
   private offer = document.createElement('div');
-  private offerLabel = document.createElement('span');
+  private offerLabel = document.createElement('strong');
+  private offerNote = document.createElement('small');
+  private offerGlass = document.createElement('span');
   private offerButton = document.createElement('button');
+  private thread = document.createElement('div');
+  private replyScroll?: HTMLElement;
+  private miraState = document.createElement('span');
+  private miraStateText = document.createElement('span');
+  private pauseRing = document.createElement('div');
+  private pauseSeconds = document.createElement('span');
+  private pauseArc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  private pauseTotal = 0;
+  private typingTimer?: number;
   private drinkButtons: HTMLButtonElement[] = [];
   private player = document.createElement('figure');
   private playerPicture = document.createElement('img');
@@ -72,12 +86,22 @@ export class MiraChat {
     const header = document.createElement('header'); header.className = 'mira-heading';
     this.heading.id = 'mira-dialog-title'; this.heading.textContent = translateText('Мира');
     const role = document.createElement('small'); role.textContent = translateText('Разговор у стойки');
-    close.type = 'button'; close.className = 'mira-leave'; close.textContent = translateText('Уйти'); close.setAttribute('aria-label', translateText('Уйти')); close.dataset.close = '';
-    const name = document.createElement('div'); name.append(this.heading, role); header.append(name, close);
+    close.type = 'button'; close.className = 'mira-leave'; close.setAttribute('aria-label', translateText('Уйти')); close.dataset.close = '';
+    close.innerHTML = '<svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+    const leaveLabel = document.createElement('span'); leaveLabel.textContent = translateText('Уйти'); close.append(leaveLabel);
+    const name = document.createElement('div'); name.className = 'mira-title'; name.append(this.heading, role);
+    const tabs = document.createElement('nav'); tabs.className = 'mira-tabs'; tabs.setAttribute('aria-label', translateText('Разделы разговора'));
+    for (const [label, view] of [[translateText('Разговор'), 'talk'], [translateText('Напитки'), 'menu'], [translateText('История'), 'history']]) {
+      const button = document.createElement('button'); button.type = 'button'; button.textContent = label; button.dataset.miraView = view;
+      button.addEventListener('click', () => this.show(view)); tabs.append(button);
+    }
+    this.createPlayerPortrait();
+    header.append(name, tabs, this.player, close);
     this.talk.className = 'mira-talk';
+    this.thread.className = 'mira-thread';
     this.log.className = 'mira-log'; this.log.setAttribute('role', 'log'); this.log.setAttribute('aria-label', translateText('Реплика Миры')); this.log.setAttribute('aria-live', 'polite');
     this.chosen.className = 'mira-chosen';
-    const answers = document.createElement('div'); answers.className = 'mira-choices';
+    const answers = document.createElement('div'); answers.className = 'mira-choices'; answers.setAttribute('aria-label', translateText('Варианты ответа'));
     for (const [label, message] of [[translateText('Как твоя смена?'), translateText('Как твоя смена?')], [translateText('Посоветуй напиток'), translateText('Посоветуй напиток.')], [translateText('Хочу выговориться'), translateText('Можно тебе кое-что рассказать?')]]) {
       const button = document.createElement('button'); button.type = 'button'; button.textContent = `› ${label}`; button.dataset.message = message;
       button.addEventListener('click', () => { this.input.value = button.dataset.message!; void this.submit(); }); answers.append(button); this.choices.push(button);
@@ -86,12 +110,17 @@ export class MiraChat {
     this.send.type = 'submit'; this.send.textContent = translateText('Сказать');
     this.form.className = 'mira-answer'; this.form.append(this.input, this.send);
     this.offer.className = 'mira-drink-offer'; this.offer.hidden = true;
-    this.offerButton.type = 'button'; this.offerButton.textContent = translateText('Выпить');
+    this.offerGlass.className = 'drink-glass'; this.offerGlass.setAttribute('aria-hidden', 'true');
+    const offerCopy = document.createElement('span'); offerCopy.className = 'mira-drink-offer-copy';
+    this.offerLabel.className = 'mira-drink-offer-name'; this.offerNote.className = 'mira-drink-offer-note'; offerCopy.append(this.offerLabel, this.offerNote);
+    this.offerButton.type = 'button'; this.offerButton.className = 'mira-drink-take'; this.offerButton.textContent = translateText('Выпить');
     this.offerButton.addEventListener('click', () => this.consume(this.offeredDrink));
-    this.offer.append(this.offerLabel, this.offerButton);
-    const replyScroll = document.createElement('div'); replyScroll.className = 'mira-reply-scroll';
-    replyScroll.append(this.chosen, this.log, this.offer, answers);
-    this.talk.append(replyScroll, this.form);
+    const offerLater = document.createElement('button'); offerLater.type = 'button'; offerLater.className = 'mira-drink-later'; offerLater.textContent = translateText('Не сейчас');
+    offerLater.addEventListener('click', () => this.updateOffer());
+    this.offer.append(this.offerGlass, offerCopy, this.offerButton, offerLater);
+    const replyScroll = document.createElement('div'); replyScroll.className = 'mira-reply-scroll'; this.replyScroll = replyScroll;
+    replyScroll.append(this.thread, this.chosen, this.log, this.offer);
+    this.talk.append(replyScroll, answers, this.form);
     this.menu.className = 'mira-menu';
     const menuTitle = document.createElement('p'); menuTitle.textContent = translateText('Выбирай. Всё за счёт клуба.');
     const menuHint = document.createElement('small'); menuHint.className = 'mira-menu-hint'; menuHint.textContent = translateText('Алкоголь меняет походку и управление. Играть можно на любой стадии.');
@@ -110,18 +139,16 @@ export class MiraChat {
     this.archive.className = 'mira-archive'; this.history.className = 'mira-history'; this.archive.append(this.history);
     this.status.setAttribute('role', 'status'); this.status.className = 'mira-status';
     const footer = document.createElement('footer'); footer.className = 'mira-footer';
-    for (const [label, view] of [[translateText('Разговор'), 'talk'], [translateText('Напитки'), 'menu'], [translateText('История'), 'history']]) {
-      const button = document.createElement('button'); button.type = 'button'; button.textContent = label; button.dataset.miraView = view;
-      button.addEventListener('click', () => this.show(view)); footer.append(button);
-    }
+    const memory = document.createElement('small'); memory.className = 'mira-memory-note'; memory.textContent = translateText('Мира помнит разговоры в твоём аккаунте.');
     const settings = document.createElement('details'); settings.className = 'mira-options';
-    const summary = document.createElement('summary'); summary.textContent = '⋯'; summary.setAttribute('aria-label', translateText('Настройки разговора'));
-    const info = document.createElement('small'); info.textContent = translateText('Мира помнит разговоры в твоём аккаунте. «Начать заново» очищает её память. Реплики передаются codex.sale. Не сообщай секреты. Мира не заменяет психолога.');
+    const summary = document.createElement('summary'); summary.textContent = translateText('Память и данные');
+    const settingsTitle = document.createElement('strong'); settingsTitle.textContent = translateText('Память и данные');
+    const info = document.createElement('small'); info.textContent = translateText('Мира помнит разговоры в твоём аккаунте. «Начать заново» очищает её память. Реплики обрабатывает внешний сервис ИИ. Не сообщай секреты. Мира не заменяет психолога.');
     this.reset.type = 'button'; this.reset.textContent = translateText('Начать заново');
-    const settingsContent = document.createElement('div'); settingsContent.className = 'mira-options-content'; settingsContent.append(info, this.reset);
-    settings.append(summary, settingsContent); footer.append(settings);
-    this.createPlayerPortrait();
-    content.append(header, this.talk, this.menu, this.archive, this.status, footer); dialog.append(this.mira.element, content, this.player);
+    const settingsContent = document.createElement('div'); settingsContent.className = 'mira-options-content'; settingsContent.append(settingsTitle, info, this.reset);
+    settings.append(summary, settingsContent); footer.append(memory, settings);
+    this.createMiraStatus();
+    content.append(header, this.talk, this.menu, this.archive, this.status, footer); dialog.append(this.mira.element, content);
     this.greet(); this.show('talk');
     this.form.addEventListener('submit', event => { event.preventDefault(); void this.submit(); });
     this.reset.addEventListener('click', () => void this.startOver());
@@ -160,8 +187,40 @@ export class MiraChat {
   }
   private releaseAttention() {
     window.clearInterval(this.animationTimer); this.animationTimer=undefined;
-    this.greetedUntil=0; this.mira.stop(); this.lastAttention='closed'; this.attentionAt=0;
+    this.greetedUntil=0; this.finishTyping(); this.mira.stop(); this.lastAttention='closed'; this.attentionAt=0;
     this.options.onAttention?.('closed');
+  }
+
+  /** Mira's own state is shown on her portrait: speaking, thinking and the conversation pause. */
+  private createMiraStatus() {
+    this.miraState.className = 'mira-portrait-state'; this.miraState.hidden = true;
+    const bars = document.createElement('span'); bars.className = 'mira-voice'; bars.setAttribute('aria-hidden', 'true');
+    for (let i = 0; i < 3; i++) bars.append(document.createElement('i'));
+    this.miraState.append(bars, this.miraStateText);
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('viewBox', '0 0 64 64'); svg.setAttribute('aria-hidden', 'true');
+    const track = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    for (const circle of [track, this.pauseArc]) { circle.setAttribute('cx', '32'); circle.setAttribute('cy', '32'); circle.setAttribute('r', '27'); }
+    track.setAttribute('class', 'mira-pause-track'); this.pauseArc.setAttribute('class', 'mira-pause-arc');
+    svg.append(track, this.pauseArc);
+    const dial = document.createElement('span'); dial.className = 'mira-pause-dial'; dial.append(svg, this.pauseSeconds);
+    const pauseLabel = document.createElement('span'); pauseLabel.textContent = translateText('Занялась стаканами');
+    this.pauseRing.className = 'mira-pause'; this.pauseRing.setAttribute('role', 'img'); this.pauseRing.hidden = true; this.pauseRing.append(dial, pauseLabel);
+    this.mira.element.append(this.miraState, this.pauseRing);
+  }
+
+  private updateMiraState(now: number) {
+    const paused = this.cooldownUntil > now;
+    const text = paused ? '' : this.busy ? translateText('Мира думает…') : this.mira.isSpeaking(now) ? translateText('Мира говорит') : '';
+    this.miraState.hidden = !text; this.miraState.dataset.mode = this.busy ? 'think' : 'speak';
+    if (this.miraStateText.textContent !== text) this.miraStateText.textContent = text;
+    this.pauseRing.hidden = !paused;
+    if (paused) {
+      const remaining = this.cooldownUntil - now, seconds = Math.ceil(remaining / 1000);
+      this.pauseSeconds.textContent = String(seconds);
+      this.pauseRing.setAttribute('aria-label', tr`Мира вернётся через ${seconds} сек.`);
+      const share = this.pauseTotal > 0 ? Math.max(0, Math.min(1, remaining / this.pauseTotal)) : 1;
+      this.pauseArc.style.strokeDashoffset = String(169.65 * (1 - share));
+    }
   }
 
   private createPlayerPortrait() {
@@ -232,6 +291,7 @@ export class MiraChat {
     }
     this.drinkButtons.forEach(button => button.disabled = drinking || pending || !this.options.onDrink);
     this.offerButton.disabled = drinking || pending || !this.options.onDrink;
+    this.updateMiraState(now);
   }
 
   private drink(id: string): Drink | undefined { return DRINKS.find(drink => drink.id === id); }
@@ -250,6 +310,8 @@ export class MiraChat {
     this.offeredDrink = typeof value === 'string' && this.drink(value) ? value : '';
     const drink = this.drink(this.offeredDrink);
     this.offer.hidden = !drink; this.offerLabel.textContent = drink ? tr`${drink.name} · угощаю` : '';
+    this.offerNote.textContent = drink?.description ?? '';
+    if (drink) this.offer.style.setProperty('--drink-color', drink.color); else this.offer.style.removeProperty('--drink-color');
     this.offerButton.title = drink ? tr`Выпить: ${drink.name}` : '';
   }
 
@@ -261,7 +323,6 @@ export class MiraChat {
         this.turns = data.turns.filter((turn: any) => ['user', 'assistant'].includes(turn.role) && typeof turn.content === 'string').map((turn: any) => ({ who: turn.role === 'user' ? 'Ты' : 'Мира', message: turn.content })).slice(-65);
         if (!this.turns.some(turn => turn.who === 'Мира')) this.greet();
         this.renderReply(); this.renderHistory();
-        const previous = [...this.turns].reverse().find(turn => turn.who === 'Ты'); this.chosen.textContent = previous ? tr`Ты: ${previous.message}` : '';
       }
       this.updateChoices(data.choices); this.updateOffer(data.drinkOffer); this.mira.react(data.emotion); this.status.textContent = ''; this.setCooldown(data.cooldownUntil);
     } catch (error) { if (version === this.version) this.status.textContent = error instanceof Error ? translateText(error.message) : translateText('Не получилось вспомнить разговор.'); }
@@ -276,11 +337,77 @@ export class MiraChat {
     if (view === 'history') this.renderHistory();
   }
 
-  private greet() { this.turns = [{ who: 'Мира', message: translateText('Ну? Чем удивишь?') }]; this.chosen.textContent = ''; this.offeredDrink = ''; this.updateChoices(); this.updateOffer(); this.mira.react('neutral'); this.renderReply(); }
+  private greet() { this.turns = [{ who: 'Мира', message: translateText('Ну? Чем удивишь?') }]; this.offeredDrink = ''; this.updateChoices(); this.updateOffer(); this.mira.react('neutral'); this.renderReply(); }
+
+  /** The newest exchange stays in .mira-chosen and .mira-log; a few earlier turns form the visible thread. */
   private renderReply(speak = false) {
-    const message = [...this.turns].reverse().find(turn => turn.who === 'Мира')?.message || translateText('Ну? Чем удивишь?');
+    this.finishTyping();
+    let last = -1;
+    for (let index = this.turns.length - 1; index >= 0; index--) if (this.turns[index].who === 'Мира') { last = index; break; }
+    const message = last >= 0 ? this.turns[last].message : translateText('Ну? Чем удивишь?');
+    const chosen = last > 0 && this.turns[last - 1].who === 'Ты' ? last - 1 : -1;
+    const earlier = this.turns.slice(Math.max(0, (chosen >= 0 ? chosen : Math.max(last, 0)) - 4), chosen >= 0 ? chosen : Math.max(last, 0));
+    this.thread.replaceChildren(...earlier.map(turn => this.bubble(turn)));
+    this.thread.hidden = !earlier.length;
+    this.setChosen(chosen >= 0 ? this.turns[chosen].message : '');
     const p = document.createElement('p'); p.textContent = translateText(message); this.log.replaceChildren(p);
-    if(speak&&this.dialog.open&&!document.hidden)this.mira.speak(message);
+    if (speak && this.dialog.open && !document.hidden) this.typeReply(p, translateText(message), this.mira.speak(message));
+    this.scrollThread();
+  }
+
+  private bubble(turn: Turn) {
+    const p = document.createElement('p'); p.className = turn.who === 'Мира' ? 'mira-bubble is-mira' : 'mira-bubble is-player';
+    const who = document.createElement('span'); who.className = 'mira-visually-hidden'; who.textContent = `${translateText(turn.who)}: `;
+    p.append(who, document.createTextNode(turn.who === 'Мира' ? translateText(turn.message) : turn.message));
+    return p;
+  }
+
+  private setChosen(message: string, pending = false) {
+    this.chosen.replaceChildren();
+    this.chosen.hidden = !message; this.chosen.classList.toggle('is-pending', pending);
+    if (!message) return;
+    const who = document.createElement('span'); who.className = 'mira-visually-hidden'; who.textContent = `${translateText('Ты')}: `;
+    this.chosen.append(who, document.createTextNode(message));
+  }
+
+  private scrollThread() {
+    const scroll = this.replyScroll;
+    if (scroll) requestAnimationFrame(() => { scroll.scrollTop = scroll.scrollHeight; });
+  }
+
+  /** The full reply is in the DOM at once; the unrevealed tail keeps its space and follows the mouth timing. */
+  private typeReply(p: HTMLParagraphElement, text: string, duration: number) {
+    if (this.reducedMotion.matches || text.length < 2) return;
+    const shown = document.createTextNode(''), rest = document.createElement('span');
+    rest.className = 'mira-typing'; rest.setAttribute('aria-hidden', 'true'); rest.textContent = text;
+    p.replaceChildren(shown, rest); p.classList.add('is-typing');
+    const started = performance.now(), length = Array.from(text).length, characters = Array.from(text);
+    const step = () => {
+      const count = Math.min(length, Math.ceil((performance.now() - started) / Math.max(1, duration * .92) * length));
+      shown.textContent = characters.slice(0, count).join(''); rest.textContent = characters.slice(count).join('');
+      if (count >= length) this.finishTyping();
+    };
+    this.typingTimer = window.setInterval(step, 32);
+    step();
+  }
+
+  private finishTyping() {
+    if (this.typingTimer === undefined) return;
+    window.clearInterval(this.typingTimer); this.typingTimer = undefined;
+    const p = this.log.querySelector('p');
+    if (p) { p.textContent = p.textContent; p.classList.remove('is-typing'); }
+  }
+
+  /** While a reply is pending, the previous exchange moves into the thread and the new line comes last. */
+  private renderPending(message: string) {
+    this.finishTyping();
+    this.thread.replaceChildren(...this.turns.slice(-4).map(turn => this.bubble(turn)));
+    this.thread.hidden = false;
+    this.setChosen(message, true);
+    const wait = document.createElement('p'); wait.className = 'mira-waiting'; wait.setAttribute('aria-hidden', 'true');
+    for (let i = 0; i < 3; i++) wait.append(document.createElement('i'));
+    this.log.replaceChildren(wait);
+    this.scrollThread();
   }
 
   private renderHistory() {
@@ -300,10 +427,16 @@ export class MiraChat {
     this.send.disabled = this.busy || paused; this.reset.disabled = this.busy; this.input.readOnly = this.busy || paused; this.choices.forEach(button => button.disabled = this.busy || paused);
     this.dialog.classList.toggle('mira-paused', paused);
     if (paused && !this.busy) this.status.textContent = tr`Мира занялась стаканами. Ещё ${Math.ceil((this.cooldownUntil - Date.now()) / 1000)} сек.`;
+    this.dialog.classList.toggle('mira-busy', this.busy);
+    this.updateMiraState(Date.now());
   }
 
   private setCooldown(value: unknown) {
-    window.clearInterval(this.cooldownTimer); this.cooldownUntil = typeof value === 'number' && Number.isFinite(value) ? value : 0;
+    window.clearInterval(this.cooldownTimer);
+    const previous = this.cooldownUntil; this.cooldownUntil = typeof value === 'number' && Number.isFinite(value) ? value : 0;
+    const remaining = this.cooldownUntil - Date.now();
+    if (remaining <= 0) this.pauseTotal = 0;
+    else if (this.cooldownUntil !== previous || !this.pauseTotal) this.pauseTotal = Math.max(remaining, MIRA_PAUSE_MS);
     if (this.cooldownUntil > Date.now()) this.cooldownTimer = window.setInterval(() => {
       if (this.cooldownUntil <= Date.now()) { window.clearInterval(this.cooldownTimer); if (!this.busy) this.status.textContent = ''; }
       this.availability();
@@ -320,13 +453,13 @@ export class MiraChat {
   private async submit() {
     const message = this.input.value.trim(); if (this.busy || this.cooldownUntil > Date.now() || !message) return;
     const version = this.version; this.setBusy(true); this.status.textContent = translateText('Мира отвечает…');
+    this.renderPending(message);
     try {
       const data = await this.api('', { message }); if (version !== this.version) return;
       if (typeof data.reply !== 'string' || !data.reply.trim()) throw new Error(translateText('Не получилось расслышать Миру. Попробуй ещё раз.'));
       this.turns.push({ who: 'Ты', message }, { who: 'Мира', message: data.reply }); this.turns = this.turns.slice(-65);
-      this.chosen.textContent = tr`Ты: ${message}`;
       this.renderReply(true); this.renderHistory(); this.updateChoices(data.choices); this.updateOffer(data.drinkOffer); this.mira.react(data.emotion); this.input.value = ''; this.status.textContent = ''; this.setCooldown(data.cooldownUntil);
-    } catch (error) { if (version === this.version) this.status.textContent = error instanceof Error && isUserMessage(error.message) ? translateText(error.message) : translateText('Не получилось связаться с Мирой. Попробуй позже.'); }
+    } catch (error) { if (version === this.version) { this.renderReply(); this.status.textContent = error instanceof Error && isUserMessage(error.message) ? translateText(error.message) : translateText('Не получилось связаться с Мирой. Попробуй позже.'); } }
     finally { if (version === this.version) this.setBusy(false); }
   }
 

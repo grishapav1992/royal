@@ -1,9 +1,8 @@
-import { openPlayerMenu } from './entry-mode';
-import { selectEntryMode } from './entry-mode';
+import { openBar, openPlayerMenu, roomNetwork, roomState, selectEntryMode } from './entry-mode';
 import { expect, test, type Page } from '@playwright/test';
 
-const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
-const network = (page: Page) => page.evaluate(() => (window as any).royalDemo.getNetworkState());
+const state = roomState;
+const network = roomNetwork;
 const password = 'Royal-bar-entry-123!';
 const email = () => `bar-entry-${crypto.randomUUID()}@example.test`;
 
@@ -52,6 +51,7 @@ test('the first bar click survives the initial authoritative room state arriving
   await expect.poll(() => page.evaluate(() => (window as any).__heldRoomStates())).toBeGreaterThan(0);
   expect((await state(page)).serverX).toBeUndefined();
   expect((await state(page)).locked).toBe(false);
+  await page.waitForFunction(() => Boolean((window as any).royalDemo?.isWorldLoaded?.()));
   await page.locator('#visit-bar').click();
   expect((await state(page)).serverX).toBeUndefined();
   await page.evaluate(() => (window as any).__releaseRoomStates());
@@ -68,9 +68,8 @@ test('changing accounts closes the old bar and the new player can consume a conf
   await page.goto('/');
   await selectEntryMode(page);
   await expect.poll(async () => (await network(page))?.status).toBe('connected');
-  await expect.poll(async () => (await state(page)).serverX).toBeDefined();
-  await page.locator('#visit-bar').click();
-  await expect(page.locator('#bar-dialog')).toBeVisible({ timeout: 15000 });
+  await expect.poll(async () => (await state(page))?.serverX).toBeDefined();
+  await openBar(page);
   await openPlayerMenu(page);await page.getByRole('button', { name: 'Выйти', exact: true }).click();
   await selectEntryMode(page);
   await expect(page.locator('#login-step')).toBeVisible();
@@ -82,8 +81,7 @@ test('changing accounts closes the old bar and the new player can consume a conf
   await expect.poll(async () => (await state(page)).skin).toBe(4);
   await expect(page.locator('#bar-dialog')).toBeHidden();
   expect((await state(page)).intoxication.stage).toBe(0);
-  await page.locator('#visit-bar').click();
-  await expect(page.locator('#bar-dialog')).toBeVisible({ timeout: 15000 });
+  await openBar(page);
   await page.getByRole('button', { name: 'Напитки', exact: true }).click();
   await page.locator('[data-drink="wine"]').click();
   await expect.poll(async () => (await state(page)).drink).toBe('wine');

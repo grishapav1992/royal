@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { openBar, selectEntryMode } from './entry-mode';
 
 test('Mira chat shows replies safely, retains failed input and resets on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -10,7 +11,7 @@ test('Mira chat shows replies safely, retains failed input and resets on mobile'
   });
   await page.route('**/api/npc/mira/reset', route => { spoke = false; return route.fulfill({ json: { ok: true } }); });
   await page.goto('/?offline=1'); await page.locator('#loading').waitFor({ state: 'detached' });
-  await page.locator('#visit-bar').click(); await expect(page.locator('#bar-dialog')).toBeVisible({ timeout: 15000 });
+  await openBar(page);
   await expect(page.locator('.mira-log')).toHaveText('Ну? Чем удивишь?');
   await expect(page.locator('[data-drink="coffee"]')).toBeHidden();
   await page.getByRole('button', { name: 'Напитки', exact: true }).click();
@@ -24,7 +25,7 @@ test('Mira chat shows replies safely, retains failed input and resets on mobile'
   await expect(page.locator('.mira-history')).toContainText('Ты: Привет');
   await expect(page.locator('.mira-history b')).toHaveCount(0);
   await page.getByRole('button', { name: 'Уйти', exact: true }).click();
-  await page.locator('#visit-bar').click();
+  await openBar(page);
   await expect(input).toBeVisible();
   await expect(page.locator('.mira-log')).toContainText('<b>Привет</b>');
   fail = true; await input.fill('Извини'); await page.getByRole('button', { name: 'Сказать', exact: true }).click();
@@ -44,22 +45,25 @@ test('Mira stays centered and stable while the player uses the room chat during 
     await route.fulfill({ json: { reply: 'Ты уже спрашивал. Пока ничего не поменялось.' } });
   });
   await page.goto('/');
+  await selectEntryMode(page);
   await page.getByLabel('Почта', { exact: true }).fill(`mira-layout-${crypto.randomUUID()}@example.test`);
   await page.getByLabel('Пароль', { exact: true }).fill('Royal-demo-123!');
-  await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
+  await page.locator('#login-button').click();
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
   await expect(page.locator('#join-dialog')).toBeHidden();
-  const room = page.locator('.room-panel'), dialogue = page.locator('#bar-dialog');
+  const dialogue = page.locator('#bar-dialog');
   const choice = page.getByRole('button', { name: '› Как твоя смена?', exact: true });
   const chat = page.getByLabel('Сообщение в общий чат');
-  await page.locator('#visit-bar').click(); await expect(dialogue).toBeVisible({ timeout: 15000 });
+  await openBar(page);
   for (const size of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }, { width: 390, height: 500 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(size); await expect(chat).toBeInViewport();
-    await expect.poll(async () => {
-      const outer = (await room.boundingBox())!, inner = (await dialogue.boundingBox())!;
-      return Math.abs(inner.y + inner.height / 2 - outer.y - outer.height / 2);
-    }).toBeLessThan(1);
+    // Wide rooms centre the dialogue; narrow rooms (700 px or less) raise it as a sheet from the room's bottom edge.
+    await expect.poll(() => dialogue.evaluate(element => {
+      const host = element.parentElement!, outer = host.getBoundingClientRect(), inner = element.getBoundingClientRect();
+      const top = outer.top + host.clientTop, bottom = top + host.clientHeight;
+      return host.clientWidth <= 700 ? Math.abs(bottom - inner.bottom) : Math.abs((inner.top + inner.bottom) / 2 - (top + bottom) / 2);
+    })).toBeLessThan(1);
     const before = (await choice.boundingBox())!, panelBefore = (await dialogue.boundingBox())!;
     await choice.click(); await expect(page.locator('.mira-status')).toHaveText('Мира отвечает…');
     const during = (await choice.boundingBox())!; expect(during.y).toBeCloseTo(before.y, 0);
@@ -84,7 +88,7 @@ test('RPG reply choices send real messages and dialogue fits desktop and landsca
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.route('**/api/npc/mira', route => { if (route.request().method() === 'GET') return route.fulfill({ json: { turns: [{ role: 'assistant', content: 'Ну? Чем удивишь?' }] } }); message = route.request().postDataJSON().message; return route.fulfill({ json: { reply: 'Длинная. С тобой уже веселее.' } }); });
   await page.goto('/?offline=1'); await page.locator('#loading').waitFor({ state: 'detached' });
-  await page.locator('#visit-bar').click(); await expect(page.locator('#bar-dialog')).toBeVisible({ timeout: 15000 });
+  await openBar(page);
   await page.getByRole('button', { name: '› Как твоя смена?', exact: true }).click();
   await expect(page.locator('.mira-log')).toHaveText('Длинная. С тобой уже веселее.');
   expect(message).toBe('Как твоя смена?');
@@ -111,7 +115,7 @@ test('Mira restores past conversations after reload, changes reply choices and k
     return route.fulfill({ json: { reply: turns.at(-1)!.content, choices, cooldownUntil } });
   });
   await page.goto('/?offline=1'); await page.locator('#loading').waitFor({ state: 'detached' });
-  await page.locator('#visit-bar').click();
+  await openBar(page);
   await expect(page.locator('.mira-log')).toContainText('5 дней');
   await page.getByRole('button', { name: 'История', exact: true }).click();
   await expect(page.locator('.mira-history')).toContainText('Люблю джаз');
@@ -122,6 +126,6 @@ test('Mira restores past conversations after reload, changes reply choices and k
   await expect(page.getByRole('button', { name: 'Сказать', exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Напитки', exact: true })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Сказать', exact: true })).toBeEnabled({ timeout: 5000 });
-  await page.reload(); await page.locator('#loading').waitFor({ state: 'detached' }); await page.locator('#visit-bar').click();
+  await page.reload(); await page.locator('#loading').waitFor({ state: 'detached' }); await openBar(page);
   await expect(page.locator('.mira-log')).toHaveText('На сегодня хватит. Я займусь стаканами.');
 });
