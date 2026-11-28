@@ -16,6 +16,9 @@ export const Player = schema({
   snowballs: t.uint8().default(0), snowFight: t.boolean().default(false), snowHitUntil: t.number().default(0), snowRoll: t.number().default(0),
   // A short social gesture seen by the whole hall.
   emote: t.string().default(''), emoteUntil: t.number().default(0),
+  // Jump and slide: the remaining distance owed to input time, and the last leap for animation.
+  leapDebt: t.number().default(0), leapSerial: t.number().default(0), leapKind: t.string().default(''),
+  leapFromX: t.number().default(0), leapFromY: t.number().default(0),
 }, 'RoyalPlayer');
 export type Player = SchemaType<typeof Player>;
 export const Guest = schema({

@@ -186,14 +186,12 @@ test('real Redis routes rooms across four processes and preserves access and rec
       await eventually(() => remote.state.players.get(remote.sessionId)?.name === 'Cluster reconnect' && remote.state.players.get(remote.sessionId)?.skin === 3);
       passed.push('cross-process-duplicate-refusal-and-same-owner-reconnect');
     });
-    await runCase('profile, drinking and security events reach a remote room through authoritative state', async () => {
+    await runCase('profile and drinking events reach a remote room through authoritative state', async () => {
       assert.equal((await api(remoteIndex, '/api/auth/profile', { name: 'Remote profile' })).status, 200);
       await eventually(() => remote.state.players.get(remote.sessionId)?.name === 'Remote profile');
       const dose = await accounts.drinking.consume(fixture[remoteIndex].account.id, 'beer');
       await eventually(() => remote.state.players.get(remote.sessionId)?.soberAt === dose.soberAt);
-      const warning = await accounts.moderation.record(fixture[remoteIndex].account.id); accounts.events.emit('security', fixture[remoteIndex].account.id, warning);
-      await eventually(() => remote.state.players.get(remote.sessionId)?.security === 'warning');
-      passed.push('remote-profile-drinking-and-security-events');
+      passed.push('remote-profile-and-drinking-events');
     });
     await runCase('a browser uses the owner route and keeps its session after network loss', async () => {
       const available = anchors.find(room => owner(room) !== 'main' && room !== remote)!;

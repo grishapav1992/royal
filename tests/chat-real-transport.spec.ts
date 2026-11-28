@@ -139,7 +139,6 @@ test('the tenth offensive word triggers a capture and street escort in the same 
     expect(captures[0].until).toBeLessThanOrEqual(Date.now() + 20 * 60_000);
     await expect.poll(() => page.evaluate(() => (window as any).__realChat.self()))
       .toMatchObject({ hall: 'street', security: '', connected: true });
-    await expect(page.locator('#security-dialog')).toBeHidden();
     await expect(page.locator('#club-chat-dock')).toBeHidden();
     expect(errors).toEqual([]);
     const originalSession = await page.evaluate(() => (window as any).royalDemo.getNetworkState().selfId);

@@ -47,7 +47,6 @@ test('solid guard shows a fist to both players; holding does not multiply hits a
   await expect.poll(async()=>(await state(a)).hall,{timeout:30000}).toBe('street');
   expect(await network(a)).toMatchObject({status:'connected',roomId:host.roomId,selfId});
   await expect(a.locator('#club-chat-dock')).toBeHidden();
-  await expect(a.locator('#security-dialog')).toBeHidden();
   await a.reload(); await selectEntryMode(a);await expect.poll(async()=>(await network(a))?.status,{timeout:30000}).toBe('connected');
   await expect.poll(async()=>(await state(a))?.hall).toBe('street');
   await expect(a.locator('#join-dialog')).toBeHidden();

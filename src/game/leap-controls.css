@@ -1,0 +1,7 @@
+.leap-controls{position:absolute;z-index:6;left:14px;bottom:64px;display:none;gap:8px}
+.leap-controls button{min-width:72px;min-height:44px;padding:8px 14px;border:2px solid #c39b58;border-radius:22px;background:#302632f5;color:#f5dfba;font:600 13px Arial,sans-serif;box-shadow:0 3px 8px #15121b40;touch-action:manipulation;user-select:none;cursor:pointer}
+.leap-controls button:active{background:#4a3a46}
+.leap-controls button.refused{opacity:.55}
+.leap-controls button:focus-visible{outline:3px solid #f6cf58;outline-offset:2px}
+@media (pointer:coarse){.leap-controls{display:flex}}
+.room-panel[data-overview=true] .leap-controls{display:none}

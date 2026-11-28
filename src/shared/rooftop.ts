@@ -1,3 +1,4 @@
+import { vault } from './obstacleKinds';
 import type { Obstacle, Point } from '../game/navigation';
 import { WORLD } from './clubGeometry';
 import { ROOF_TOILET } from './toilet';
@@ -178,6 +179,6 @@ export const ROOF_OBSTACLES: Obstacle[] = [
   { x: 0, y: 0, w: 170, h: ROOF.height },
   { x: 2070, y: 0, w: WORLD.width - 2070, h: ROOF.height },
   { x: 0, y: 1170, w: WORLD.width, h: ROOF.height - 1170 },
-  ROOF.hatch, ...ROOF.vents, ...ROOF.benches, ROOF.antenna, ROOF_TOILET.body, ROOF_TOILET.step,
+  ROOF.hatch, ...ROOF.vents.map(vault), ...ROOF.benches.map(vault), ROOF.antenna, ROOF_TOILET.body, ROOF_TOILET.step,
   ROOF_FIREWORKS.obstacle,
 ];

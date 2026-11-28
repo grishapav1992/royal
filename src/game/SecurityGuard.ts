@@ -11,9 +11,18 @@ import { NpcMotion } from '../network/NpcMotion';
 type Person = { sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; label?: Phaser.GameObjects.Text };
 const WIDTH = 112, HEIGHT = 144, SCALE = .77;
 
-function createGuard(scene: Phaser.Scene) {
-  if (scene.textures.exists('security-guard')) return;
-  const texture = scene.textures.createCanvas('security-guard', WIDTH * 14 * 2, HEIGHT * 8 * 2)!;
+type GuardLook = { key: string; skin: string; shirt: string };
+const HOUSE_GUARD = 'security';
+// The radio backup wears a navy suit, so two guards on one floor read as two people.
+const LOOKS: Record<string, GuardLook> = {
+  [HOUSE_GUARD]: { key: 'security-guard', skin: '#89563f', shirt: '#20212a' },
+  backup: { key: 'security-guard-2', skin: '#c48a62', shirt: '#26324f' },
+};
+const lookFor = (id: string) => id === HOUSE_GUARD ? LOOKS[HOUSE_GUARD] : LOOKS.backup;
+
+function createGuard(scene: Phaser.Scene, look: GuardLook) {
+  if (scene.textures.exists(look.key)) return;
+  const texture = scene.textures.createCanvas(look.key, WIDTH * 14 * 2, HEIGHT * 8 * 2)!;
   const c = texture.context;
   ['down', 'left', 'right', 'up'].forEach((direction, row) => {
     for (let frame = 0; frame < 28; frame++) {
@@ -29,7 +38,7 @@ function createGuard(scene: Phaser.Scene) {
       const pointing = frame === 7, throwing = frame === 10 || frame === 11;
       const fist=frame===26||frame===27;
       const talking=frame===18||frame===19, looking=frame===20, blink=frame===22, glance=frame===23?-3:frame===24?3:0;
-      const skin = '#89563f', ink = '#302b2a', shirt = '#20212a';
+      const skin = look.skin, ink = '#302b2a', shirt = look.shirt;
       const fill = (color: string) => { c.fillStyle=color; c.fill(); c.strokeStyle=ink; c.lineWidth=.9; c.stroke(); };
       const poly = (points: number[], color: string) => {
         c.beginPath(); c.moveTo(points[0],points[1]);
@@ -228,53 +237,77 @@ function createGuard(scene: Phaser.Scene) {
   texture.refresh();
 }
 
+type Unit = { sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; speech: Phaser.GameObjects.Text; motion: NpcMotion<GuardView> };
+const MOVING_PHASES = ['approach','return','carry','patrol','transit','enter'];
+
 export class SecurityGuard {
-  private sprite: Phaser.GameObjects.Sprite;
-  private shadow: Phaser.GameObjects.Ellipse;
-  private speech: Phaser.GameObjects.Text;
+  private units = new Map<string, Unit>();
   private guards: GuardView[] = [];
-  private motion=new NpcMotion<GuardView>({delayMs:0,isMoving:view=>['approach','return','carry','patrol','transit','enter'].includes(view.phase)});
   private reply: Phaser.GameObjects.Text;
   constructor(private scene: Phaser.Scene) {
-    createGuard(scene);
-    this.shadow = scene.add.ellipse(585,635,54,17,0x151521,.35);
-    this.sprite = scene.add.sprite(585,635,'security-guard','down-6').setOrigin(.5,1).setScale(SCALE / 2);
     this.reply = scene.add.text(MIRA_HOME.x,MIRA_HOME.y-116,'',{fontFamily:'Arial',fontSize:'12px',color:'#fff0d9',backgroundColor:'#513045',align:'center',padding:{x:11,y:8},wordWrap:{width:210}}).setOrigin(.5,1).setDepth(1500).setVisible(false);
-    this.speech = scene.add.text(585,505,'', { fontFamily:'Arial', fontSize:'12px', fontStyle:'bold', color:'#ffe49b', backgroundColor:'#25212c', align:'center', padding:{x:12,y:9}, wordWrap:{width:240} }).setOrigin(.5,1).setVisible(false);
+    this.unit(HOUSE_GUARD);
+  }
+  private unit(id: string): Unit {
+    const existing = this.units.get(id);
+    if (existing) return existing;
+    const look = lookFor(id);
+    createGuard(this.scene, look);
+    const unit: Unit = {
+      shadow: this.scene.add.ellipse(585,635,54,17,0x151521,.35),
+      sprite: this.scene.add.sprite(585,635,look.key,'down-6').setOrigin(.5,1).setScale(SCALE / 2),
+      speech: this.scene.add.text(585,505,'', { fontFamily:'Arial', fontSize:'12px', fontStyle:'bold', color:'#ffe49b', backgroundColor:'#25212c', align:'center', padding:{x:12,y:9}, wordWrap:{width:240} }).setOrigin(.5,1).setVisible(false),
+      motion: new NpcMotion<GuardView>({delayMs:0,isMoving:view=>MOVING_PHASES.includes(view.phase)}),
+    };
+    this.units.set(id, unit);
+    return unit;
   }
   sync(guards: GuardView[], at=performance.now()) {
     this.guards = guards;
-    // One guard travels between halls. Missing samples must not retain an old route.
-    if(guards[0])this.motion.push(guards[0],at);else this.motion.reset();
+    const present = new Set(guards.map(guard => guard.id ?? HOUSE_GUARD));
+    // Each guard travels between halls on its own. Missing samples must not retain an old route.
+    for (const guard of guards) this.unit(guard.id ?? HOUSE_GUARD).motion.push(guard, at);
+    for (const [id, unit] of this.units) {
+      if (present.has(id)) continue;
+      if (id === HOUSE_GUARD) { unit.motion.reset(); continue; }
+      unit.sprite.destroy(); unit.shadow.destroy(); unit.speech.destroy(); this.units.delete(id);
+    }
   }
-  resetMotion() { this.motion.reset(); }
+  resetMotion() { for (const unit of this.units.values()) unit.motion.reset(); }
   getState() { return this.guards; }
-  barConversation() { const g=this.guards.find(g=>g.hall==='arcade');return { active:g?.phase==='chat', speaking:Boolean(g?.reply) }; }
+  barConversation() { const g=this.guards.find(g=>(g.id??HOUSE_GUARD)===HOUSE_GUARD&&g.hall==='arcade');return { active:g?.phase==='chat', speaking:Boolean(g?.reply) }; }
   update(hall: HallId, time: number, dt: number, getPerson: (id: string) => Person | undefined, renderAt=performance.now(),view?:StreetView) {
-    const latest = this.guards.find(guard => guard.hall === hall);
-    const buffered=this.motion.sample(renderAt);
+    let reply = '';
+    for (const [id, unit] of this.units) {
+      const latest = this.guards.find(guard => (guard.id ?? HOUSE_GUARD) === id && guard.hall === hall);
+      this.draw(unit, latest, hall, time, getPerson, renderAt, view);
+      if (id === HOUSE_GUARD && latest?.reply) reply = latest.reply;
+    }
+    this.reply.setText(translateText(reply)).setVisible(hall==='arcade'&&Boolean(reply));
+  }
+  private draw(unit: Unit, latest: GuardView | undefined, hall: HallId, time: number, getPerson: (id: string) => Person | undefined, renderAt: number, view?: StreetView) {
+    const buffered=unit.motion.sample(renderAt);
     const sample=latest&&buffered?.hall===hall?buffered:latest;
     const g=sample&&(!view||view.visible(sample))?sample:undefined;
-    this.sprite.setVisible(Boolean(g)); this.shadow.setVisible(Boolean(g));
-    if (!g) { this.speech.setVisible(false); this.reply.setVisible(false); return; }
+    unit.sprite.setVisible(Boolean(g)); unit.shadow.setVisible(Boolean(g));
+    if (!g) { unit.speech.setVisible(false); return; }
     const point=view?view.point(g):g;
     const x=point.x,y=point.y,depth=view?view.depth(g):y;
-    const moved=Math.hypot(x-this.sprite.x,y-this.sprite.y)>.001;
-    const moving = moved&&['approach','return','carry','patrol','transit','enter'].includes(g.phase);
+    const moved=Math.hypot(x-unit.sprite.x,y-unit.sprite.y)>.001;
+    const moving = moved&&MOVING_PHASES.includes(g.phase);
     const opacity = g.phase==='door' ? 1-g.progress : g.phase==='enter' ? g.progress : 1;
-    this.sprite.setAlpha(opacity);this.shadow.setAlpha(opacity);
+    unit.sprite.setAlpha(opacity);unit.shadow.setAlpha(opacity);
     const leisurely = g.phase==='patrol'||g.phase==='return'||(['transit','enter'].includes(g.phase)&&!g.target);
-    let frame = g.phase==='warn' ? 7 : g.phase==='grab' ? 8 : g.phase==='carry' ? 12+(moving?Math.floor(time/130)%6:0) : g.phase==='throw' ? (g.progress<.3?10:11) : moving ? Math.floor(time/(leisurely?170:110))%6 : 6;
+    let frame = g.phase==='grab' ? 8 : g.phase==='carry' ? 12+(moving?Math.floor(time/130)%6:0) : g.phase==='throw' ? (g.progress<.3?10:11) : moving ? Math.floor(time/(leisurely?170:110))%6 : 6;
     if(g.phase==='chat')frame=g.speech?(Math.floor(g.progress*40)%2?18:19):6;
     if(g.phase==='window')frame=g.progress<.7?20:6;
     if(g.phase==='inspect')frame=Math.floor(g.progress*6)%2?21:6;
     if(g.phase==='watch')frame=g.progress>.7?25:Math.floor(g.progress*9)%2?23:24;
     if(g.phase==='bump')frame=26+Math.floor(g.progress*8)%2;
     if(['idle','watch','chat'].includes(g.phase)&&time%5100<130)frame=22;
-    this.sprite.setFrame(`${view?view.facing(g.facing as Facing):g.facing}-${frame}`).setPosition(x,y).setDepth(depth+.2);
-    this.shadow.setPosition(x,y-2).setDepth(depth-1);
-    this.speech.setText(translateText(g.speech)).setPosition(Phaser.Math.Clamp(x,160,WORLD.width-160),y-116).setDepth(view?depth+1:1500).setVisible(Boolean(g.speech)&&(!view||!view.occluded(g)));
-    this.reply.setText(translateText(g.reply || '')).setVisible(hall==='arcade'&&Boolean(g.reply));
+    unit.sprite.setFrame(`${view?view.facing(g.facing as Facing):g.facing}-${frame}`).setPosition(x,y).setDepth(depth+.2);
+    unit.shadow.setPosition(x,y-2).setDepth(depth-1);
+    unit.speech.setText(translateText(g.speech)).setPosition(Phaser.Math.Clamp(x,160,WORLD.width-160),y-116).setDepth(view?depth+1:1500).setVisible(Boolean(g.speech)&&(!view||!view.occluded(g)));
     const person = getPerson(g.target);
     if (person && ['grab','carry','throw'].includes(g.phase)) {
       const lift = g.phase==='grab'?g.progress:1;

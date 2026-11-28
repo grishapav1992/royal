@@ -3,6 +3,7 @@ import { PLAYER_SPEED,PLAYER_SPRINT_SPEED } from '../shared/world';
 import { ROOF_STAIR_SPEED_SCALE,ROOF_STAIR_EPSILON } from '../shared/rooftop';
 import type { Point } from '../game/navigation';
 import { applyMovementInput, type MovementBody, type MovementInput } from '../shared/movement';
+import type { LeapKind } from '../shared/leap';
 import type { GuardCollider } from '../shared/guardCollision';
 import { MAX_MOVEMENT_BATCH, MAX_MOVEMENT_INPUT_MS, MAX_PENDING_MOVEMENT_INPUTS, MAX_QUEUED_MOVEMENT_MS } from '../shared/movementLimits';
 
@@ -14,12 +15,12 @@ export class MovementPrediction {
   active = false;
   finishing = false;
   reset() { this.active = false; this.finishing = false; this.pending = []; this.outgoing = []; }
-  step(body: MovementBody, x: number, y: number, ms: number, sprint = false, guards:readonly GuardCollider[] = [], route = false) {
+  step(body: MovementBody, x: number, y: number, ms: number, sprint = false, guards:readonly GuardCollider[] = [], route = false, leap?: LeapKind) {
     // Stop speculative movement if the server has not acknowledged input for several seconds.
     // Reserve one slot for releasing the keys or handing control to a UI action.
     if (this.pending.length >= MAX_PENDING_MOVEMENT_INPUTS - (x || y ? 1 : 0)) { body.moving = false; return; }
     this.active = true; this.finishing = false;
-    const input = { seq: ++this.sequence, x, y, ms: Math.min(MAX_MOVEMENT_INPUT_MS, Math.max(0, ms)), sprint, route: route || undefined };
+    const input: MovementInput = { seq: ++this.sequence, x, y, ms: Math.min(MAX_MOVEMENT_INPUT_MS, Math.max(0, ms)), sprint, route: route || undefined, ...(leap ? { leap } : {}) };
     this.pending.push(input); this.outgoing.push(input);
     applyMovementInput(body, input, guards);
   }
@@ -73,12 +74,13 @@ export function advanceClickMovement(body: MovementBody, path: Point[], ms: numb
     const speed=(onStairs?(sprinting?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*ROOF_STAIR_SPEED_SCALE:PLAYER_SPRINT_SPEED)*impairment;
     const duration = Math.min(remaining, distance / speed * 1000);
     const beforeX = body.x, beforeY = body.y, count = prediction.pendingCount;
-    const wasOnStairs=body.hall==='street'&&(body.stairStep??0)>0;
+    const wasOnStairs=body.hall==='street'&&(body.stairStep??0)>0, debt=body.leapDebt??0;
     prediction.step(body, dx / distance, dy / distance, duration, sprinting, guards, true);
     if (prediction.pendingCount === count) break;
     remaining -= duration;
     if(wasOnStairs&&!body.stairStep){path.length=0;break;}
-    if (Math.hypot(body.x - beforeX, body.y - beforeY) < 1e-6) { path.length = 0; break; }
+    // Time spent paying off a leap is progress, not a blocked route.
+    if (Math.hypot(body.x - beforeX, body.y - beforeY) < 1e-6 && (body.leapDebt ?? 0) >= debt) { path.length = 0; break; }
     if (Math.hypot(target.x - body.x, target.y - body.y) <= tolerance) path.shift();
   }
 }

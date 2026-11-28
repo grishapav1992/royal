@@ -1,3 +1,4 @@
+import { vault } from './obstacleKinds';
 import type { Obstacle, Point } from '../game/navigation';
 import { WORLD } from './clubGeometry';
 import { STREET_KIOSK } from './streetPlay';
@@ -18,10 +19,10 @@ export const STREET_OBSTACLES: Obstacle[] = [
   STREET.building,
   { x: STREET.width - 65, y: 0, w: WORLD.width - STREET.width + 65, h: STREET.height },
   { x: 0, y: 1210, w: STREET.width, h: 170 },
-  ...STREET.benches.map(p => ({ x: p.x - 57, y: p.y - 32, w: 114, h: 40 })),
+  ...STREET.benches.map(p => vault({ x: p.x - 57, y: p.y - 32, w: 114, h: 40 })),
   ...STREET.trees.map(p=>({x:p.x-17,y:p.y-10,w:34,h:30})),
   ...STREET.lamps.map(p=>({x:p.x-16,y:p.y,w:32,h:9})),
-  ...[-126,126].map(offset=>({x:STREET.entrance.x+offset-28,y:906,w:56,h:28})),
+  ...[-126,126].map(offset=>vault({x:STREET.entrance.x+offset-28,y:906,w:56,h:28})),
   STREET_KIOSK.obstacle,
 ];
 

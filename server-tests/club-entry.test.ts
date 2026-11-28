@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { test, type TestContext } from 'node:test';
 import type { Client } from '@colyseus/core';
 import { accounts } from '../server/accounts';
+import { PostgresDatabase } from '../server/database';
 import type { Guards } from '../server/guards';
 import { LobbyRoom } from '../server/LobbyRoom';
 import { ROOF_STAIR_ROUTE, STREET_ROOF_STAIRS } from '../src/shared/rooftop';
@@ -36,8 +37,12 @@ async function markedVisitor(context: TestContext, oldBan = false) {
     id: randomUUID(), reason: 'spam',
   });
   if (oldBan) {
-    await accounts.moderation.eject(login.account.id);
-    assert(await accounts.moderation.banUntil(login.account.id) > Date.now());
+    // A row left by the former warning system must not block entry.
+    await accounts.moderation.ready;
+    const database = new PostgresDatabase(accounts.schema);
+    context.after(() => database.close());
+    await database.prepare(`INSERT INTO chat_conduct_discipline(account_id,warned_until,banned_until) VALUES(?,0,?)
+      ON CONFLICT(account_id) DO UPDATE SET banned_until=excluded.banned_until`).run(login.account.id, Date.now() + 600000);
   }
 
   const closes: (number | undefined)[] = [];

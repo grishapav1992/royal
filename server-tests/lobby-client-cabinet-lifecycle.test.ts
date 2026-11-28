@@ -40,11 +40,11 @@ class TransportRoom {
 }
 
 async function fixture(context: TestContext) {
-  const room = new TransportRoom(), notices: string[] = [], ejections: number[] = [], statuses: { status: string; releases: number }[] = [];
+  const room = new TransportRoom(), notices: string[] = [], statuses: { status: string; releases: number }[] = [];
   const clubTransitions: (SecurityDecision | 'street')[] = [];
   const releases = () => room.packets.filter(packet => packet.type === 'playing' && packet.value === false);
   const ignore = () => {};
-  const client = new LobbyClient({ npcTime: ignore, guards: ignore, guests: ignore, mira: ignore, security: ignore, ejected: until => ejections.push(until),
+  const client = new LobbyClient({ npcTime: ignore, guards: ignore, guests: ignore, mira: ignore,
     clubCapture: decision => clubTransitions.push(decision), clubEjected: () => clubTransitions.push('street'),
     joined: ignore, players: ignore, chat: ignore, history: ignore, activities: ignore, note: ignore,
     notice: message => notices.push(message), status: status => statuses.push({ status, releases: releases().length }) });
@@ -53,7 +53,7 @@ async function fixture(context: TestContext) {
   context.after(() => client.leave());
   const request = () => room.packets.filter(packet => packet.type === 'cabinet-play').at(-1)!.value;
   const reply = (accepted: boolean, result: Record<string, unknown> = {}) => room.handlers.get('cabinet-play-result')!({ ...request(), accepted, ...result });
-  return { client, room, notices, ejections, clubTransitions, statuses, releases, request, reply };
+  return { client, room, notices, clubTransitions, statuses, releases, request, reply };
 }
 
 test('player recovery waits for its matching authoritative state and fails on disconnect', async context => {
@@ -204,21 +204,12 @@ test('another account or invitation cannot adopt a saved session', async context
 });
 
 
-test('exhausted reconnection automatically recovers without inventing a guard ban', async context => {
+test('exhausted reconnection automatically recovers the room', async context => {
   const f = await fixture(context), pending = f.client.claimCabinet('royal-fruits');
   f.room.drop(); f.room.finalLeave(4003);
   assert.equal(f.client.status, 'reconnecting');
   assert.equal(await pending, false);
-  assert.deepEqual(f.ejections, []);
   await f.client.join(); assert.equal(f.client.status, 'connected');
-});
-
-test('a warning followed by reconnection failure is not a ban', async context => {
-  const f = await fixture(context);
-  f.room.handlers.get('security')!({ kind: 'warning', until: Date.now() + 86400000, reason: 'spam' });
-  f.room.drop(); f.room.finalLeave(4003);
-  await f.client.join();
-  assert.deepEqual(f.ejections, []); assert.equal(f.client.status, 'connected');
 });
 
 test('club capture cancels pending admissions and street ejection permits reconnection', async context => {
@@ -245,20 +236,6 @@ test('club capture cancels pending admissions and street ejection permits reconn
   f.room.handlers.get('club-capture')!(decision);
   f.room.handlers.get('club-ejected')!({ pursuitId: decision.pursuitId });
   assert.deepEqual(f.clubTransitions, [decision, 'street']);
-  assert.deepEqual(f.ejections, []);
-});
-
-test('a confirmed ban keeps the exact server deadline through final departure', async context => {
-  const f = await fixture(context), until = Date.now() + 120000;
-  f.room.handlers.get('security')!({ kind: 'ejecting', until, reason: 'collision' });
-  f.room.finalLeave(4003); assert.deepEqual(f.ejections, [until]);
-});
-
-test('an explicit ejection is honored and an expired sanction cannot restart a timer', async context => {
-  const f = await fixture(context), until = Date.now() + 120000;
-  f.room.handlers.get('ejected')!({ until }); assert.deepEqual(f.ejections, [until]);
-  f.room.handlers.get('security')!({ kind: 'ejecting', until: Date.now() - 1 });
-  f.room.drop(); f.room.finalLeave(4003); assert.deepEqual(f.ejections, [until]);
 });
 
 test('a server restart automatically enters a replacement room without a manual login', async context => {
@@ -272,7 +249,7 @@ test('a server restart automatically enters a replacement room without a manual 
   assert.equal(f.client.status, 'reconnecting');
   await f.client.join();
   assert.equal(fresh, 1); assert.equal(f.client.status, 'connected');
-  assert.equal(f.client.getState().roomId, 'replacement'); assert.deepEqual(f.ejections, []);
+  assert.equal(f.client.getState().roomId, 'replacement');
 });
 
 test('SDK retry exhaustion preserves a valid token and an open game reservation', async context => {
@@ -303,7 +280,7 @@ test('recovery stops on a revoked login or a real server ban', async context => 
     const f = await fixture(context); let calls = 0;
     (f.client as any).client = { joinById: async () => { calls++; throw Object.assign(new Error('Access denied'), { code }); } };
     f.room.finalLeave(4001); await (f.client as any).recovery;
-    assert.equal(calls, 1); assert.equal(f.client.status, 'disconnected'); assert.deepEqual(f.ejections, []);
+    assert.equal(calls, 1); assert.equal(f.client.status, 'disconnected');
   }
 });
 

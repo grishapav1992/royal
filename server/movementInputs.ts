@@ -1,5 +1,6 @@
 import { applyMovementInput, type MovementBody, type MovementInput } from '../src/shared/movement';
 import type { GuardCollider } from '../src/shared/guardCollision';
+import { LEAP_COOLDOWN_MS, LEAP_KINDS } from '../src/shared/leap';
 import { MAX_MOVEMENT_BATCH, MAX_MOVEMENT_INPUT_MS, MAX_PENDING_MOVEMENT_INPUTS, MAX_QUEUED_MOVEMENT_MS } from '../src/shared/movementLimits';
 
 export class MovementInputs {
@@ -8,6 +9,7 @@ export class MovementInputs {
   private received = 0;
   private pending: MovementInput[] = [];
   private pendingMs = 0;
+  private leapReadyAt = 0;
   sequence = 0;
   constructor(now = Date.now()) { this.at = now; }
   takeDuration(ms: number, now = Date.now()) {
@@ -30,7 +32,11 @@ export class MovementInputs {
       if (input.ms > this.budget) break;
       this.pending.shift(); this.pendingMs -= input.ms; this.budget -= input.ms;
       this.sequence = input.seq;
-      if (applyMovementInput(body, input, guards)) onContact();
+      // A leap inside the cooldown still moves normally; only a completed leap starts the window.
+      const leap = input.leap && now < this.leapReadyAt ? { ...input, leap: undefined } : input;
+      const serial = body.leapSerial ?? 0;
+      if (applyMovementInput(body, leap, guards)) onContact();
+      if ((body.leapSerial ?? 0) !== serial) this.leapReadyAt = now + LEAP_COOLDOWN_MS;
       if ((body as MovementBody & {security?:string}).security) { this.cancel(); break; }
     }
   }
@@ -39,8 +45,9 @@ export class MovementInputs {
     let accepted = false;
     for (const value of data) {
       if (!value || typeof value !== 'object') continue;
-      const { seq, x, y, ms, sprint, route } = value as MovementInput;
+      const { seq, x, y, ms, sprint, route, leap } = value as MovementInput;
       if (sprint !== undefined && typeof sprint !== 'boolean') continue;
+      if (leap !== undefined && !LEAP_KINDS.includes(leap)) continue;
       if (route !== undefined && typeof route !== 'boolean') continue;
       const directionValid = route === true
         ? Number.isFinite(x) && Number.isFinite(y) && Math.abs(x) <= 1 && Math.abs(y) <= 1
@@ -49,7 +56,7 @@ export class MovementInputs {
       // Bound queued work as well as the existing per-packet and elapsed-time limits.
       if (this.pending.length >= MAX_PENDING_MOVEMENT_INPUTS || this.pendingMs + ms > MAX_QUEUED_MOVEMENT_MS) break;
       this.received = seq;
-      this.pending.push({ seq, x, y, ms, sprint, route }); this.pendingMs += ms;
+      this.pending.push({ seq, x, y, ms, sprint, route, ...(leap ? { leap } : {}) }); this.pendingMs += ms;
       accepted = true;
     }
     if (accepted) this.advance(body, now, guards, onContact);

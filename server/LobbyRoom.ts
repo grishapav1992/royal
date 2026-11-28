@@ -91,6 +91,10 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (sanction && sanction.until > Date.now()) return { id: randomUUID(), sanctionId: sanction.id, until: sanction.until };
     },
     capture: (id, pursuit) => this.confirmCapture(id, pursuit),
+    disguised: id => {
+      const access = this.access.get(id), check = access?.equippedSkinId && access.disguises?.get(access.equippedSkinId);
+      return !!access?.active && !!access.sanction && access.sanction.until > Date.now() && !!check && check.usable === true;
+    },
   });
   private dispatchViolation(client: Client, player: Player, pursuit: ClubPursuit, reason: ClubViolation) {
     const access = this.access.get(client.sessionId);
@@ -148,7 +152,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if (!player) return;
     this.stop(id);
     Object.assign(player, STREET.spawn, { hall: 'street', facing: 'down', stairStep: 0, stairDirection: 1, security: '' });
-    player.hallRevision++;
+    player.hallRevision++;player.leapDebt=0;
     this.updateChatVisit(id, player.hall);
     const capture = this.access.get(id)?.capture;
     if (player.connected && capture) this.clients.find(c => c.sessionId === id)?.send('club-ejected', { pursuitId: capture.pursuitId });
@@ -384,7 +388,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if(!p||!c||(value as {revision?:number})?.revision!==p.hallRevision||p.playing||p.seat||p.action==='drink')return;
       const link=stairWindowLink(p);if(!link)return;
       this.activities.leave(client.sessionId);this.releaseCabinet(client.sessionId);this.stop(client.sessionId);this.stand(client.sessionId);
-      const arrival=playerHallArrival(p.hall,link);p.hall=link.target;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
+      const arrival=playerHallArrival(p.hall,link);p.hall=link.target;p.hallRevision++;p.leapDebt=0;Object.assign(p,arrival);c.lastTarget=0;
       this.updateChatVisit(client.sessionId, p.hall);
       client.send('activities',this.activities.snapshot(client.sessionId));
     });
@@ -412,7 +416,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       }
       this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId);
       const dock = elevatorDock(target);
-      p.hall = target; p.hallRevision++; p.x = dock.arrival.x; p.y = dock.arrival.y; p.facing = dock.facing;
+      p.hall = target; p.hallRevision++;p.leapDebt=0; p.x = dock.arrival.x; p.y = dock.arrival.y; p.facing = dock.facing;
       this.updateChatVisit(client.sessionId, p.hall);
       control.lastTarget = 0;
       client.send('elevator-result', { requestId, target, accepted: true, revision: p.hallRevision });
@@ -941,7 +945,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.cat.handle(id, 'release');
     this.releaseCabinet(id); this.stop(id);
     Object.assign(p, point, { playing: false, cabinet: '', seat: '', action: 'idle', drink: '', actionUntil: 0, facing: 'down', moving: false });
-    p.hallRevision++;
+    p.hallRevision++;p.leapDebt=0;
     const control = this.controls.get(id); if (control) control.lastTarget = 0;
     return true;
   }
@@ -970,7 +974,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if(p.hall==='street'&&link.target==='roof'&&p.stairStep!==ROOF_STAIR_ROUTE.length)return false;
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
     const hall=link.target,arrival=playerHallArrival(p.hall,link);
-    p.hall=hall;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
+    p.hall=hall;p.hallRevision++;p.leapDebt=0;Object.assign(p,arrival);c.lastTarget=0;
     this.updateChatVisit(id, hall);
     this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot(id));
     return true;

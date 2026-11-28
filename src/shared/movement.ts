@@ -4,13 +4,34 @@ import { walkable } from '../game/navigation';
 import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, SEATS } from './world';
 import { blockedByGuard, type GuardCollider } from './guardCollision';
 import { intoxicatedMovement } from './intoxication';
+import { leapDirection, leapLanding, type LeapKind } from './leap';
 
-export type MovementInput = { seq: number; x: number; y: number; ms: number; sprint?: boolean; route?: boolean };
-export type MovementBody = { hall?: string; stairStep?: number; stairDirection?:number; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };
+export type MovementInput = { seq: number; x: number; y: number; ms: number; sprint?: boolean; route?: boolean; leap?: LeapKind };
+export type MovementBody = { hall?: string; stairStep?: number; stairDirection?:number; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number;
+  // A leap lands at once, then the following input time pays for the distance, so it never outruns a sprint.
+  leapDebt?: number; leapSerial?: number; leapKind?: string; leapFromX?: number; leapFromY?: number };
+
+/** Jump (any time) or slide (while sprinting) along the input direction, or the facing when standing. */
+function applyLeap(body: MovementBody, input: MovementInput, guards: readonly GuardCollider[]) {
+  const kind = input.leap;
+  if (!kind || body.seat || body.action === 'drink' || (body.stairStep ?? 0) > 0) return;
+  if (kind === 'slide' && input.sprint !== true) return;
+  const direction = leapDirection(input.x, input.y, body.facing);
+  // A blocked jump still hops on the spot, so the key always answers; a blocked slide does nothing.
+  const landing = leapLanding(body, kind, direction, guards) ?? (kind === 'jump' ? { x: body.x, y: body.y } : null);
+  if (!landing) return;
+  const distance = Math.hypot(landing.x - body.x, landing.y - body.y);
+  body.leapFromX = body.x; body.leapFromY = body.y; body.leapKind = kind;
+  body.leapSerial = (body.leapSerial ?? 0) + 1;
+  body.leapDebt = (body.leapDebt ?? 0) + distance;
+  body.x = landing.x; body.y = landing.y;
+  body.facing = movementFacing(direction.x, direction.y, body.facing as Facing);
+}
 
 /** Shared collision integration for local prediction, server validation and replay. */
 export function applyMovementInput(body: MovementBody, input: MovementInput, guards:readonly GuardCollider[] = []) {
   let contact=false;
+  applyLeap(body, input, guards);
   const length = Math.hypot(input.x, input.y);
   body.moving = false;
   if (!length) {if(body.hall==='street')settleRoofStairLanding(body);return;}
@@ -38,7 +59,11 @@ export function applyMovementInput(body: MovementBody, input: MovementInput, gua
   }
   // Click routes retain their checked direction while keeping the same speed impairment.
   if (input.route === true) { impaired.x = input.x / length; impaired.y = input.y / length; }
-  const distance = (input.sprint === true ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * input.ms / 1000 / 3;
+  let distance = (input.sprint === true ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * input.ms / 1000 / 3;
+  if (body.leapDebt) {
+    const paid = Math.min(body.leapDebt, distance * 3);
+    body.leapDebt -= paid; distance -= paid / 3;
+  }
   for (let step = 0; step < 3; step++) {
     const x = impaired.x * distance, y = impaired.y * distance;
     if (walkable(body.x + x, body.y, hallObstacles(body.hall))) {
