@@ -2063,10 +2063,10 @@
       "sha256": "886bacce374b11ca9cb702be610cb60fc8d79a5c421e9df43dccdcf9687953bf"
     },
     "src/ui/skin-studio.css": {
-      "commit": "5f200c137918b1a0ed24a627f4d33968d8881286",
+      "commit": "99f5192ef081bd6072ea70662d371bc43145c706",
       "path": "src/ui/skin-studio.css",
-      "baseSha256": "31c8618062a9a76cf9ead13cfa94883dac7ae3585efcc4de177ba87b7374179c",
-      "sha256": "31c8618062a9a76cf9ead13cfa94883dac7ae3585efcc4de177ba87b7374179c"
+      "baseSha256": "d76d8e331af179ae5db53b9aafa171ff918cdf5d3f47a24675b850719a2c7b00",
+      "sha256": "d76d8e331af179ae5db53b9aafa171ff918cdf5d3f47a24675b850719a2c7b00"
     },
     "src/shared/miraRoutine.ts": {
       "commit": "87367e83f578e37fd26653c1ff9baffbab7f5fb3",
