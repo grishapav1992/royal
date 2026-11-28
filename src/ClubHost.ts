@@ -72,6 +72,11 @@ export class ClubHost implements PlayerControls {
   streetSnowball(value: Parameters<RoomScene['streetSnowball']>[0]) { this.world?.streetSnowball(value); }
   roofFirework(value: Parameters<RoomScene['roofFirework']>[0]) { this.world?.roofFirework(value); }
   toiletAct(value: Parameters<RoomScene['toiletAct']>[0]) { this.world?.toiletAct(value); }
+  /** Walks to the counter on the first floor; elsewhere the map marks the next doorway. */
+  goToAtelier() {
+    if (this.presentation === 'casino' || !this.world) { this.onNotice('Ателье на 1 этаже клуба. Переключись в режим «Клуб».'); return; }
+    this.world.guideToAtelier();
+  }
   finishMovement(action: () => void) { if (this.world) this.world.finishMovement(action); else action(); }
   cancelMovement() { this.world?.cancelMovement(); this.commands?.stop(); }
   onElevatorCancel() { this.world?.onElevatorCancel(); }

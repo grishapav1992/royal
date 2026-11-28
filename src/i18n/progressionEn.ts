@@ -18,6 +18,7 @@ export const progressionEnglish: Record<string, string> = {
   'Бесплатная генерация скина': 'Free skin generation',
   '2 варианта на выбор · 1 образ навсегда': '2 variants to choose from · keep 1 forever',
   'Открыть ателье': 'Open atelier',
+  'Идти к ателье': 'Walk to the atelier',
   'Генерация использована': 'Generation used',
   'Бесплатных генераций за уровни: {0}': 'Free level reward generations: {0}',
   'Создать бесплатно': 'Create for free',

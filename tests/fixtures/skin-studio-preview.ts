@@ -8,7 +8,8 @@ import { hasSkinSheet, loadSkinSheet } from '../../src/game/generatedSkinArt';
 import { SKIN_THEME } from '../../src/shared/skinStudio';
 import { createCharacterMotion } from '../../src/game/characterAnimation';
 let account: Account | null = { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', name: 'Игрок', email: 'skin@example.test', skin: 0, appearance: null };
-const studio = new SkinStudioUI({ setLocked: () => {} } as unknown as RoomScene, () => account, async () => {});
+// A player on the street: the wardrobe offers the route to the first-floor atelier.
+const studio = new SkinStudioUI({ setLocked: () => {}, hall: 'street', goToAtelier: () => { (window as any).skinPreview.guided = ((window as any).skinPreview.guided ?? 0) + 1; } } as unknown as RoomScene, () => account, async () => {});
 (window as any).skinPreview = { studio, wallet:demoWallet, setAccount(value: Account | null) { account = value; window.dispatchEvent(new Event('royal-account')); },
   async miraPortrait(id: string) {
     const [{ RoomScene }, { MiraChat }] = await Promise.all([import('../../src/game/RoomScene'), import('../../src/ui/MiraChat')]);

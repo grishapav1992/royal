@@ -1,6 +1,7 @@
 import { volcanicPlinkoEnglish } from './volcanicPlinkoEn';
 import { progressionEnglish } from './progressionEn';
 import { streetEnglish } from './streetEn';
+import { atelierEnglish } from './atelierEn';
 
 export const english: Record<string, string> = {
   "ТРУППА":"TROUPE",
@@ -50,6 +51,7 @@ export const english: Record<string, string> = {
   'Возвращаем ${0}…':'Refunding ${0}…',
 
   ...streetEnglish,
+  ...atelierEnglish,
   'Улица казино':'Casino street',
   'ВХОД':'ENTRANCE',
   'НА УЛИЦУ':'TO THE STREET',

@@ -1,28 +1,146 @@
-.skin-studio{box-sizing:border-box;width:min(720px,calc(100vw - 28px));max-height:calc(100dvh - 28px);padding:24px;border:2px solid #655044;border-radius:18px;background:#f5ead6;color:#392c25;overflow:auto;box-shadow:0 25px 90px #0008;font-family:Arial,sans-serif}
+/* Atelier window: the booth sign as the header, the fitting room in front of the counter,
+   orders and the wardrobe beside it. Palette kept from the previous window. */
+.skin-studio{--skin-paper:#f5ead6;--skin-card:#fffbf2;--skin-ink:#392c25;--skin-muted:#695244;--skin-line:#c9b99b;--skin-burgundy:#963e32;--skin-burgundy-dark:#6d2a24;--skin-teal:#34615c;--skin-gold:#c8963e;--skin-gold-light:#f3d48a;
+  box-sizing:border-box;width:min(1120px,calc(100vw - 28px));max-height:calc(100dvh - 28px);padding:0;border:2px solid #655044;border-radius:18px;background:var(--skin-paper);color:var(--skin-ink);overflow:auto;box-shadow:0 25px 90px #0009;font-family:Arial,sans-serif}
 .skin-studio::backdrop{background:#1f1c24bf;backdrop-filter:blur(4px)}
-.skin-studio-identity{display:flex;align-items:center;gap:12px}.skin-tailor-portrait{height:56px;width:48px;flex:none;overflow:hidden;border-radius:6px}.skin-tailor-portrait canvas{width:48px;height:56px}.skin-balance{font-size:13px;color:#695244;min-height:16px;margin:0;text-align:right}
-.skin-studio-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.skin-studio h2{margin:8px 0;font-size:30px}.skin-studio h3{font-size:21px;margin:22px 0 10px}.skin-studio h3 small{font-size:12px;color:#806958;margin-left:8px}.skin-studio .icon-button{flex:none;color:#392c25;background:#e6d6bb}.skin-studio-intro{max-width:680px;line-height:1.55;color:#695244;margin:10px 0 22px}.skin-studio label{display:block;font-weight:700;margin-bottom:8px}.skin-studio textarea{box-sizing:border-box;width:100%;resize:vertical;min-height:106px;max-height:300px;padding:14px;background:#fffbf2;border:1px solid #b49a7e;border-radius:10px;color:#392c25;font:16px/1.45 Arial,sans-serif}.skin-studio textarea:focus-visible,.skin-studio button:focus-visible,.skin-studio select:focus-visible{outline:3px solid #477d7c;outline-offset:3px}.skin-studio-price{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:14px 0}.skin-studio-price strong{font-size:26px}.skin-studio-price small{font-size:12px;font-weight:400;display:block;color:#695244}.skin-studio-price>span{font-size:14px}.skin-studio .primary-button{min-height:46px;background:#963e32;color:#fff6e7;border:1px solid #6d2a24;border-radius:9px;padding:11px 18px;font-weight:700;cursor:pointer}.skin-studio button:disabled{opacity:.55;cursor:default}.skin-studio-note{font-size:12px;line-height:1.6;color:#715e4f}.skin-studio #skin-status{padding:14px 16px;background:#e6dcc5;border:1px solid #c9b99b;border-radius:10px;font-size:14px;line-height:1.5}.skin-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.skin-card{min-width:0;background:#fffbf2;border:1px solid #c9b99b;border-radius:12px;padding:12px}.skin-card h4{margin:0 0 8px;font-size:15px}.skin-preview{height:240px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:8px;background:radial-gradient(ellipse at 50% 95%,#c4b59c 0,transparent 55%),#eee4d2}.skin-preview-art{width:160px;height:240px;flex-shrink:0;background-size:400% 400%;background-repeat:no-repeat;background-position:0 0}.skin-preview-controls{display:flex;gap:6px;margin:10px 0}.skin-studio select{box-sizing:border-box;min-width:0;width:50%;padding:8px 3px;border:1px solid #bea686;border-radius:5px;background:#fff9ed;color:#392c25;font-size:12px}.skin-select{width:100%;padding:11px 7px;border-radius:7px;border:1px solid #92765d;background:#eaddc5;color:#392c25;font-weight:700;cursor:pointer}.skin-select[aria-pressed=true]{background:#34615c;color:#fff;border-color:#244d48}.skin-choose-slot{margin:16px 0}.skin-closet-grid .skin-preview{height:180px}.skin-closet-grid .skin-preview-art{width:120px;height:180px}.skin-card-description{font-size:12px;line-height:1.4;height:34px;overflow:hidden;color:#715e4f;overflow-wrap:anywhere}.skin-empty{color:#806958;font-size:14px;grid-column:1/-1}.skin-image-error::before{content:'Изображение недоступно';font-size:12px}.skin-image-error .skin-preview-art{display:none}
-@media(max-width:650px){.skin-studio{padding:18px;width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}.skin-studio h2{font-size:25px}.skin-card-grid{grid-template-columns:1fr}.skin-card{display:grid;grid-template-columns:1fr 1fr;gap:8px}.skin-card h4{grid-column:1/-1}.skin-preview{grid-row:2/5;height:210px}.skin-preview-art{width:140px;height:210px}.skin-preview-controls{flex-direction:column;margin:0}.skin-studio select{width:100%}.skin-card-description{height:auto;max-height:70px;margin:0}.skin-select{align-self:end}.skin-studio-price{align-items:flex-start}.skin-studio-price>span{max-width:150px;text-align:right;font-size:12px}}
-.skin-studio .text-button{border:0;background:transparent;color:#694c3b;padding:8px 0;text-decoration:underline;cursor:pointer}.skin-studio .eyebrow{font-size:11px;letter-spacing:.14em;color:#806958;font-weight:700}.skin-studio .icon-button{width:36px;height:36px;border:1px solid #c9b99b;border-radius:8px;font-size:25px;cursor:pointer}
+.skin-studio *{box-sizing:border-box}
+.skin-studio [hidden]{display:none!important}
+.skin-studio button{font:inherit}
+.skin-studio textarea:focus-visible,.skin-studio button:focus-visible,.skin-studio canvas:focus-visible{outline:3px solid #477d7c;outline-offset:3px}
+.skin-studio button:disabled{opacity:.55;cursor:default}
 
-.skin-studio-heading{align-items:center;margin-bottom:20px}.skin-studio h2{margin:0 0 4px;font-size:26px}.skin-studio .eyebrow{font-size:10px}.skin-studio-price>span{font-size:13px}.skin-studio #skin-status{margin-bottom:0}.skin-studio .skin-refresh{margin-top:8px}
-@media(max-width:650px){.skin-studio-price{align-items:center}.skin-studio-price>span{text-align:left;max-width:none}.skin-balance{font-size:12px}}
+/* Header: the booth sign */
+.skin-studio-heading{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:14px;padding:11px 16px 11px 18px;background:linear-gradient(#6a1d28,#4e131c);border-bottom:3px solid var(--skin-gold);color:var(--skin-gold-light)}
+.skin-tailor-portrait{display:flex;align-items:center;justify-content:center;width:52px;height:58px;flex:none;overflow:hidden;border-radius:9px;border:2px solid var(--skin-gold);background:#7a4e33;color:var(--skin-gold-light)}
+.skin-tailor-portrait canvas{width:52px;height:58px;display:block}
+.skin-portrait-hook{width:34px;height:30px}
+.skin-heading-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.skin-studio .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#e7c98f;font-weight:700}
+.skin-studio h2{margin:0;font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:1.1;letter-spacing:.04em;color:var(--skin-gold-light)}
+.skin-scissors{flex:none;color:var(--skin-gold)}
+.skin-studio:not([data-offer="atelier"]) .skin-scissors,.skin-studio[data-mode="wardrobe"] .skin-scissors{display:none}
+.skin-balance{margin:0 0 0 auto;font-size:13px;color:#f1dcb6;text-align:right;font-variant-numeric:tabular-nums;min-height:16px}
+.skin-studio .icon-button{flex:none;width:40px;height:40px;border:1px solid var(--skin-gold);border-radius:9px;background:#5a1822;color:var(--skin-gold-light);font-size:25px;line-height:1;cursor:pointer}
+.skin-disguise-help{margin:14px 22px 0;padding:10px 12px;border-radius:10px;background:#e6dcc5;font-size:13px;line-height:1.5}
 
-.skin-card-grid[data-variant-count="3"]{grid-template-columns:repeat(3,minmax(0,1fr))}
-@media(max-width:650px){.skin-card-grid[data-variant-count="3"]{grid-template-columns:1fr}}
+.skin-studio-body{display:grid;grid-template-columns:minmax(0,1.06fr) minmax(0,1fr);gap:24px;padding:20px 22px 22px;align-items:start}
+.skin-studio-main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.skin-panel{display:flex;flex-direction:column;gap:14px;min-width:0}
+.skin-panel form,.skin-progress,.skin-results{display:flex;flex-direction:column;gap:12px}
+.skin-studio h3{margin:0;font-family:Georgia,'Times New Roman',serif;font-size:23px;line-height:1.2;text-wrap:balance}
+.skin-lead,.skin-note,.skin-empty{margin:0;font-size:13px;line-height:1.5;color:var(--skin-muted)}
+.skin-note{font-size:12px}
+.skin-recap{margin:0;padding:9px 12px;border-radius:10px;background:#efe3cc;font-size:13px;line-height:1.4;color:var(--skin-ink);overflow-wrap:anywhere}
 
-.skin-results .skin-preview{height:180px}.skin-results .skin-preview-art{width:120px;height:180px}
-.skin-results .skin-select{margin-top:10px}.skin-closet-grid .skin-select{margin-top:8px}
-.skin-fitting-room{margin-top:20px}.skin-fitting-room[hidden]{display:none}
-.skin-fitting-room h3{margin-bottom:6px}.skin-fitting-caption{font-size:13px;color:#695244;margin:0 0 12px;min-height:16px}
-.skin-fitting-room canvas{display:block;box-sizing:border-box;width:100%;height:280px;border:1px solid #b49a7e;border-radius:10px;cursor:crosshair;touch-action:none}
-.skin-fitting-room canvas:focus-visible{outline:3px solid #477d7c;outline-offset:3px}
-.skin-fitting-hint{font-size:12px;line-height:1.5;color:#695244;margin:10px 0}
-.skin-fitting-controls{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.skin-fitting-pad{display:grid;grid-template-columns:repeat(3,44px);gap:5px}
-.skin-fitting-pad button,.skin-fitting-pose{min-height:44px;border:1px solid #92765d;border-radius:7px;background:#eaddc5;color:#392c25;cursor:pointer;font-weight:700;touch-action:none;user-select:none}
-.skin-fitting-pad button{font-size:22px}.skin-fitting-pad button:first-child{grid-column:2}.skin-fitting-pad button:nth-child(2){grid-column:1}
-.skin-fitting-pose{padding:10px 22px}.skin-fitting-pose[aria-pressed=true]{background:#34615c;color:#fff}
-@media(max-width:650px){.skin-results .skin-card-grid:not([data-variant-count="3"]){grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.skin-results .skin-card{display:block;padding:8px}.skin-results .skin-preview{height:150px}.skin-results .skin-preview-art{width:100px;height:150px}.skin-results .skin-select{font-size:12px;padding:10px 4px}.skin-closet-grid .skin-card{display:block}.skin-fitting-hint{font-size:12px}}
+/* Fitting room */
+.skin-fitting-room{position:sticky;top:96px;border-radius:14px;overflow:hidden;border:1px solid #6b4a33;background:#3a2418}
+.skin-fitting-stage canvas{display:block;width:100%;height:clamp(300px,calc(100dvh - 330px),460px);cursor:crosshair;touch-action:none}
+.skin-fitting-bar{display:flex;align-items:center;gap:12px;padding:10px 12px;background:#f0e2c8;border-top:1px solid var(--skin-line)}
+.skin-fitting-text{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.skin-fitting-caption{font-size:14px;overflow-wrap:anywhere}
+.skin-fitting-hint{font-size:12px;line-height:1.4;color:var(--skin-muted)}
+.skin-fitting-controls{display:flex;align-items:center;gap:10px;flex:none}
+.skin-fitting-pad{display:grid;grid-template-columns:repeat(3,36px);grid-template-rows:repeat(2,32px);gap:4px}
+.skin-fitting-pad button,.skin-fitting-pose{border:1px solid #92765d;border-radius:7px;background:#eaddc5;color:var(--skin-ink);cursor:pointer;font-weight:700;touch-action:none;user-select:none}
+.skin-fitting-pad button{font-size:17px;padding:0}
+.skin-fitting-pad button:first-child{grid-column:2;grid-row:1}
+.skin-fitting-pad button:nth-child(2){grid-column:1;grid-row:2}
+.skin-fitting-pad button:nth-child(3){grid-column:2;grid-row:2}
+.skin-fitting-pad button:nth-child(4){grid-column:3;grid-row:2}
+.skin-fitting-pose{min-height:44px;padding:8px 14px}
+.skin-fitting-pose[aria-pressed=true]{background:var(--skin-teal);color:#fff}
 
-.skin-card-grid[data-variant-count="1"]{grid-template-columns:minmax(0,1fr);max-width:300px;margin-inline:auto}
+/* Tabs */
+.skin-tabs{display:flex;gap:4px;border-bottom:2px solid #d8c6a6}
+.skin-tabs button{display:flex;align-items:center;gap:8px;min-height:44px;padding:10px 14px;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;background:none;color:var(--skin-muted);font-size:15px;font-weight:700;cursor:pointer}
+.skin-tabs button[aria-selected=true]{color:var(--skin-ink);border-bottom-color:var(--skin-burgundy)}
+.skin-count{min-width:22px;padding:2px 7px;border-radius:20px;background:#e3d3b6;color:var(--skin-ink);font-size:12px;text-align:center}
+.skin-studio #skin-status{margin:0;padding:12px 14px;background:#e6dcc5;border:1px solid var(--skin-line);border-radius:10px;font-size:14px;line-height:1.5}
+.skin-studio .text-button{align-self:flex-start;border:0;background:transparent;color:#694c3b;padding:4px 0;text-decoration:underline;cursor:pointer}
+
+/* Order form */
+.skin-studio label{font-weight:700;font-size:14px}
+.skin-studio textarea{width:100%;resize:vertical;min-height:104px;max-height:300px;padding:13px;background:var(--skin-card);border:1px solid #b49a7e;border-radius:10px;color:var(--skin-ink);font:16px/1.45 Arial,sans-serif}
+.skin-studio-price{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.skin-studio-price>div{display:flex;flex-direction:column;gap:3px;padding:11px 12px;border-radius:10px;background:#efe3cc}
+.skin-studio-price span{font-size:12px;color:var(--skin-muted)}
+.skin-studio-price strong{font-size:18px;font-variant-numeric:tabular-nums}
+.skin-free-generations,.skin-existing-order{margin:0;font-size:13px;color:var(--skin-teal);font-weight:700}
+.skin-studio .primary-button{width:100%;min-height:50px;padding:11px 18px;border:1px solid var(--skin-burgundy-dark);border-radius:10px;background:var(--skin-burgundy);color:#fff6e7;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 3px 0 var(--skin-burgundy-dark);overflow-wrap:anywhere}
+
+/* Steps while the tailor draws: a real sequence */
+.skin-steps{list-style:none;margin:0;padding:0}
+.skin-step{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;padding:11px 0;border-bottom:1px dashed #d4c2a2}
+.skin-step:last-child{border-bottom:0}
+.skin-step-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid var(--skin-line);color:var(--skin-muted);background:var(--skin-card)}
+.skin-step[data-state=done] .skin-step-dot{background:var(--skin-teal);border-color:var(--skin-teal);color:#fff}
+.skin-step[data-state=now] .skin-step-dot{border-color:var(--skin-burgundy);color:var(--skin-burgundy);animation:skin-step-pulse 1.6s ease-in-out infinite}
+.skin-step strong{display:block;font-size:15px}
+.skin-step span{font-size:12px;line-height:1.4;color:var(--skin-muted)}
+@keyframes skin-step-pulse{50%{box-shadow:0 0 0 7px #963e3222}}
+@media (prefers-reduced-motion:reduce){.skin-step[data-state=now] .skin-step-dot{animation:none}}
+
+/* Rail with hanging cards */
+.skin-rail{position:relative;padding-top:20px}
+.skin-rail::before{content:"";position:absolute;left:-4px;right:-4px;top:6px;height:7px;border-radius:4px;background:linear-gradient(#f0cd7c,#a8772e);box-shadow:0 2px 3px #0003}
+.skin-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.skin-card-grid[data-variant-count="3"],.skin-closet-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.skin-card-grid[data-variant-count="1"]{grid-template-columns:minmax(0,220px)}
+.skin-card{position:relative;display:flex;flex-direction:column;gap:6px;min-width:0;padding:10px;text-align:left;background:var(--skin-card);border:2px solid #d4c2a2;border-radius:13px;color:var(--skin-ink);cursor:pointer}
+.skin-card:hover{border-color:#b49a7e}
+.skin-card[aria-pressed=true]{border-color:var(--skin-teal);box-shadow:0 0 0 4px #34615c2e}
+.skin-hook{position:absolute;left:50%;top:-21px;transform:translateX(-50%);color:#8a6a3a}
+.skin-pill{position:absolute;top:8px;right:8px;z-index:1;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;background:var(--skin-teal);color:#fff}
+.skin-pill[data-kind=worn]{background:#e3d3b6;color:var(--skin-ink)}
+.skin-preview{height:190px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;border-radius:9px;background:radial-gradient(ellipse at 50% 92%,#d8c8ac 0,transparent 60%),#f1e6d2}
+.skin-closet-grid .skin-preview,.skin-card-grid[data-variant-count="3"] .skin-preview{height:150px}
+.skin-preview-art{width:126px;height:190px;flex-shrink:0;background-size:400% 400%;background-repeat:no-repeat;background-position:0 0}
+.skin-closet-grid .skin-preview-art,.skin-card-grid[data-variant-count="3"] .skin-preview-art{width:100px;height:150px}
+.skin-image-error{align-items:center;font-size:12px;color:var(--skin-muted)}
+.skin-image-error::before{content:attr(data-error)}
+.skin-image-error .skin-preview-art{display:none}
+.skin-card-description{font-size:14px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.skin-card-prompt{font-size:12px;line-height:1.35;color:#715e4f;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+
+/* An equip slot without a picked outfit takes no space (its sticky band on phones included). */
+.skin-equip-slot:has(> .skin-equip[hidden]){display:none}
+
+/* Wardrobe: where new outfits come from */
+.skin-goto{display:grid;grid-template-columns:104px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px;border-radius:12px;background:#efe3cc;border:1px solid #d8c6a6}
+.skin-goto img{width:104px;height:auto;border-radius:6px}
+.skin-goto strong{display:block;font-size:15px;margin-bottom:3px}
+.skin-goto span{font-size:12px;line-height:1.4;color:var(--skin-muted)}
+.skin-goto-button{min-height:44px;padding:10px 14px;border:1px solid #92765d;border-radius:9px;background:#eaddc5;color:var(--skin-ink);font-weight:700;cursor:pointer}
+
+@media (max-width:900px){
+  .skin-studio-body{grid-template-columns:minmax(0,1fr);gap:16px}
+  .skin-fitting-room{position:static}
+  .skin-fitting-stage canvas{height:clamp(260px,42dvh,360px)}
+}
+@media (max-width:650px){
+  .skin-studio{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:14px}
+  .skin-studio-heading{padding:9px 10px;gap:10px}
+  .skin-tailor-portrait{width:42px;height:46px}
+  .skin-tailor-portrait canvas{width:42px;height:46px}
+  .skin-studio h2{font-size:22px}
+  .skin-scissors{display:none}
+  .skin-studio .eyebrow{display:none}
+  .skin-balance{font-size:12px;white-space:nowrap}
+  .skin-studio-body{padding:0 0 14px;gap:12px}
+  .skin-fitting-room{border-radius:0;border-width:0 0 1px}
+  .skin-fitting-stage canvas{height:clamp(240px,38dvh,320px)}
+  .skin-fitting-bar{padding:8px 10px;gap:8px}
+  .skin-fitting-hint{display:none}
+  .skin-fitting-pad{grid-template-columns:repeat(3,34px);grid-template-rows:repeat(2,30px)}
+  .skin-fitting-pose{padding:8px 10px}
+  .skin-studio-main{padding:0 12px}
+  .skin-studio h3{font-size:20px}
+  .skin-card-grid,.skin-closet-grid,.skin-card-grid[data-variant-count="3"]{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .skin-card{padding:8px}
+  .skin-preview,.skin-closet-grid .skin-preview,.skin-card-grid[data-variant-count="3"] .skin-preview{height:126px}
+  .skin-preview-art,.skin-closet-grid .skin-preview-art,.skin-card-grid[data-variant-count="3"] .skin-preview-art{width:84px;height:126px}
+  .skin-choose-slot,.skin-equip-slot{position:sticky;bottom:-14px;z-index:1;margin:0 -12px;padding:10px 12px 14px;background:#f0e2c8;border-top:1px solid #d8c6a6}
+  .skin-goto{grid-template-columns:72px minmax(0,1fr)}
+  .skin-goto img{width:72px}
+  .skin-goto-button{grid-column:1/-1}
+}
