@@ -1,0 +1,36 @@
+{
+  "activeBefore": [
+    "panda-dragon-preview",
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge"
+  ],
+  "sourceUpdates": {
+    "src/ClubHost.ts": "8c9126f185d30cc495af14c0f199a626147da4fe2a5f2342a92bca9c0da423c9",
+    "src/game/RoomScene.ts": "0e4d04b2cf8c9d0bd7726480ddfd3243205de54a06d657274bd5e2ea056f6715",
+    "src/i18n/atelierEn.ts": "9502b8ec3319b4a12c5bdb2b336b5bb19fa3a38b00e0d6040fd15ac3729774bf",
+    "src/i18n/en.ts": "260907d524fe088610f316b2815bd163435776088ac8cb80e6d3ba4c8d3b4038",
+    "src/i18n/progressionEn.ts": "e7757e2d869a1f85f4c09152f57a8ce6ba2e9d3972b5bca42bab19bb4484baea",
+    "src/ui/ClubMap.ts": "b9a760399459951b013f7080b0b7766acde61d6a14a314640a6ed33c245b00f4",
+    "src/ui/ProgressionUI.ts": "21d3464b86a276ae001864aa7d11702e0cf39946e0c640fb941ee469b94d2248",
+    "src/ui/SkinFittingRoom.ts": "886bacce374b11ca9cb702be610cb60fc8d79a5c421e9df43dccdcf9687953bf",
+    "src/ui/SkinStudioUI.ts": "fb2ffd80d0b1dadc17dda2511289b08b86fece33d8c51e52589bb74d397681c1",
+    "src/ui/skin-studio.css": "31c8618062a9a76cf9ead13cfa94883dac7ae3585efcc4de177ba87b7374179c"
+  }
+}
