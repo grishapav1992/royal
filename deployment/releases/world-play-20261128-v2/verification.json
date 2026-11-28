@@ -1,0 +1,124 @@
+{
+ "published": true,
+ "preparedImage": "sha256:3be9b15ce6d486fc346c60ce9a1b4d7f36f4281930802655073e8c19ef9024ae",
+ "runningImage": "sha256:3be9b15ce6d486fc346c60ce9a1b4d7f36f4281930802655073e8c19ef9024ae",
+ "containerRestarted": true,
+ "sourceCommit": "55e5012af1419801d66544ad760648032cde6999",
+ "changedSources": 30,
+ "clientDeltaFiles": 10,
+ "configurationsAndMountsPreserved": true,
+ "gameDataPreserved": true,
+ "backendDeltaFiles": 1,
+ "otherBackendProgramsAndModulesPreserved": true,
+ "oldAssetsPreserved": true,
+ "otherPersistentServicesPreserved": 10,
+ "release": "world-play-20261128-v2",
+ "baseCommit": "ee2c58cc413bb3e0b45077aa1eb98bb60aec7089",
+ "featureCommits": {
+  "streetAndRoof": "c8463cbd",
+  "restroomAndFloors": "01728583",
+  "mainIntegration": "f1911518",
+  "releaseTooling": "55e5012a"
+ },
+ "supersededPreparation": {
+  "release": "world-play-20261128-v1",
+  "base": "5b7170be367ae44c340b4f2bf5e149ab3142315b",
+  "installed": false,
+  "reason": "mira-motion-20261128-v1 was published first; rebuilt on its projections"
+ },
+ "rollbackImage": "sha256:17f63bc47a406af3f6a86e61177c266493ec77830ab4e7fa87be02f777d6d713",
+ "rollbackTag": "royal-game:before-world-play-20261128-v2",
+ "backup": "/opt/royal-backups/world-play-20261128-v2",
+ "sourceArchive": {
+  "bytes": 91542,
+  "sha256": "6a0e6ac1e019d56e85ac88c17850721f21d1f2d0d539a5089a4ad97c79983ed0"
+ },
+ "financialBackupSha256": "35a904c19e105d410ecfd75a05fe184892ae8da0a7e5ce0784c805ba63b0e934",
+ "databaseRestored": false,
+ "unrelatedMainDifferences": [
+  "src/game/RoomScene.ts formatting only",
+  "src/shared/world.ts NetworkCommands field order (type only)"
+ ],
+ "activeCatalogue": 20,
+ "addedGames": [],
+ "restoredGames": [],
+ "rulesOrMathChanged": false,
+ "activeModulePointersUnchanged": true,
+ "moduleHostContractUnchanged": true,
+ "maintenance": {
+  "status": "completed",
+  "durationSeconds": 72.68,
+  "freeBytesAfter": 10589204480,
+  "hourlyTimer": "enabled, active",
+  "containerHealth": "healthy"
+ },
+ "checks": {
+  "applicationBuild": {
+   "rtp": true,
+   "typecheck": true,
+   "modules": true,
+   "host": true,
+   "backend": true,
+   "reconciliation": true,
+   "payments": true
+  },
+  "githubVerified": true,
+  "serverTests": {
+   "street": {
+    "passed": 108
+   },
+   "walletAndMira": {
+    "passed": 19,
+    "files": [
+     "game-wallet",
+     "wallet-account",
+     "mira-drinks",
+     "mira"
+    ]
+   }
+  },
+  "installerTests": {
+   "passed": 15,
+   "file": "deployment/releases/skin-offers-20261105-v2/test_deploy.py",
+   "platform": "macOS, not Linux"
+  },
+  "browser": {
+   "entryStand": {
+    "fixture": "Local entry stand from main with temporary PostgreSQL",
+    "passed": 9,
+    "note": "mode switching first timed out, then passed twice",
+    "wallet": {
+     "stakeUnits": "10",
+     "lostResponseRecovered": true,
+     "sameOperationId": true,
+     "oneDebit": true
+    }
+   },
+   "exactBytes": {
+    "fixture": "Exact prepared dist and dist-server with connected host and temporary PostgreSQL",
+    "passed": 10,
+    "files": [
+     "street-play.spec",
+     "roof-play.spec",
+     "toilet-play.spec",
+     "floors-play.spec"
+    ],
+    "viewports": [
+     "1440x1000",
+     "390x844"
+    ]
+   }
+  },
+  "public": {
+   "healthz": 200,
+   "guestWallet": 401,
+   "sha256Matched": 10,
+   "oldAssetsServed": true
+  }
+ },
+ "notChecked": [
+  "production accounts",
+  "Safari",
+  "real phones"
+ ]
+}
